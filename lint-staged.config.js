@@ -3,7 +3,7 @@ module.exports = {
     // '**/*.(ts|tsx)': () => 'npm tsc --noEmit',
   
     // This will lint and format TypeScript and                                             //JavaScript files
-    '**/*.(ts)': () => [
+    'src/*.{ts}': () => [
       `npm run lint`,
     ],
   
