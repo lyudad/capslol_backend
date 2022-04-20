@@ -94,6 +94,10 @@ root@16d0d1803a49:/# mysql -u admin -p
 `DATABASE_PASSWORD=root`
 `DATABASE_NAME=freelancer_db`
 
+# Documentaion
+
+URL: `http://localhost:3000/docs/`
+
 # REST API
 
 ## Get All users
