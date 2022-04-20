@@ -1,13 +1,20 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import AuthServive from './auth.service';
 import CreateUserDto from './dto/create-user.dto';
 import UserEntity from './user.entity';
 
+@ApiTags('Authorization')
 @Controller('auth')
 export default class AuthController {
   constructor(private readonly authService: AuthServive) {}
 
-  @Get('allusers')
+  @Get('allUsers')
+  @ApiResponse({
+    status: 200,
+    description: 'Users found',
+    type: UserEntity,
+  })
   async allUser(): Promise<UserEntity[]> {
     const users = await this.authService.allUsers();
     return users;
