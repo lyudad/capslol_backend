@@ -88,8 +88,10 @@ root@16d0d1803a49:/# mysql -u admin -p
 8. `CREATE DATABASE IF NOT EXISTS freelancer_db;`
    `show databases;`
 
-## Update .env file
+### Update .env file
 
 `DATABASE_USERNAME=admin`
 `DATABASE_PASSWORD=root`
 `DATABASE_NAME=freelancer_db`
+
+## Migrations
