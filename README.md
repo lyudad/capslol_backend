@@ -96,6 +96,11 @@ root@16d0d1803a49:/# mysql -u admin -p
 
 # REST API
 
+## Get All users
+
+Method: ` GET`
+Endpoint :`/auth/allUsers`
+
 ## Create user
 
 Method: ` POST`

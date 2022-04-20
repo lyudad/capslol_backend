@@ -9,7 +9,7 @@ export default class AuthServive {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
-  ) { }
+  ) {}
 
   async allUsers(): Promise<UserEntity[]> {
     const users = await this.userRepository.createQueryBuilder().getMany();
@@ -17,7 +17,11 @@ export default class AuthServive {
   }
 
   async createUser(user: CreateUserDto) {
-    const newUser = await this.userRepository.createQueryBuilder().insert().values(user).execute()
-    return newUser
+    const newUser = await this.userRepository
+      .createQueryBuilder()
+      .insert()
+      .values(user)
+      .execute();
+    return newUser;
   }
 }
