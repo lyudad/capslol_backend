@@ -94,4 +94,20 @@ root@16d0d1803a49:/# mysql -u admin -p
 `DATABASE_PASSWORD=root`
 `DATABASE_NAME=freelancer_db`
 
-## Migrations
+# REST API
+
+## Create user
+
+Method: ` POST`
+Endpoint :`/auth/createUser`
+Body:
+
+```json
+{
+  "user": {
+    "username": "",
+    "email": "",
+    "password": ""
+  }
+}
+```
