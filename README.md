@@ -1,3 +1,5 @@
+# NestJS
+
 ## Installation
 
 ```bash
@@ -29,3 +31,65 @@ $ npm run test:e2e
 # test coverage
 $ npm run test:cov
 ```
+
+# Database
+
+I used MySQL v8.0
+If you haven`t installed database in your machine, you can use docker container.
+
+```bash
+docker run --name mysqldb \
+           --volume "$(pwd)/data:/var/lib/mysql" \
+           --env MYSQL_ROOT_PASSWORD=secret \
+           --publish 3306:3306 \
+           --detach \
+           --restart unless-stopped \
+           mysql:8.0
+```
+
+## Creating a New User
+
+### Enter into container
+
+1.  `docker exec -it mysqldb bash`
+
+### Enter into MySQL
+
+2. `root@16d0d1803a49:/# mysql -u root -psecret`
+
+### Create new User with Password
+
+3. `CREATE USER 'admin' IDENTIFIED BY 'root';`
+
+### Check new User
+
+4. `SELECT user FROM mysql.user;`
+
+### Granting a User Permissions
+
+5. `GRANT ALL PRIVILEGES ON * . * TO 'admin';`
+   `FLUSH PRIVILEGES;`
+   You can review a user’s current permissions by running the SHOW GRANTS command:
+   `SHOW GRANTS FOR 'admin';`
+6. After creating your MySQL user and granting them privileges, you can exit the MySQL client:
+
+```bash
+mysql> exit
+```
+
+7. to log in as your new MySQL user, you’d use a command like the following:
+
+```bash
+root@16d0d1803a49:/# mysql -u admin -p
+```
+
+### Create new database
+
+8. `CREATE DATABASE IF NOT EXISTS freelancer_db;`
+   `show databases;`
+
+## Update .env file
+
+`DATABASE_USERNAME=admin`
+`DATABASE_PASSWORD=root`
+`DATABASE_NAME=freelancer_db`
