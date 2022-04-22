@@ -98,6 +98,7 @@ root@16d0d1803a49:/# mysql -u admin -p
 
 After setup database and NestJS connected to database, you would run migration.
 `npm run migration:run`
+`npm run start:dev`
 
 # Documentaion
 
