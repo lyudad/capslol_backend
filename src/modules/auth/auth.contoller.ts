@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Controller, Get, Post } from '@nestjs/common';
 import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import AuthServive from './auth.service';
-import CreateUserDto from './dto/create-user.dto';
+import { User } from './decorators/user.decorator';
+import CreateUserDto, { UserInfoDto } from './dto/create-user.dto';
 import UserEntity from './user.entity';
 
 @ApiTags('Authorization')
@@ -20,13 +21,10 @@ export default class AuthController {
     return users;
   }
 
-
   @Post('createUser')
-  @ApiBody({
-    description: 'user',
-  })
-  async createUser(@Body('user') user: CreateUserDto) {
-    const createdUser = await this.authService.createUser(user);
+  @ApiBody({ type: CreateUserDto })
+  async createUser(@User() userInfoDto: UserInfoDto) {
+    const createdUser = await this.authService.createUser(userInfoDto);
     return createdUser;
   }
 }
