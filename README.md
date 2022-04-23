@@ -94,6 +94,12 @@ root@16d0d1803a49:/# mysql -u admin -p
 `DATABASE_PASSWORD=root`
 `DATABASE_NAME=freelancer_db`
 
+# Migration
+
+After setup database and NestJS connected to database, you would run migration.
+`npm run migration:run`
+`npm run start:dev`
+
 # Documentaion
 
 URL: `http://localhost:3000/docs/`
