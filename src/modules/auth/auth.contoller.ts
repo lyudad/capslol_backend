@@ -1,14 +1,16 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import AuthServive from './auth.service';
-import { User } from './decorators/user.decorator';
-import CreateUserDto, { UserInfoDto } from './dto/create-user.dto';
-import UserEntity from './user.entity';
+import User from './decorators/user.decorator';
+import CreateUserDto from './dto/create-user.dto';
+import UserInfoDto from './dto/user-info.dto';
+import UserEntity from './entity/user.entity';
+import { IUserResponse } from './types/response.interface';
 
 @ApiTags('Authorization')
 @Controller('auth')
 export default class AuthController {
-  constructor(private readonly authService: AuthServive) { }
+  constructor(private readonly authService: AuthServive) {}
 
   @Get('allUsers')
   @ApiResponse({
@@ -16,15 +18,37 @@ export default class AuthController {
     description: 'Users found',
     type: UserEntity,
   })
-  async allUser(): Promise<UserEntity[]> {
+  async allUsers(): Promise<IUserResponse> {
     const users = await this.authService.allUsers();
-    return users;
+    return this.authService.buildResponse(users, 'Users were found');
+  }
+
+  @Get('getUser/:id')
+  async getUserById(@Param('id') userId: number): Promise<IUserResponse> {
+    const user = await this.authService.getUserById(userId);
+    return this.authService.buildResponse(user, 'User was found');
   }
 
   @Post('createUser')
   @ApiBody({ type: CreateUserDto })
-  async createUser(@User() userInfoDto: UserInfoDto) {
+  async createUser(@User() userInfoDto: UserInfoDto): Promise<IUserResponse> {
     const createdUser = await this.authService.createUser(userInfoDto);
-    return createdUser;
+    return this.authService.buildResponse(createdUser, 'User was created');
+  }
+
+  @Put('updateUser/:id')
+  @ApiBody({ type: CreateUserDto })
+  async updateUser(
+    @Param('id') userId: number,
+    @User() userInfoDto: UserInfoDto,
+  ): Promise<IUserResponse> {
+    const updatedUser = await this.authService.updateUser(userId, userInfoDto);
+    return this.authService.buildResponse(updatedUser, 'User was updated');
+  }
+
+  @Delete('deleteUser/:id')
+  async deleteUser(@Param('id') userId: number) {
+    const user = await this.authService.deleteUser(userId);
+    return this.authService.buildResponse(user, 'User was deleted');
   }
 }

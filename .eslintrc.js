@@ -17,6 +17,7 @@ module.exports = {
   },
   ignorePatterns: ['.eslintrc.js'],
   rules: {
+    'class-methods-use-this': "off",
     'import/no-unresolved': [0, { caseSensitive: false }],
     'no-useless-constructor': 'off',
     '@typescript-eslint/no-useless-constructor': ['error'],
