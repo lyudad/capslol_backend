@@ -16,10 +16,10 @@ const typeOrmConfig: TypeOrmModuleAsyncOptions = {
     username: configService.get<string>('DATABASE_USERNAME'),
     password: configService.get<string>('DATABASE_PASSWORD'),
     database: configService.get<string>('DATABASE_NAME'),
-    entities: [`${__dirname}/**/*.entity{.ts,.js}`],
+    entities: [__dirname + '/**/*.entity{.ts,.js}'],
     synchronize: false,
     logging: true,
-    migrations: [`${__dirname}/migrations/**/*{.ts,.js}`],
+    migrations: [__dirname + '/**/*.entity{.ts,.js}'],
     cli: {
       migrationsDir: '/migrations',
     },
