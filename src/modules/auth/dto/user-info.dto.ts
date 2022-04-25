@@ -2,11 +2,16 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export default class UserInfoDto {
   @ApiProperty({
-    required: false,
-    description: 'username must be unique',
-    example: '@neo',
+    description: 'Fist name ',
+    example: 'Thomas',
   })
-  username: string;
+  firstName: string;
+
+  @ApiProperty({
+    description: 'Fast name',
+    example: 'Anderson',
+  })
+  lastName: string;
 
   @ApiProperty({
     description: 'email address',
@@ -17,7 +22,7 @@ export default class UserInfoDto {
   @ApiProperty({
     description:
       'password must contain at least one character, one number and less 6 digits',
-    example: 'zion-20',
+    example: 'The-One',
   })
   password: string;
 }
