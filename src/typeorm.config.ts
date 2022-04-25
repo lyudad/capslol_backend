@@ -19,10 +19,6 @@ const typeOrmConfig: TypeOrmModuleAsyncOptions = {
     entities: [__dirname + '/**/*.entity{.ts,.js}'],
     synchronize: false,
     logging: true,
-    migrations: [__dirname + '/**/*.entity{.ts,.js}'],
-    cli: {
-      migrationsDir: '/migrations',
-    },
   }),
 };
 
