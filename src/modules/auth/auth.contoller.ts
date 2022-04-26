@@ -1,4 +1,14 @@
-import { Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import AuthServive from './auth.service';
 import User from './decorators/user.decorator';
@@ -12,12 +22,12 @@ import { IUserResponse } from './types/response.interface';
 export default class AuthController {
   constructor(private readonly authService: AuthServive) {}
 
-  @Get('allUsers')
   @ApiResponse({
     status: 200,
     description: 'Users found',
     type: UserEntity,
   })
+  @Get('allUsers')
   async allUsers(): Promise<IUserResponse> {
     const users = await this.authService.allUsers();
     return this.authService.buildResponse(users, 'Users were found');
@@ -29,15 +39,18 @@ export default class AuthController {
     return this.authService.buildResponse(user, 'User was found');
   }
 
-  @Post('createUser')
   @ApiBody({ type: CreateUserDto })
-  async createUser(@User() userInfoDto: UserInfoDto): Promise<IUserResponse> {
+  @UsePipes(new ValidationPipe())
+  @Post('createUser')
+  async createUser(
+    @Body('user') userInfoDto: UserInfoDto,
+  ): Promise<IUserResponse> {
     const createdUser = await this.authService.createUser(userInfoDto);
     return this.authService.buildResponse(createdUser, 'User was created');
   }
 
-  @Put('updateUser/:id')
   @ApiBody({ type: CreateUserDto })
+  @Put('updateUser/:id')
   async updateUser(
     @Param('id') userId: number,
     @User() userInfoDto: UserInfoDto,
