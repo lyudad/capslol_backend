@@ -21,7 +21,7 @@ export default class UserInfoDto {
 
   @ApiProperty({
     description:
-      'password must contain at least one character, one number and less 6 digits',
+      'must contain at least one capital letter, one number and length must be minimum 8 symbols, and we must show the hint about password parameters',
     example: 'The-One',
   })
   password: string;

@@ -31,6 +31,9 @@ export default class AuthServive {
   }
 
   async createUser(userInfoDto: UserInfoDto): Promise<UserEntity> {
+    const newUser = new UserEntity();
+    Object.assign(newUser, userInfoDto);
+
     const createdUser = await this.userRepository
       .createQueryBuilder()
       .insert()
