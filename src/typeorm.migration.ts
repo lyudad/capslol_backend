@@ -20,7 +20,7 @@ const ormConfig: ConnectionOptions = {
   synchronize: false,
   migrations: [`${__dirname}/migrations/**/*{.ts,.js}`],
   cli: {
-    migrationsDir: '/migrations',
+    migrationsDir: 'src/migrations',
   },
 };
 
