@@ -1,11 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  Contains,
-  IsEmail,
-  IsNotEmpty,
-  IsString,
-  MinLength,
-} from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 
 export default class UserInfoDto {
   @ApiProperty({
@@ -39,6 +33,6 @@ export default class UserInfoDto {
   })
   @IsNotEmpty()
   @MinLength(8)
-  //!TODO need to validate on capital letter and one number
+  //! TODO need to validate on capital letter and one number
   password: string;
 }

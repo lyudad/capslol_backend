@@ -12,8 +12,8 @@ import {
 import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import AuthServive from './auth.service';
 import User from './decorators/user.decorator';
-import CreateUserDto from './dto/create-user.dto';
-import UserInfoDto from './dto/user-info.dto';
+import CreateUserDto from './dto/createuser.dto';
+import UserInfoDto from './dto/userinfodto';
 import UserEntity from './entity/user.entity';
 import { IUserResponse } from './types/response.interface';
 

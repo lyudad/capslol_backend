@@ -1,4 +1,4 @@
-import UserInfoDto from './user-info.dto';
+import UserInfoDto from './userinfo.dto.';
 
 export default class CreateUserDto {
   user: UserInfoDto;
