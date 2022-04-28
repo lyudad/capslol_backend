@@ -1,11 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  Contains,
-  IsEmail,
-  IsNotEmpty,
-  IsString,
-  MinLength,
-} from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { HasCapitalLetter } from 'src/shared/validators/HasCapitalLetter.validator';
+import { HasNumber } from 'src/shared/validators/HasNumber.validator';
 
 export default class UserInfoDto {
   @ApiProperty({
@@ -39,6 +35,7 @@ export default class UserInfoDto {
   })
   @IsNotEmpty()
   @MinLength(8)
-  //!TODO need to validate on capital letter and one number
+  @HasNumber()
+  @HasCapitalLetter()
   password: string;
 }
