@@ -17,6 +17,12 @@ module.exports = {
   },
   ignorePatterns: ['.eslintrc.js'],
   rules: {
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto"
+      },
+    ],
     'class-methods-use-this': "off",
     'import/no-unresolved': [0, { caseSensitive: false }],
     'no-useless-constructor': 'off',
@@ -26,4 +32,4 @@ module.exports = {
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
   },
-};
+}
