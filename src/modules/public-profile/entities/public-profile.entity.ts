@@ -1,13 +1,13 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-enum English {
-  NOENGLISH = 'No English',
-  BEGINNER = 'Beginner',
-  INTERMEDIATE = 'Intermediate',
-  ADVANCED = 'Advanced',
-}
+// enum English {
+//   NOENGLISH = 'No English',
+//   BEGINNER = 'Beginner',
+//   INTERMEDIATE = 'Intermediate',
+//   ADVANCED = 'Advanced',
+// }
 
-@Entity({ name: 'profiles' })
+@Entity('profiles')
 export default class PublicProfile {
   @PrimaryGeneratedColumn()
   user_id: number;
@@ -37,11 +37,10 @@ export default class PublicProfile {
   skill_id?: number;
 
   @Column({
-    type: 'enum',
-    enum: English,
+    type: 'varchar',
     default: 'not chosen',
   })
-  english?: English;
+  english?: string;
 
   @Column({ type: 'text' })
   other?: string;

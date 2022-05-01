@@ -47,10 +47,11 @@ export default class CreatePublicProfileDto {
 
   @ApiProperty({
     description: 'Choose one of the level English',
-    enum: English,
+    // enum: English,
   })
   @IsEnum(English)
-  english: English;
+  @IsString()
+  english: string;
 
   @IsString()
   other: string;

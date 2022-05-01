@@ -16,8 +16,12 @@ export default class PublicProfileService {
     return this.repository.save(dto);
   }
 
-  findAll() {
-    return this.repository.find();
+  async findAll(): Promise<PublicProfile[]> {
+    const profiles = await this.repository
+      .createQueryBuilder()
+      .select()
+      .getMany();
+    return profiles;
   }
 
   findOne(id: number) {

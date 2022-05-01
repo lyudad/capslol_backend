@@ -13,7 +13,7 @@ import CreatePublicProfileDto from './dto/create-public-profile.dto';
 import UpdatePublicProfileDto from './dto/update-public-profile.dto';
 
 @ApiTags('Public Profile')
-@Controller('public-profile')
+@Controller('profile')
 export default class PublicProfileController {
   constructor(private readonly publicProfileService: PublicProfileService) {}
 
@@ -23,8 +23,9 @@ export default class PublicProfileController {
   }
 
   @Get()
-  findAll() {
-    return this.publicProfileService.findAll();
+  async findAll() {
+    const profile = await this.publicProfileService.findAll();
+    return profile;
   }
 
   @Get(':id')
