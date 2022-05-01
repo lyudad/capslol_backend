@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { CreatePublicProfileDto } from './dto/create-public-profile.dto';
-import { UpdatePublicProfileDto } from './dto/update-public-profile.dto';
+import CreatePublicProfileDto from './dto/create-public-profile.dto';
+import UpdatePublicProfileDto from './dto/update-public-profile.dto';
 
 @Injectable()
-export class PublicProfileService {
+export default class PublicProfileService {
   create(createPublicProfileDto: CreatePublicProfileDto) {
     return 'This action adds a new publicProfile';
   }

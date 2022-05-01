@@ -1,10 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { PublicProfileService } from './public-profile.service';
-import { CreatePublicProfileDto } from './dto/create-public-profile.dto';
-import { UpdatePublicProfileDto } from './dto/update-public-profile.dto';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+import PublicProfileService from './public-profile.service';
+import CreatePublicProfileDto from './dto/create-public-profile.dto';
+import UpdatePublicProfileDto from './dto/update-public-profile.dto';
 
+@ApiTags('Public Profile')
 @Controller('public-profile')
-export class PublicProfileController {
+export default class PublicProfileController {
   constructor(private readonly publicProfileService: PublicProfileService) {}
 
   @Post()
@@ -23,7 +33,10 @@ export class PublicProfileController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePublicProfileDto: UpdatePublicProfileDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updatePublicProfileDto: UpdatePublicProfileDto,
+  ) {
     return this.publicProfileService.update(+id, updatePublicProfileDto);
   }
 
