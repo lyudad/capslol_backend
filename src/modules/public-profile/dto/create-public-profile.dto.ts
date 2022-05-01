@@ -27,6 +27,10 @@ export default class CreatePublicProfileDto {
 
   category_id: number;
 
+  @ApiProperty({
+    description: 'Please indicate the desired position',
+    example: 'Frontend Developer',
+  })
   @IsString()
   position: string;
 
