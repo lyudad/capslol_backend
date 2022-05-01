@@ -1,26 +1,34 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import CreatePublicProfileDto from './dto/create-public-profile.dto';
 import UpdatePublicProfileDto from './dto/update-public-profile.dto';
+import PublicProfile from './entities/public-profile.entity';
 
 @Injectable()
 export default class PublicProfileService {
-  create(createPublicProfileDto: CreatePublicProfileDto) {
-    return 'This action adds a new publicProfile';
+  constructor(
+    @InjectRepository(PublicProfile)
+    private repository: Repository<PublicProfile>,
+  ) {}
+
+  create(dto: CreatePublicProfileDto) {
+    return this.repository.save(dto);
   }
 
   findAll() {
-    return `This action returns all publicProfile`;
+    return this.repository.find();
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} publicProfile`;
+    return this.repository.findOne(id);
   }
 
-  update(id: number, updatePublicProfileDto: UpdatePublicProfileDto) {
-    return `This action updates a #${id} publicProfile`;
+  update(id: number, dto: UpdatePublicProfileDto) {
+    return this.repository.update(id, dto);
   }
 
   remove(id: number) {
-    return `This action removes a #${id} publicProfile`;
+    return this.repository.delete(id);
   }
 }

@@ -1,5 +1,12 @@
-import { IsNumber, IsString } from 'class-validator';
+import { IsEnum, IsNumber, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+
+enum English {
+  NOENGLISH = 'No English',
+  BEGINNER = 'Beginner',
+  INTERMEDIATE = 'Intermediate',
+  ADVANCED = 'Advanced',
+}
 
 export default class CreatePublicProfileDto {
   user_id: number;
@@ -38,7 +45,12 @@ export default class CreatePublicProfileDto {
 
   skill_id: number;
 
-  language_id: number;
+  @ApiProperty({
+    description: 'Choose one of the level English',
+    enum: English,
+  })
+  @IsEnum(English)
+  english: English;
 
   @IsString()
   other: string;
