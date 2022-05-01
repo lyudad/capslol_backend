@@ -1,4 +1,4 @@
-import { IsEnum, IsNumber, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 enum English {
@@ -13,7 +13,14 @@ export default class CreatePublicProfileDto {
 
   @ApiProperty({
     description: 'URL',
-    example: 'https://images.pexels.com',
+    example: 1,
+  })
+  @IsNotEmpty()
+  userId: number;
+
+  @ApiProperty({
+    description: 'URL',
+    example: 'https://assets.imgix.net/unsplash/transport.jpg',
   })
   @IsString()
   profile_image: string;
@@ -47,11 +54,10 @@ export default class CreatePublicProfileDto {
 
   @ApiProperty({
     description: 'Choose one of the level English',
-    // enum: English,
+    enum: English,
   })
   @IsEnum(English)
-  @IsString()
-  english: string;
+  english: English;
 
   @IsString()
   other: string;

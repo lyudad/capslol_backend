@@ -13,13 +13,14 @@ import CreatePublicProfileDto from './dto/create-public-profile.dto';
 import UpdatePublicProfileDto from './dto/update-public-profile.dto';
 
 @ApiTags('Public Profile')
-@Controller('profile')
+@Controller('profiles')
 export default class PublicProfileController {
   constructor(private readonly publicProfileService: PublicProfileService) {}
 
   @Post()
-  create(@Body() createPublicProfileDto: CreatePublicProfileDto) {
-    return this.publicProfileService.create(createPublicProfileDto);
+  async create(@Body() dto: CreatePublicProfileDto) {
+    const profile = await this.publicProfileService.create(dto);
+    return profile;
   }
 
   @Get()
