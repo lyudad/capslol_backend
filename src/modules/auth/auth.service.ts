@@ -1,7 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { sign } from 'jsonwebtoken';
+import { compare } from 'bcrypt';
 import UserInfoDto from './dto/user-info.dto';
+import LoginUserDto from './dto/user-login.dto';
 import UserEntity from './entity/user.entity';
 import { IUserResponse } from './types/response.interface';
 
@@ -79,5 +82,65 @@ export default class AuthServive {
       user,
       message: messsage,
     };
+  }
+
+  generateJwt(user: UserEntity): string {
+    return sign(
+      {
+        id: user.id,
+        username: user.firstName,
+        email: user.email,
+      },
+      process.env.JWT_SECRET,
+    );
+  }
+
+  buildResponseWithToken(user: UserEntity, messsage: string): IUserResponse {
+    return {
+      user,
+      token: this.generateJwt(user),
+      message: messsage,
+    };
+  }
+
+  async login(loginUserDto: LoginUserDto): Promise<UserEntity> {
+    const user: UserEntity = await this.userRepository.findOne(
+      {
+        email: loginUserDto.email,
+      },
+      {
+        select: [
+          'id',
+          'firstName',
+          'lastName',
+          'role',
+          'email',
+          'phoneNumber',
+          'createdAt',
+          'password',
+        ],
+      },
+    );
+
+    if (!user) {
+      throw new HttpException(
+        'Credential are not valid',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+    const isPasswordCorrect = await compare(
+      loginUserDto.password,
+      user.password,
+    );
+
+    if (!isPasswordCorrect) {
+      throw new HttpException(
+        'Credential are not valid',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+
+    delete user.password;
+    return user;
   }
 }
