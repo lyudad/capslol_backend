@@ -14,6 +14,7 @@ import AuthServive from './auth.service';
 import User from './decorators/user.decorator';
 import CreateUserDto from './dto/create-user.dto';
 import UserInfoDto from './dto/user-info.dto';
+import LoginUserDto from './dto/user-login.dto';
 import UserEntity from './entity/user.entity';
 import { IUserResponse } from './types/response.interface';
 
@@ -46,7 +47,10 @@ export default class AuthController {
     @Body('user') userInfoDto: UserInfoDto,
   ): Promise<IUserResponse> {
     const createdUser = await this.authService.createUser(userInfoDto);
-    return this.authService.buildResponse(createdUser, 'User was created');
+    return this.authService.buildResponseWithToken(
+      createdUser,
+      'User was created',
+    );
   }
 
   @ApiBody({ type: CreateUserDto })
@@ -63,5 +67,14 @@ export default class AuthController {
   async deleteUser(@Param('id') userId: number) {
     const user = await this.authService.deleteUser(userId);
     return this.authService.buildResponse(user, 'User was deleted');
+  }
+
+  @Post('login')
+  @UsePipes(new ValidationPipe())
+  async login(
+    @Body('user') loginUserDto: LoginUserDto,
+  ): Promise<IUserResponse> {
+    const loggedUser = await this.authService.login(loginUserDto);
+    return this.authService.buildResponseWithToken(loggedUser, 'Login success');
   }
 }
