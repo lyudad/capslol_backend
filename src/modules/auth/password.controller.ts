@@ -23,7 +23,7 @@ export default class PasswordController {
   @UsePipes(new ValidationPipe())
   async sendConfirmation(
     @Body() forgotPasswordDto: ForgotPasswordDto,
-  ): Promise<string> {
+  ): Promise<boolean> {
     return this.passwordService.forgotPassword(forgotPasswordDto);
   }
 

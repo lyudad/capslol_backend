@@ -22,7 +22,7 @@ export default class PasswordService {
     this.feUrl = this.configService.get('FE_APP_URL');
   }
 
-  async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<string> {
+  async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<boolean> {
     const user = await this.repository.findOne({
       where: { email: forgotPasswordDto.email },
     });
@@ -36,7 +36,7 @@ export default class PasswordService {
 
     await this.mailService.sendUserConfirmation(userVerify, url);
 
-    return user.email;
+    return !!user.email;
   }
 
   async changePassword(
