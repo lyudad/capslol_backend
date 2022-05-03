@@ -10,6 +10,7 @@ import { ApiBody, ApiTags } from '@nestjs/swagger';
 import User from './decorators/user.decorator';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import UserEntity from './entity/user.entity';
 import { IUser } from './interfaces/user.interface';
 import PasswordService from './password.service';
 
@@ -23,7 +24,7 @@ export default class PasswordController {
   @UsePipes(new ValidationPipe())
   async sendConfirmation(
     @Body() forgotPasswordDto: ForgotPasswordDto,
-  ): Promise<boolean> {
+  ): Promise<UserEntity> {
     return this.passwordService.forgotPassword(forgotPasswordDto);
   }
 
