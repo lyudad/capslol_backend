@@ -7,6 +7,12 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
+enum Role {
+  FREELANCER = 'Freelancer',
+  JOBOWNER = 'Job Owner',
+  NOSET = 'No set',
+}
+
 @Entity({ name: 'users' })
 export default class UserEntity {
   @PrimaryGeneratedColumn()
@@ -18,8 +24,12 @@ export default class UserEntity {
   @Column({ type: 'varchar', length: 50 })
   lastName: string;
 
-  @Column({ type: 'integer', width: 1, nullable: true })
-  role: number;
+  @Column({
+    type: 'enum',
+    enum: Role,
+    default: Role.NOSET,
+  })
+  role: Role;
 
   @Column({ type: 'varchar', length: 50 })
   email: string;

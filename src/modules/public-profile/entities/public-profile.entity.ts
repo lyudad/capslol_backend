@@ -39,16 +39,13 @@ export default class PublicProfile {
   education_id?: number;
 
   @Column('int')
-  category_id?: number;
+  category_id: number;
 
   @Column({ type: 'varchar', length: 255 })
   position?: string;
 
   @Column('int')
   experiense_id?: number;
-
-  @Column('int')
-  skill_id?: number;
 
   @Column({
     type: 'enum',

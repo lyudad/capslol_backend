@@ -50,8 +50,6 @@ export default class CreatePublicProfileDto {
 
   experiense_id: number;
 
-  skill_id: number;
-
   @ApiProperty({
     description: 'Choose one of the level English',
     enum: English,
