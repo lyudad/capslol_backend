@@ -19,7 +19,9 @@ import {
   USER_UNAUTHORIZED,
 } from './constants/auth.constants';
 import User from './decorators/user.decorator';
+import ChangePasswordDto from './dto/change-password.dto';
 import CreateUserDto from './dto/create-user.dto';
+import ForgotPasswordDto from './dto/forgot-password.dto';
 import UserInfoDto from './dto/user-info.dto';
 import LoginUserDto from './dto/user-login.dto';
 import UserEntity from './entity/user.entity';
@@ -121,5 +123,26 @@ export default class AuthController {
       RESPONSE_MESSAGE.USER_CREATED,
     );
     return response;
+  }
+
+  @ApiBody({ type: ForgotPasswordDto })
+  @Post('forgotPassword')
+  @UsePipes(new ValidationPipe())
+  async sendConfirmation(
+    @Body() email: ForgotPasswordDto,
+  ): Promise<UserEntity> {
+    const response = await this.authService.forgotPassword(email);
+    return response;
+  }
+
+  @ApiBody({ type: ChangePasswordDto })
+  @Put('changePassword')
+  @UsePipes(new ValidationPipe())
+  async changePassword(
+    @User() user: UserEntity,
+    @Body('user')
+    changePasswordDto: ChangePasswordDto,
+  ): Promise<boolean> {
+    return this.authService.changePassword(user.id, changePasswordDto);
   }
 }

@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
-import { IUserVerify } from './interface.ts/userVerifyInterface';
+import { IUserVerify } from './interface/userVerify.interface';
 
 @Injectable()
-export class MailService {
-  constructor(private mailerService: MailerService) {}
+export default class MailService {
+  constructor(private readonly mailerService: MailerService) {}
 
   async sendUserConfirmation(user: IUserVerify, url: string): Promise<void> {
     await this.mailerService.sendMail({

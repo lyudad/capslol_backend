@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { compare } from 'bcrypt';
@@ -10,6 +15,10 @@ import UserEntity from './entity/user.entity';
 import { IUserResponse } from './types/response.interface';
 import { GoogleUserType } from './types/google.type';
 import { JWTPayload } from './types/jwt.payload';
+import MailService from '../mail/mail.service';
+import ForgotPasswordDto from './dto/forgot-password.dto';
+import { IUserVerify } from '../mail/interface/userVerify.interface';
+import ChangePasswordDto from './dto/change-password.dto';
 
 @Injectable()
 export default class AuthServive {
@@ -17,6 +26,7 @@ export default class AuthServive {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     private readonly configService: ConfigService,
+    private readonly mailService: MailService,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -147,6 +157,41 @@ export default class AuthServive {
       .execute();
 
     const user = await this.getUserById(createdUser.raw.insertId);
+    return user;
+  }
+
+  async changePassword(
+    userId: number,
+    password: ChangePasswordDto,
+  ): Promise<boolean> {
+    await this.userRepository
+      .createQueryBuilder()
+      .update()
+      .set(password)
+      .where('id =:id', { id: userId })
+      .execute();
+
+    return true;
+  }
+
+  async forgotPassword(
+    forgotPasswordDto: ForgotPasswordDto,
+  ): Promise<UserEntity> {
+    const user = await this.userRepository.findOne({
+      where: { email: forgotPasswordDto.email },
+    });
+
+    if (!user.email) {
+      throw new BadRequestException('Invalid email');
+    }
+    const token = user.id;
+    const url = `${this.configService.get(
+      'FE_APP_URL',
+    )}/reset_password/?token=${token}`;
+    const userVerify: IUserVerify = { email: user.email, name: user.firstName };
+
+    await this.mailService.sendUserConfirmation(userVerify, url);
+
     return user;
   }
 }

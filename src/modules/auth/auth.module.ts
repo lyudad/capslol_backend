@@ -3,7 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { MailModule } from 'src/mail/mail.module';
+import MailModule from '../mail/mail.module';
 import AuthController from './auth.contoller';
 import AuthServive from './auth.service';
 import UserEntity from './entity/user.entity';
@@ -16,6 +16,7 @@ import JWTStrategy from './strategies/jwt.strategy';
     TypeOrmModule.forFeature([UserEntity]),
     ConfigModule,
     PassportModule,
+    MailModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
