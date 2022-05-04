@@ -143,6 +143,10 @@ export default class AuthController {
     @Body('user')
     changePasswordDto: ChangePasswordDto,
   ): Promise<boolean> {
-    return this.authService.changePassword(user.id, changePasswordDto);
+    const response = await this.authService.changePassword(
+      user.id,
+      changePasswordDto,
+    );
+    return response;
   }
 }
