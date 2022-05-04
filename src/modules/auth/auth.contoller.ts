@@ -6,16 +6,26 @@ import {
   Param,
   Post,
   Put,
+  Req,
+  UnauthorizedException,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import AuthServive from './auth.service';
+import {
+  RESPONSE_MESSAGE,
+  USER_UNAUTHORIZED,
+} from './constants/auth.constants';
 import User from './decorators/user.decorator';
 import CreateUserDto from './dto/create-user.dto';
 import UserInfoDto from './dto/user-info.dto';
 import LoginUserDto from './dto/user-login.dto';
 import UserEntity from './entity/user.entity';
+import GoogleGuard from './guards/google.guard';
+import JWTGuard from './guards/jwt.guard';
+import { ExpressRequest } from './types/expressRequest.interface';
 import { IUserResponse } from './types/response.interface';
 
 @ApiTags('Authorization')
@@ -29,15 +39,21 @@ export default class AuthController {
     type: UserEntity,
   })
   @Get('allUsers')
-  async allUsers(): Promise<IUserResponse> {
+  @UseGuards(JWTGuard)
+  async allUsers() {
     const users = await this.authService.allUsers();
-    return this.authService.buildResponse(users, 'Users were found');
+    return users;
   }
 
   @Get('getUser/:id')
+  @UseGuards(JWTGuard)
   async getUserById(@Param('id') userId: number): Promise<IUserResponse> {
     const user = await this.authService.getUserById(userId);
-    return this.authService.buildResponse(user, 'User was found');
+    const response = await this.authService.buildResponse(
+      user,
+      RESPONSE_MESSAGE.USER_FOUND,
+    );
+    return response;
   }
 
   @ApiBody({ type: CreateUserDto })
@@ -47,26 +63,37 @@ export default class AuthController {
     @Body('user') userInfoDto: UserInfoDto,
   ): Promise<IUserResponse> {
     const createdUser = await this.authService.createUser(userInfoDto);
-    return this.authService.buildResponseWithToken(
+    const response = await this.authService.buildResponse(
       createdUser,
-      'User was created',
+      RESPONSE_MESSAGE.USER_CREATED,
     );
+    return response;
   }
 
   @ApiBody({ type: CreateUserDto })
   @Put('updateUser/:id')
+  @UseGuards(JWTGuard)
   async updateUser(
     @Param('id') userId: number,
     @User() userInfoDto: UserInfoDto,
   ): Promise<IUserResponse> {
     const updatedUser = await this.authService.updateUser(userId, userInfoDto);
-    return this.authService.buildResponse(updatedUser, 'User was updated');
+    const response = this.authService.buildResponse(
+      updatedUser,
+      RESPONSE_MESSAGE.USER_UPDATED,
+    );
+    return response;
   }
 
   @Delete('deleteUser/:id')
+  @UseGuards(JWTGuard)
   async deleteUser(@Param('id') userId: number) {
     const user = await this.authService.deleteUser(userId);
-    return this.authService.buildResponse(user, 'User was deleted');
+    const response = await this.authService.buildResponse(
+      user,
+      RESPONSE_MESSAGE.USER_DELETED,
+    );
+    return response;
   }
 
   @Post('login')
@@ -75,6 +102,24 @@ export default class AuthController {
     @Body('user') loginUserDto: LoginUserDto,
   ): Promise<IUserResponse> {
     const loggedUser = await this.authService.login(loginUserDto);
-    return this.authService.buildResponseWithToken(loggedUser, 'Login success');
+    const response = this.authService.buildResponse(
+      loggedUser,
+      RESPONSE_MESSAGE.LOGIN_SUCCESS,
+    );
+    return response;
+  }
+
+  @Get('google/redirect')
+  @UseGuards(GoogleGuard)
+  async googleAuthRedirect(@Req() req: ExpressRequest) {
+    if (!req.user) {
+      throw new UnauthorizedException(USER_UNAUTHORIZED);
+    }
+    const user = await this.authService.googleLogin(req.user);
+    const response = await this.authService.buildResponse(
+      user,
+      RESPONSE_MESSAGE.USER_CREATED,
+    );
+    return response;
   }
 }

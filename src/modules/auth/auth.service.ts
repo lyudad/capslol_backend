@@ -1,18 +1,23 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { sign } from 'jsonwebtoken';
 import { compare } from 'bcrypt';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 import UserInfoDto from './dto/user-info.dto';
 import LoginUserDto from './dto/user-login.dto';
 import UserEntity from './entity/user.entity';
 import { IUserResponse } from './types/response.interface';
+import { GoogleUserType } from './types/google.type';
+import { JWTPayload } from './types/jwt.payload';
 
 @Injectable()
 export default class AuthServive {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+    private readonly configService: ConfigService,
+    private readonly jwtService: JwtService,
   ) {}
 
   async allUsers(): Promise<UserEntity[]> {
@@ -27,10 +32,22 @@ export default class AuthServive {
   async getUserById(userId: number): Promise<UserEntity> {
     const user = await this.userRepository
       .createQueryBuilder('user')
+      .select('')
       .where('user.id = :userId', { userId })
       .getOne();
 
     return user;
+  }
+
+  async hasUserGoogleAccount(email: string): Promise<boolean> {
+    const user: UserEntity = await this.userRepository
+      .createQueryBuilder('user')
+      .where('user.email = :email', { email })
+      .getOne();
+    if (!user) {
+      return false;
+    }
+    return user.isGoogle;
   }
 
   async createUser(userInfoDto: UserInfoDto): Promise<UserEntity> {
@@ -74,57 +91,33 @@ export default class AuthServive {
     return deletedUser;
   }
 
-  buildResponse(
-    user: UserEntity | UserEntity[],
+  async buildResponse(
+    user: UserEntity,
     messsage: string,
-  ): IUserResponse {
-    return {
-      user,
-      message: messsage,
+  ): Promise<IUserResponse> {
+    const payload: JWTPayload = {
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
     };
-  }
-
-  generateJwt(user: UserEntity): string {
-    return sign(
-      {
-        id: user.id,
-        username: user.firstName,
-        email: user.email,
-      },
-      process.env.JWT_SECRET,
-    );
-  }
-
-  buildResponseWithToken(user: UserEntity, messsage: string): IUserResponse {
     return {
       user,
-      token: this.generateJwt(user),
       message: messsage,
+      accessToken: await this.jwtService.signAsync(payload),
     };
   }
 
   async login(loginUserDto: LoginUserDto): Promise<UserEntity> {
-    const user: UserEntity = await this.userRepository.findOne(
-      {
-        email: loginUserDto.email,
-      },
-      {
-        select: [
-          'id',
-          'firstName',
-          'lastName',
-          'role',
-          'email',
-          'phoneNumber',
-          'createdAt',
-          'password',
-        ],
-      },
-    );
+    const { email } = loginUserDto;
+    const user: UserEntity = await this.userRepository
+      .createQueryBuilder('user')
+      .select(['user.password', 'user.email', 'user.firstName'])
+      .where('user.email = :email', { email })
+      .getOne();
 
     if (!user) {
       throw new HttpException(
-        'Credential are not valid',
+        'User not exists',
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
@@ -135,12 +128,25 @@ export default class AuthServive {
 
     if (!isPasswordCorrect) {
       throw new HttpException(
-        'Credential are not valid',
+        'Wrong password',
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
 
     delete user.password;
+    return user;
+  }
+
+  async googleLogin(googleUser: GoogleUserType): Promise<UserEntity> {
+    const newUser = new UserEntity();
+    const entity = Object.assign(newUser, googleUser, { isGoogle: true });
+    const createdUser = await this.userRepository
+      .createQueryBuilder()
+      .insert()
+      .values(entity)
+      .execute();
+
+    const user = await this.getUserById(createdUser.raw.insertId);
     return user;
   }
 }
