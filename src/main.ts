@@ -9,6 +9,8 @@ async function bootstrap() {
     credentials: true,
   });
 
+  app.enableCors();
+
   const config = new DocumentBuilder()
     .setTitle('Freelancer')
     .setDescription('The Freelancer API Description')
