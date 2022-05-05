@@ -13,11 +13,12 @@ export default class PublicProfileService {
   ) {}
 
   async create(dto: CreatePublicProfileDto) {
-    const profile = this.repository.save({
+    const newProfile = await this.repository.save({
       ...dto,
       user: { id: dto.userId },
     });
-    return profile;
+    await this.repository.save(newProfile);
+    return newProfile;
   }
 
   async findAll(): Promise<PublicProfile[]> {

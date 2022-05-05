@@ -17,23 +17,26 @@ export default class CreatePublicProfileDto {
     example: 'https://assets.imgix.net/unsplash/transport.jpg',
   })
   @IsString()
-  profile_image: string;
+  profileImage: string;
 
   @IsNumber()
   @ApiProperty({
     description: 'Recommended hourly rate in dollars (number)',
   })
-  hour_rate: number;
+  hourRate: number;
 
   @ApiProperty({
     description: 'Ability to set aside time for daily work (number)',
   })
   @IsNumber()
-  available_hours: number;
+  availableHours: number;
 
-  education_id: number;
+  educationsId: number;
 
-  category_id: number;
+  // @IsNotEmpty()
+  // experienseId: number;
+
+  categoryId: number;
 
   @ApiProperty({
     description: 'Please indicate the desired position',
@@ -41,8 +44,6 @@ export default class CreatePublicProfileDto {
   })
   @IsString()
   position: string;
-
-  // experiense_id: number;
 
   @ApiProperty({
     description: 'Choose one of the level English',

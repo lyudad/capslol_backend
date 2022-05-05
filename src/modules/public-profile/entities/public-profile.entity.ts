@@ -1,4 +1,5 @@
 import UserEntity from 'src/modules/auth/entity/user.entity';
+import EducationEntity from 'src/modules/educations/entities/education.entity';
 import ExperienceEntity from 'src/modules/experiences/entities/experience.entity';
 import {
   Column,
@@ -31,26 +32,25 @@ export default class PublicProfile {
   user: UserEntity;
 
   @Column({ type: 'varchar', length: 255 })
-  profile_image?: string;
+  profileImage?: string;
 
   @Column({ type: 'integer' })
-  hour_rate?: number;
+  hourRate?: number;
 
   @Column({ type: 'integer' })
-  available_hours?: number;
+  availableHours?: number;
+
+  @ManyToOne(() => EducationEntity, (e: EducationEntity) => e.id)
+  educations: EducationEntity[];
 
   @Column('int')
-  education_id?: number;
-
-  @Column('int')
-  category_id: number;
+  categoryId: number;
 
   @Column({ type: 'varchar', length: 255 })
   position?: string;
 
-  // @Column('int')
   @ManyToOne(() => ExperienceEntity, (e: ExperienceEntity) => e.id)
-  experienses: ExperienceEntity[];
+  experiense: ExperienceEntity[];
 
   @Column({
     type: 'enum',

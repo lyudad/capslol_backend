@@ -16,8 +16,8 @@ export default class CreateExperienceDto {
   position: string;
 
   @IsString()
-  start_at: string;
+  startAt: string;
 
   @IsString()
-  end_at: string;
+  endAt: string;
 }

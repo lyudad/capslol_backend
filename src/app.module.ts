@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import ExperiencesModule from './modules/experiences/experiences.module';
-import { EducationsModule } from './modules/educations/educations.module';
+import EducationsModule from './modules/educations/educations.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { SkillsModule } from './modules/skills/skills.module';
 import { SkillProfileModule } from './modules/skill-profile/skill-profile.module';

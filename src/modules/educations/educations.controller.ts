@@ -1,10 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { EducationsService } from './educations.service';
-import { CreateEducationDto } from './dto/create-education.dto';
-import { UpdateEducationDto } from './dto/update-education.dto';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+import EducationsService from './educations.service';
+import CreateEducationDto from './dto/create-education.dto';
+import UpdateEducationDto from './dto/update-education.dto';
 
+@ApiTags('Educations')
 @Controller('educations')
-export class EducationsController {
+export default class EducationsController {
   constructor(private readonly educationsService: EducationsService) {}
 
   @Post()
@@ -23,7 +33,10 @@ export class EducationsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateEducationDto: UpdateEducationDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateEducationDto: UpdateEducationDto,
+  ) {
     return this.educationsService.update(+id, updateEducationDto);
   }
 
