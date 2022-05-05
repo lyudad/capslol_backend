@@ -9,12 +9,6 @@ enum English {
 }
 
 export default class CreatePublicProfileDto {
-  user_id: number;
-
-  @ApiProperty({
-    description: 'URL',
-    example: 1,
-  })
   @IsNotEmpty()
   userId: number;
 
@@ -48,7 +42,7 @@ export default class CreatePublicProfileDto {
   @IsString()
   position: string;
 
-  experiense_id: number;
+  // experiense_id: number;
 
   @ApiProperty({
     description: 'Choose one of the level English',

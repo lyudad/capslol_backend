@@ -34,13 +34,13 @@ export default class PublicProfileController {
     return this.publicProfileService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updatePublicProfileDto: UpdatePublicProfileDto,
-  ) {
-    return this.publicProfileService.update(+id, updatePublicProfileDto);
-  }
+  // @Patch(':id')
+  // update(
+  //   @Param('id') id: string,
+  //   @Body() updatePublicProfileDto: UpdatePublicProfileDto,
+  // ) {
+  //   return this.publicProfileService.update(+id, updatePublicProfileDto);
+  // }
 
   @Delete(':id')
   remove(@Param('id') id: string) {

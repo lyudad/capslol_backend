@@ -1,10 +1,14 @@
 import UserEntity from 'src/modules/auth/entity/user.entity';
+import ExperienceEntity from 'src/modules/experiences/entities/experience.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
+  // OneToMany,
+  OneToOne,
+  // PrimaryColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -20,9 +24,9 @@ enum English {
 @Entity('profiles')
 export default class PublicProfile {
   @PrimaryGeneratedColumn()
-  user_id: number;
+  id: number;
 
-  @ManyToOne(() => UserEntity)
+  @OneToOne(() => UserEntity)
   @JoinColumn({ name: 'userId' })
   user: UserEntity;
 
@@ -44,8 +48,9 @@ export default class PublicProfile {
   @Column({ type: 'varchar', length: 255 })
   position?: string;
 
-  @Column('int')
-  experiense_id?: number;
+  // @Column('int')
+  @ManyToOne(() => ExperienceEntity, (e: ExperienceEntity) => e.id)
+  experienses: ExperienceEntity[];
 
   @Column({
     type: 'enum',
