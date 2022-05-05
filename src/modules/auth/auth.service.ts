@@ -1,146 +1,245 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { sign } from 'jsonwebtoken';
 import { compare } from 'bcrypt';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 import UserInfoDto from './dto/user-info.dto';
 import LoginUserDto from './dto/user-login.dto';
 import UserEntity from './entity/user.entity';
 import { IUserResponse } from './types/response.interface';
+import { GoogleUserType } from './types/google.type';
+import { JWTPayload } from './types/jwt.payload';
+import MailService from '../mail/mail.service';
+import ForgotPasswordDto from './dto/forgot-password.dto';
+import { IUserVerify } from '../mail/interface/userVerify.interface';
+import ChangePasswordDto from './dto/change-password.dto';
+import { RESPONSE_MESSAGE } from './constants/auth.constants';
 
 @Injectable()
 export default class AuthServive {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+    private readonly configService: ConfigService,
+    private readonly mailService: MailService,
+    private readonly jwtService: JwtService,
   ) {}
 
   async allUsers(): Promise<UserEntity[]> {
-    const users = await this.userRepository
-      .createQueryBuilder()
-      .select()
-      .getMany();
+    try {
+      const users = await this.userRepository
+        .createQueryBuilder()
+        .select()
+        .getMany();
 
-    return users;
+      return users;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
   }
 
   async getUserById(userId: number): Promise<UserEntity> {
-    const user = await this.userRepository
-      .createQueryBuilder('user')
-      .where('user.id = :userId', { userId })
-      .getOne();
+    try {
+      const user = await this.userRepository
+        .createQueryBuilder('user')
+        .select('')
+        .where('user.id = :userId', { userId })
+        .getOne();
 
-    return user;
+      return user;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
+
+  async hasUserGoogleAccount(email: string): Promise<boolean> {
+    try {
+      const user: UserEntity = await this.userRepository
+        .createQueryBuilder('user')
+        .where('user.email = :email', { email })
+        .getOne();
+      if (!user) {
+        return false;
+      }
+      return user.isGoogle;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
   }
 
   async createUser(userInfoDto: UserInfoDto): Promise<UserEntity> {
-    const newUser = new UserEntity();
-    const entity = Object.assign(newUser, userInfoDto);
+    try {
+      const newUser = new UserEntity();
+      const entity = Object.assign(newUser, userInfoDto);
 
-    const createdUser = await this.userRepository
-      .createQueryBuilder()
-      .insert()
-      .values(entity)
-      .execute();
+      const createdUser = await this.userRepository
+        .createQueryBuilder()
+        .insert()
+        .values(entity)
+        .execute();
 
-    const user = await this.getUserById(createdUser.raw.insertId);
-
-    return user;
+      const user = await this.getUserById(createdUser.raw.insertId);
+      return user;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
   }
 
   async updateUser(
     userId: number,
     userInfoDto: UserInfoDto,
   ): Promise<UserEntity> {
-    await this.userRepository
-      .createQueryBuilder()
-      .update()
-      .set(userInfoDto)
-      .where('id = :userId', { userId })
-      .execute();
+    try {
+      await this.userRepository
+        .createQueryBuilder()
+        .update()
+        .set(userInfoDto)
+        .where('id = :userId', { userId })
+        .execute();
 
-    const user = await this.getUserById(userId);
-
-    return user;
+      const user = await this.getUserById(userId);
+      return user;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
   }
 
   async deleteUser(userId: number): Promise<any> {
-    const deletedUser = await this.userRepository
-      .createQueryBuilder()
-      .delete()
-      .where('id = :userId', { userId })
-      .execute();
+    try {
+      const deletedUser = await this.userRepository
+        .createQueryBuilder()
+        .delete()
+        .where('id = :userId', { userId })
+        .execute();
 
-    return deletedUser;
+      return deletedUser;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
   }
 
-  buildResponse(
-    user: UserEntity | UserEntity[],
+  async buildResponse(
+    user: UserEntity,
     messsage: string,
-  ): IUserResponse {
-    return {
-      user,
-      message: messsage,
-    };
-  }
-
-  generateJwt(user: UserEntity): string {
-    return sign(
-      {
+  ): Promise<IUserResponse> {
+    try {
+      const payload: JWTPayload = {
         id: user.id,
-        username: user.firstName,
         email: user.email,
-      },
-      process.env.JWT_SECRET,
-    );
-  }
-
-  buildResponseWithToken(user: UserEntity, messsage: string): IUserResponse {
-    return {
-      user,
-      token: this.generateJwt(user),
-      message: messsage,
-    };
+        firstName: user.firstName,
+      };
+      return {
+        user,
+        message: messsage,
+        accessToken: await this.jwtService.signAsync(payload),
+      };
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
   }
 
   async login(loginUserDto: LoginUserDto): Promise<UserEntity> {
-    const user: UserEntity = await this.userRepository.findOne(
-      {
-        email: loginUserDto.email,
-      },
-      {
-        select: [
-          'id',
-          'firstName',
-          'lastName',
-          'role',
-          'email',
-          'phoneNumber',
-          'createdAt',
-          'password',
-        ],
-      },
-    );
+    try {
+      const { email } = loginUserDto;
+      const user: UserEntity = await this.userRepository
+        .createQueryBuilder('user')
+        .select(['user.password', 'user.email', 'user.firstName'])
+        .where('user.email = :email', { email })
+        .getOne();
 
-    if (!user) {
-      throw new HttpException(
-        'Credential are not valid',
-        HttpStatus.UNPROCESSABLE_ENTITY,
+      if (!user) {
+        throw new HttpException(
+          RESPONSE_MESSAGE.USER_NOT_FOUND,
+          HttpStatus.UNPROCESSABLE_ENTITY,
+        );
+      }
+      const isPasswordCorrect = await compare(
+        loginUserDto.password,
+        user.password,
       );
-    }
-    const isPasswordCorrect = await compare(
-      loginUserDto.password,
-      user.password,
-    );
 
-    if (!isPasswordCorrect) {
-      throw new HttpException(
-        'Credential are not valid',
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
-    }
+      if (!isPasswordCorrect) {
+        throw new HttpException(
+          RESPONSE_MESSAGE.CREDENTIAL_NOT_VALID,
+          HttpStatus.UNPROCESSABLE_ENTITY,
+        );
+      }
 
-    delete user.password;
-    return user;
+      delete user.password;
+      return user;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
+
+  async googleUserRegistration(
+    googleUser: GoogleUserType,
+  ): Promise<UserEntity> {
+    try {
+      const newUser = new UserEntity();
+      const entity = Object.assign(newUser, googleUser, { isGoogle: true });
+      const createdUser = await this.userRepository
+        .createQueryBuilder()
+        .insert()
+        .values(entity)
+        .execute();
+
+      const user = await this.getUserById(createdUser.raw.insertId);
+      return user;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
+
+  async changePassword(
+    userId: number,
+    password: ChangePasswordDto,
+  ): Promise<boolean> {
+    try {
+      await this.userRepository
+        .createQueryBuilder()
+        .update()
+        .set(password)
+        .where('id =:id', { id: userId })
+        .execute();
+
+      return true;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
+
+  async forgotPassword(
+    forgotPasswordDto: ForgotPasswordDto,
+  ): Promise<UserEntity> {
+    try {
+      const user = await this.userRepository.findOne({
+        where: { email: forgotPasswordDto.email },
+      });
+
+      if (!user.email) {
+        throw new BadRequestException('Invalid email');
+      }
+      const token = user.id;
+      const url = `${this.configService.get(
+        'FE_APP_URL',
+      )}/reset_password/?token=${token}`;
+      const userVerify: IUserVerify = {
+        email: user.email,
+        name: user.firstName,
+      };
+
+      await this.mailService.sendUserConfirmation(userVerify, url);
+
+      return user;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
   }
 }

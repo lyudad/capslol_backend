@@ -17,6 +17,8 @@ module.exports = {
   },
   ignorePatterns: ['.eslintrc.js'],
   rules: {
+    "no-shadow": "off",
+    "@typescript-eslint/no-shadow": ["error"],
     'class-methods-use-this': "off",
     'import/no-unresolved': [0, { caseSensitive: false }],
     'no-useless-constructor': 'off',
