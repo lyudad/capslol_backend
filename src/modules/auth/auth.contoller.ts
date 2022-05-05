@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
   Param,
   Post,
   Put,
@@ -43,19 +45,27 @@ export default class AuthController {
   @Get('allUsers')
   @UseGuards(JWTGuard)
   async allUsers() {
-    const users = await this.authService.allUsers();
-    return users;
+    try {
+      const users = await this.authService.allUsers();
+      return users;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 
   @Get('getUser/:id')
   @UseGuards(JWTGuard)
   async getUserById(@Param('id') userId: number): Promise<IUserResponse> {
-    const user = await this.authService.getUserById(userId);
-    const response = await this.authService.buildResponse(
-      user,
-      RESPONSE_MESSAGE.USER_FOUND,
-    );
-    return response;
+    try {
+      const user = await this.authService.getUserById(userId);
+      const response = await this.authService.buildResponse(
+        user,
+        RESPONSE_MESSAGE.USER_FOUND,
+      );
+      return response;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 
   @ApiBody({ type: CreateUserDto })
@@ -64,12 +74,16 @@ export default class AuthController {
   async createUser(
     @Body('user') userInfoDto: UserInfoDto,
   ): Promise<IUserResponse> {
-    const createdUser = await this.authService.createUser(userInfoDto);
-    const response = await this.authService.buildResponse(
-      createdUser,
-      RESPONSE_MESSAGE.USER_CREATED,
-    );
-    return response;
+    try {
+      const createdUser = await this.authService.createUser(userInfoDto);
+      const response = await this.authService.buildResponse(
+        createdUser,
+        RESPONSE_MESSAGE.USER_CREATED,
+      );
+      return response;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 
   @ApiBody({ type: CreateUserDto })
@@ -79,23 +93,34 @@ export default class AuthController {
     @Param('id') userId: number,
     @User() userInfoDto: UserInfoDto,
   ): Promise<IUserResponse> {
-    const updatedUser = await this.authService.updateUser(userId, userInfoDto);
-    const response = this.authService.buildResponse(
-      updatedUser,
-      RESPONSE_MESSAGE.USER_UPDATED,
-    );
-    return response;
+    try {
+      const updatedUser = await this.authService.updateUser(
+        userId,
+        userInfoDto,
+      );
+      const response = this.authService.buildResponse(
+        updatedUser,
+        RESPONSE_MESSAGE.USER_UPDATED,
+      );
+      return response;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 
   @Delete('deleteUser/:id')
   @UseGuards(JWTGuard)
   async deleteUser(@Param('id') userId: number) {
-    const user = await this.authService.deleteUser(userId);
-    const response = await this.authService.buildResponse(
-      user,
-      RESPONSE_MESSAGE.USER_DELETED,
-    );
-    return response;
+    try {
+      const user = await this.authService.deleteUser(userId);
+      const response = await this.authService.buildResponse(
+        user,
+        RESPONSE_MESSAGE.USER_DELETED,
+      );
+      return response;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 
   @Post('login')
@@ -103,26 +128,34 @@ export default class AuthController {
   async login(
     @Body('user') loginUserDto: LoginUserDto,
   ): Promise<IUserResponse> {
-    const loggedUser = await this.authService.login(loginUserDto);
-    const response = this.authService.buildResponse(
-      loggedUser,
-      RESPONSE_MESSAGE.LOGIN_SUCCESS,
-    );
-    return response;
+    try {
+      const loggedUser = await this.authService.login(loginUserDto);
+      const response = this.authService.buildResponse(
+        loggedUser,
+        RESPONSE_MESSAGE.LOGIN_SUCCESS,
+      );
+      return response;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 
   @Get('google/redirect')
   @UseGuards(GoogleGuard)
   async googleAuthRedirect(@Req() req: ExpressRequest) {
-    if (!req.user) {
-      throw new UnauthorizedException(USER_UNAUTHORIZED);
+    try {
+      if (!req.user) {
+        throw new UnauthorizedException(USER_UNAUTHORIZED);
+      }
+      const user = await this.authService.googleUserRegistration(req.user);
+      const response = await this.authService.buildResponse(
+        user,
+        RESPONSE_MESSAGE.USER_CREATED,
+      );
+      return response;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
-    const user = await this.authService.googleLogin(req.user);
-    const response = await this.authService.buildResponse(
-      user,
-      RESPONSE_MESSAGE.USER_CREATED,
-    );
-    return response;
   }
 
   @ApiBody({ type: ForgotPasswordDto })
@@ -131,8 +164,12 @@ export default class AuthController {
   async sendConfirmation(
     @Body() email: ForgotPasswordDto,
   ): Promise<UserEntity> {
-    const response = await this.authService.forgotPassword(email);
-    return response;
+    try {
+      const response = await this.authService.forgotPassword(email);
+      return response;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 
   @ApiBody({ type: ChangePasswordDto })
@@ -143,10 +180,14 @@ export default class AuthController {
     @Body('user')
     changePasswordDto: ChangePasswordDto,
   ): Promise<boolean> {
-    const response = await this.authService.changePassword(
-      user.id,
-      changePasswordDto,
-    );
-    return response;
+    try {
+      const response = await this.authService.changePassword(
+        user.id,
+        changePasswordDto,
+      );
+      return response;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 }

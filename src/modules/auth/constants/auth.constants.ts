@@ -7,4 +7,6 @@ export enum RESPONSE_MESSAGE {
   LOGIN_SUCCESS = 'Login success',
   USER_FOUND = 'User was found',
   USERS_FOUND = 'Users were found',
+  CREDENTIAL_NOT_VALID = 'Credential are not valid',
+  USER_NOT_FOUND = 'User not found',
 }

@@ -17,7 +17,6 @@ module.exports = {
   },
   ignorePatterns: ['.eslintrc.js'],
   rules: {
-    // "import/no-extraneous-dependencies": [1, {"devDependencies": false}],
     "no-shadow": "off",
     "@typescript-eslint/no-shadow": ["error"],
     'class-methods-use-this': "off",
