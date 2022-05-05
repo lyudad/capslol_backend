@@ -24,6 +24,8 @@ module.exports = {
       },
       
     ],
+    "no-shadow": "off",
+    "@typescript-eslint/no-shadow": ["error"],
     'class-methods-use-this': "off",
     'import/no-unresolved': [0, { caseSensitive: false }],
     'no-useless-constructor': 'off',
@@ -33,6 +35,7 @@ module.exports = {
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
     "no-shadow": "off",
-    "@typescript-eslint/no-shadow": ["error"]
+    "@typescript-eslint/no-shadow": ["error"],
+    '@typescript-eslint/no-explicit-any': 'off'
   },
 }

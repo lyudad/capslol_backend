@@ -7,6 +7,7 @@ import { CategoriesModule } from './modules/categories/categories.module';
 import { SkillsModule } from './modules/skills/skills.module';
 import { SkillProfileModule } from './modules/skill-profile/skill-profile.module';
 import PublicProfileModule from './modules/public-profile/public-profile.module';
+import MailModule from './modules/mail/mail.module';
 import typeOrmConfig from './typeorm.config';
 import AppController from './app.controller';
 import AppService from './app.service';
@@ -23,6 +24,7 @@ import AuthModule from './modules/auth/auth.module';
     CategoriesModule,
     SkillsModule,
     SkillProfileModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService],
