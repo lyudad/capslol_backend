@@ -65,7 +65,6 @@ export default class PublicProfile {
   @ManyToOne(() => CategoryEntity, (e: CategoryEntity) => e.id)
   categories: CategoryEntity[];
 
-  @Column('int')
   @ManyToMany(() => SkillEntity)
   @JoinTable()
   skills: SkillEntity[];
