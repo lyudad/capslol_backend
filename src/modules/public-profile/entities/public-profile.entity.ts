@@ -2,6 +2,7 @@ import UserEntity from 'src/modules/auth/entity/user.entity';
 import CategoryEntity from 'src/modules/categories/entities/category.entity';
 import EducationEntity from 'src/modules/educations/entities/education.entity';
 import ExperienceEntity from 'src/modules/experiences/entities/experience.entity';
+import SkillEntity from 'src/modules/skills/entities/skill.entity';
 import {
   Column,
   CreateDateColumn,
@@ -62,8 +63,8 @@ export default class PublicProfile {
   @ManyToOne(() => CategoryEntity, (e: CategoryEntity) => e.id)
   categories: CategoryEntity[];
 
-  // @ManyToOne(() => CategoryEntity, (e: CategoryEntity) => e.id)
-  // skills: CategoryEntity[];
+  @ManyToOne(() => SkillEntity, (e: SkillEntity) => e.id)
+  skills: SkillEntity[];
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;

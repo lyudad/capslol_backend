@@ -1,1 +1,1 @@
-export class CreateSkillDto {}
+export default class CreateSkillDto {}

@@ -4,7 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import ExperiencesModule from './modules/experiences/experiences.module';
 import EducationsModule from './modules/educations/educations.module';
 import CategoriesModule from './modules/categories/categories.module';
-import { SkillsModule } from './modules/skills/skills.module';
+import SkillsModule from './modules/skills/skills.module';
 import PublicProfileModule from './modules/public-profile/public-profile.module';
 import MailModule from './modules/mail/mail.module';
 import typeOrmConfig from './typeorm.config';

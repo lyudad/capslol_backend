@@ -1,15 +1,26 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { SkillsService } from './skills.service';
-import { CreateSkillDto } from './dto/create-skill.dto';
-import { UpdateSkillDto } from './dto/update-skill.dto';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+import SkillsService from './skills.service';
+import CreateSkillDto from './dto/create-skill.dto';
+import UpdateSkillDto from './dto/update-skill.dto';
 
+@ApiTags('Skills')
 @Controller('skills')
-export class SkillsController {
+export default class SkillsController {
   constructor(private readonly skillsService: SkillsService) {}
 
   @Post()
-  create(@Body() createSkillDto: CreateSkillDto) {
-    return this.skillsService.create(createSkillDto);
+  async create(@Body() dto: CreateSkillDto) {
+    const skills = await this.skillsService.create(dto);
+    return skills;
   }
 
   @Get()
@@ -23,8 +34,8 @@ export class SkillsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSkillDto: UpdateSkillDto) {
-    return this.skillsService.update(+id, updateSkillDto);
+  update(@Param('id') id: string, @Body() updateExperienceDto: UpdateSkillDto) {
+    return this.skillsService.update(+id, updateExperienceDto);
   }
 
   @Delete(':id')
