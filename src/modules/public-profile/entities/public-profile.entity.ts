@@ -1,4 +1,5 @@
 import UserEntity from 'src/modules/auth/entity/user.entity';
+import CategoryEntity from 'src/modules/categories/entities/category.entity';
 import EducationEntity from 'src/modules/educations/entities/education.entity';
 import ExperienceEntity from 'src/modules/experiences/entities/experience.entity';
 import {
@@ -7,9 +8,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  // OneToMany,
   OneToOne,
-  // PrimaryColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -17,6 +16,7 @@ import {
 enum English {
   NOENGLISH = 'No English',
   BEGINNER = 'Beginner',
+  PREINTERMEDIATE = 'Pre-Intermediate',
   INTERMEDIATE = 'Intermediate',
   ADVANCED = 'Advanced',
   NOSET = 'No set',
@@ -40,17 +40,8 @@ export default class PublicProfile {
   @Column({ type: 'integer' })
   availableHours?: number;
 
-  @ManyToOne(() => EducationEntity, (e: EducationEntity) => e.id)
-  educations: EducationEntity[];
-
-  @Column('int')
-  categoryId: number;
-
   @Column({ type: 'varchar', length: 255 })
   position?: string;
-
-  @ManyToOne(() => ExperienceEntity, (e: ExperienceEntity) => e.id)
-  experiense: ExperienceEntity[];
 
   @Column({
     type: 'enum',
@@ -61,6 +52,18 @@ export default class PublicProfile {
 
   @Column({ type: 'text' })
   other?: string;
+
+  @ManyToOne(() => EducationEntity, (e: EducationEntity) => e.id)
+  educations: EducationEntity[];
+
+  @ManyToOne(() => ExperienceEntity, (e: ExperienceEntity) => e.id)
+  experiense: ExperienceEntity[];
+
+  @ManyToOne(() => CategoryEntity, (e: CategoryEntity) => e.id)
+  categories: CategoryEntity[];
+
+  // @ManyToOne(() => CategoryEntity, (e: CategoryEntity) => e.id)
+  // skills: CategoryEntity[];
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;

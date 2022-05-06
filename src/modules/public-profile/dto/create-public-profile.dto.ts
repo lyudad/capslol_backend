@@ -31,12 +31,17 @@ export default class CreatePublicProfileDto {
   @IsNumber()
   availableHours: number;
 
+  @IsNumber()
+  experienseId: number;
+
+  @IsNumber()
   educationsId: number;
 
-  // @IsNotEmpty()
-  // experienseId: number;
-
+  @IsNumber()
   categoryId: number;
+
+  @IsNumber()
+  skillsId: number;
 
   @ApiProperty({
     description: 'Please indicate the desired position',
