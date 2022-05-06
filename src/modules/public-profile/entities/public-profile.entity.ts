@@ -8,6 +8,8 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -63,7 +65,9 @@ export default class PublicProfile {
   @ManyToOne(() => CategoryEntity, (e: CategoryEntity) => e.id)
   categories: CategoryEntity[];
 
-  @ManyToOne(() => SkillEntity, (e: SkillEntity) => e.id)
+  @Column('int')
+  @ManyToMany(() => SkillEntity)
+  @JoinTable()
   skills: SkillEntity[];
 
   @CreateDateColumn({ type: 'timestamp' })
