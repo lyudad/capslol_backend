@@ -8,6 +8,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Req,
   UnauthorizedException,
   UseGuards,
@@ -30,6 +31,7 @@ import UserEntity from './entity/user.entity';
 import GoogleGuard from './guards/google.guard';
 import JWTGuard from './guards/jwt.guard';
 import { ExpressRequest } from './types/expressRequest.interface';
+import { IToken } from './types/password.verifyToken';
 import { IUserResponse } from './types/response.interface';
 
 @ApiTags('Authorization')
@@ -176,13 +178,14 @@ export default class AuthController {
   @Put('changePassword')
   @UsePipes(new ValidationPipe())
   async changePassword(
-    @User() user: UserEntity,
-    @Body('user')
+    @Body()
     changePasswordDto: ChangePasswordDto,
+    @Query()
+    verifyToken: IToken,
   ): Promise<boolean> {
     try {
       const response = await this.authService.changePassword(
-        user.id,
+        verifyToken,
         changePasswordDto,
       );
       return response;

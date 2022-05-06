@@ -1,7 +1,7 @@
 import {MigrationInterface, QueryRunner} from "typeorm";
 
-export class FixUnique1651832765563 implements MigrationInterface {
-    name = 'FixUnique1651832765563'
+export class FixUniqueIssue1651836477316 implements MigrationInterface {
+    name = 'FixUniqueIssue1651836477316'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`ALTER TABLE \`users\` DROP COLUMN \`created_at\``);
