@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import CreateEducationDto from './dto/create-education.dto';
@@ -13,30 +13,53 @@ export default class EducationsService {
   ) {}
 
   async create(educations: CreateEducationDto) {
-    const newEducatio = await this.repository.save({
-      ...educations,
-    });
-    await this.repository.save(newEducatio);
-    return newEducatio;
+    try {
+      const newEducatio = await this.repository.save({
+        ...educations,
+      });
+      await this.repository.save(newEducatio);
+      return newEducatio;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
   }
 
   async findAll(): Promise<EducationEntity[]> {
-    const category = await this.repository
-      .createQueryBuilder()
-      .select()
-      .getMany();
-    return category;
+    try {
+      const category = await this.repository
+        .createQueryBuilder()
+        .select()
+        .getMany();
+      return category;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
   }
 
-  findOne(id: number) {
-    return this.repository.findOne(id);
+  async findOne(id: number) {
+    try {
+      const newEducatio = await this.repository.findOne(id);
+      return newEducatio;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
   }
 
-  update(id: number, dto: UpdateEducationDto) {
-    return this.repository.update(id, dto);
+  async update(id: number, dto: UpdateEducationDto) {
+    try {
+      const newEducatio = await this.repository.update(id, dto);
+      return newEducatio;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
   }
 
-  remove(id: number) {
-    return this.repository.delete(id);
+  async remove(id: number) {
+    try {
+      const newEducatio = await this.repository.delete(id);
+      return newEducatio;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
   }
 }

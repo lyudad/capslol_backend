@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import CreateCategoryDto from './dto/create-category.dto';
@@ -13,30 +13,53 @@ export default class CategoriesService {
   ) {}
 
   async create(categories: CreateCategoryDto) {
-    const newCategories = await this.repository.save({
-      ...categories,
-    });
-    await this.repository.save(newCategories);
-    return newCategories;
+    try {
+      const newCategories = await this.repository.save({
+        ...categories,
+      });
+      await this.repository.save(newCategories);
+      return newCategories;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
   }
 
   async findAll(): Promise<CategoryEntity[]> {
-    const categories = await this.repository
-      .createQueryBuilder()
-      .select()
-      .getMany();
-    return categories;
+    try {
+      const categories = await this.repository
+        .createQueryBuilder()
+        .select()
+        .getMany();
+      return categories;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
   }
 
-  findOne(id: number) {
-    return this.repository.findOne(id);
+  async findOne(id: number) {
+    try {
+      const newCategories = await this.repository.findOne(id);
+      return newCategories;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
   }
 
-  update(id: number, dto: UpdateCategoryDto) {
-    return this.repository.update(id, dto);
+  async update(id: number, dto: UpdateCategoryDto) {
+    try {
+      const newCategories = await this.repository.update(id, dto);
+      return newCategories;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
   }
 
-  remove(id: number) {
-    return this.repository.delete(id);
+  async remove(id: number) {
+    try {
+      const newCategories = await this.repository.delete(id);
+      return newCategories;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
   }
 }

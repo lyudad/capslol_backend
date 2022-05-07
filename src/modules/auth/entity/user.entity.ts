@@ -1,3 +1,4 @@
+import { HttpException, HttpStatus } from '@nestjs/common';
 import { hash } from 'bcrypt';
 import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -42,9 +43,13 @@ export default class UserEntity {
 
   @BeforeInsert()
   async hashedPassword() {
-    this.password = await hash(this.password, 10);
-    if (this.password) {
+    try {
       this.password = await hash(this.password, 10);
+      if (this.password) {
+        this.password = await hash(this.password, 10);
+      }
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import CreateSkillDto from './dto/create-skill.dto';
@@ -13,30 +13,53 @@ export default class SkillsService {
   ) {}
 
   async create(skills: CreateSkillDto) {
-    const newSkills = await this.repository.save({
-      ...skills,
-    });
-    await this.repository.save(newSkills);
-    return newSkills;
+    try {
+      const newSkills = await this.repository.save({
+        ...skills,
+      });
+      await this.repository.save(newSkills);
+      return newSkills;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
   }
 
   async findAll(): Promise<SkillEntity[]> {
-    const category = await this.repository
-      .createQueryBuilder()
-      .select()
-      .getMany();
-    return category;
+    try {
+      const category = await this.repository
+        .createQueryBuilder()
+        .select()
+        .getMany();
+      return category;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
   }
 
-  findOne(id: number) {
-    return this.repository.findOne(id);
+  async findOne(id: number) {
+    try {
+      const newSkills = await this.repository.findOne(id);
+      return newSkills;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
   }
 
-  update(id: number, dto: UpdateSkillDto) {
-    return this.repository.update(id, dto);
+  async update(id: number, dto: UpdateSkillDto) {
+    try {
+      const newSkills = await this.repository.update(id, dto);
+      return newSkills;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
   }
 
-  remove(id: number) {
-    return this.repository.delete(id);
+  async remove(id: number) {
+    try {
+      const newSkills = await this.repository.delete(id);
+      return newSkills;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
   }
 }
