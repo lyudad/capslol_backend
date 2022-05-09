@@ -1,5 +1,11 @@
 import { hash } from 'bcrypt';
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity({ name: 'users' })
 export default class UserEntity {
@@ -31,6 +37,7 @@ export default class UserEntity {
   isGoogle: boolean;
 
   @BeforeInsert()
+  @BeforeUpdate()
   async hashedPassword() {
     if (this.password) {
       this.password = await hash(this.password, 10);

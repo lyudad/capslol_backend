@@ -9,4 +9,5 @@ export enum RESPONSE_MESSAGE {
   USERS_FOUND = 'Users were found',
   CREDENTIAL_NOT_VALID = 'Credential are not valid',
   USER_NOT_FOUND = 'User not found',
+  EMAIL_EXISTS = 'email exists',
 }

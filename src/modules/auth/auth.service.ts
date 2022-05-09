@@ -9,27 +9,32 @@ import { Repository } from 'typeorm';
 import { compare } from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { OAuth2Client } from 'google-auth-library';
 import UserInfoDto from './dto/user-info.dto';
 import LoginUserDto from './dto/user-login.dto';
 import UserEntity from './entity/user.entity';
-import { IUserResponse } from './types/response.interface';
+import { IResponse } from './types/response.interface';
 import { GoogleUserType } from './types/google.type';
-import { JWTPayload } from './types/jwt.payload';
 import MailService from '../mail/mail.service';
 import ForgotPasswordDto from './dto/forgot-password.dto';
 import { IUserVerify } from '../mail/interface/userVerify.interface';
 import ChangePasswordDto from './dto/change-password.dto';
 import { RESPONSE_MESSAGE } from './constants/auth.constants';
+import { IUserResponse, UserType } from './types/user.interface';
 
 @Injectable()
 export default class AuthServive {
+  private readonly client: OAuth2Client;
+
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     private readonly configService: ConfigService,
     private readonly mailService: MailService,
     private readonly jwtService: JwtService,
-  ) {}
+  ) {
+    this.client = new OAuth2Client(this.configService.get('GOOGLE_CLIENT_ID'));
+  }
 
   async allUsers(): Promise<UserEntity[]> {
     try {
@@ -73,8 +78,9 @@ export default class AuthServive {
     }
   }
 
-  async createUser(userInfoDto: UserInfoDto): Promise<UserEntity> {
+  async createUser(userInfoDto: UserInfoDto): Promise<IUserResponse> {
     try {
+      await this.checkEmail(userInfoDto.email);
       const newUser = new UserEntity();
       const entity = Object.assign(newUser, userInfoDto);
 
@@ -85,7 +91,35 @@ export default class AuthServive {
         .execute();
 
       const user = await this.getUserById(createdUser.raw.insertId);
-      return user;
+      delete user.password;
+      const userWithToken = await this.generateJWT(user);
+
+      return userWithToken;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
+
+  async createGoogleUser(idToken: string) {
+    try {
+      const ticket = await this.client.verifyIdToken({
+        idToken,
+        audience: this.configService.get('GOOGLE_CLIENT_ID'),
+      });
+
+      const payload = ticket.getPayload();
+      const { email, given_name: firstName } = payload;
+      await this.checkEmail(email);
+
+      const newUser = new UserEntity();
+      const entity = Object.assign(newUser, {
+        email,
+        firstName,
+        isGoogle: true,
+      } as UserEntity);
+
+      const createdGoogleUser = await this.createUser(entity);
+      return createdGoogleUser;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
@@ -124,21 +158,41 @@ export default class AuthServive {
     }
   }
 
-  async buildResponse(
-    user: UserEntity,
-    messsage: string,
-  ): Promise<IUserResponse> {
+  buildResponse(data: any, message: string): IResponse {
+    const response: IResponse = {
+      data,
+      message,
+    };
+    return response;
+  }
+
+  async generateJWT(user: UserType): Promise<IUserResponse> {
     try {
-      const payload: JWTPayload = {
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
+      const userIsAssignedToken = {
+        user: {
+          ...user,
+        },
+        accessToken: await this.jwtService.signAsync({ ...user }),
       };
-      return {
-        user,
-        message: messsage,
-        accessToken: await this.jwtService.signAsync(payload),
-      };
+      return userIsAssignedToken;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
+
+  async checkEmail(email: string): Promise<boolean> {
+    try {
+      const isEmailExist = await this.userRepository
+        .createQueryBuilder('user')
+        .where('user.email = :email', { email })
+        .getOne();
+      if (isEmailExist) {
+        throw new HttpException(
+          RESPONSE_MESSAGE.EMAIL_EXISTS,
+          HttpStatus.UNPROCESSABLE_ENTITY,
+        );
+      }
+      return false;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }

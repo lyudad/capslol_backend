@@ -8,7 +8,9 @@
         "name": "@nestjs/swagger"
       }
     ],
-    "assets": ["src/mailer/templates/**/*"],
+    "assets": [
+      "**/*.hbs"
+    ],
     "watchAssets": true
   }
 }

@@ -3,13 +3,17 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import AppModule from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  app.enableCors({
-    origin: process.env.CORS_ORIGINAL,
-    credentials: true,
+  const app = await NestFactory.create(AppModule, {
+    cors: {
+      origin: ['http://localhost:3005', 'https://accounts.google.com'],
+      // origin: '*',
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+      // allowedHeaders: ['content-type'],
+      preflightContinue: false,
+      optionsSuccessStatus: 204,
+      credentials: true,
+    },
   });
-
-  app.enableCors();
 
   const config = new DocumentBuilder()
     .setTitle('Freelancer')

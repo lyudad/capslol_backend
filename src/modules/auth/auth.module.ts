@@ -8,7 +8,6 @@ import AuthController from './auth.contoller';
 import AuthServive from './auth.service';
 import UserEntity from './entity/user.entity';
 import AuthMiddlerware from './middlewares/auth.middleware';
-import GoogleStrategy from './strategies/google.strategy';
 import JWTStrategy from './strategies/jwt.strategy';
 
 @Module({
@@ -29,7 +28,7 @@ import JWTStrategy from './strategies/jwt.strategy';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthServive, GoogleStrategy, JWTStrategy],
+  providers: [AuthServive, JWTStrategy],
 })
 export default class AuthModule {
   configure(consumer: MiddlewareConsumer) {
