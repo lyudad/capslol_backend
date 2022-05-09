@@ -29,20 +29,20 @@ export default class ExperiencesController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.experiencesService.findOne(+id);
+  findOne(@Param('id') id: number) {
+    return this.experiencesService.findOne(id);
   }
 
   @Patch(':id')
   update(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateExperienceDto: UpdateExperienceDto,
   ) {
-    return this.experiencesService.update(+id, updateExperienceDto);
+    return this.experiencesService.update(id, updateExperienceDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.experiencesService.remove(+id);
+  remove(@Param('id') id: number) {
+    return this.experiencesService.remove(id);
   }
 }

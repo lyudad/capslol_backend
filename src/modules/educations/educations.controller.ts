@@ -28,20 +28,20 @@ export default class EducationsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.educationsService.findOne(+id);
+  findOne(@Param('id') id: number) {
+    return this.educationsService.findOne(id);
   }
 
   @Patch(':id')
   update(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateEducationDto: UpdateEducationDto,
   ) {
-    return this.educationsService.update(+id, updateEducationDto);
+    return this.educationsService.update(id, updateEducationDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.educationsService.remove(+id);
+  remove(@Param('id') id: number) {
+    return this.educationsService.remove(id);
   }
 }

@@ -28,20 +28,20 @@ export default class CategoriesController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.categoriesService.findOne(+id);
+  findOne(@Param('id') id: number) {
+    return this.categoriesService.findOne(id);
   }
 
   @Patch(':id')
   update(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateCategoryDto: UpdateCategoryDto,
   ) {
-    return this.categoriesService.update(+id, updateCategoryDto);
+    return this.categoriesService.update(id, updateCategoryDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.categoriesService.remove(+id);
+  remove(@Param('id') id: number) {
+    return this.categoriesService.remove(id);
   }
 }

@@ -14,10 +14,7 @@ export default class EducationsService {
 
   async create(educations: CreateEducationDto) {
     try {
-      const newEducatio = await this.repository.save({
-        ...educations,
-      });
-      await this.repository.save(newEducatio);
+      const newEducatio = await this.repository.save(educations);
       return newEducatio;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);

@@ -14,10 +14,7 @@ export default class CategoriesService {
 
   async create(categories: CreateCategoryDto) {
     try {
-      const newCategories = await this.repository.save({
-        ...categories,
-      });
-      await this.repository.save(newCategories);
+      const newCategories = await this.repository.save(categories);
       return newCategories;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);

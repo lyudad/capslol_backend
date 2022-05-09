@@ -30,20 +30,20 @@ export default class PublicProfileController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.publicProfileService.findOne(+id);
+  findOne(@Param('id') id: number) {
+    return this.publicProfileService.findOne(id);
   }
 
   @Patch(':id')
   update(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updatePublicProfileDto: UpdatePublicProfileDto,
   ) {
-    return this.publicProfileService.update(+id, updatePublicProfileDto);
+    return this.publicProfileService.update(id, updatePublicProfileDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.publicProfileService.remove(+id);
+  remove(@Param('id') id: number) {
+    return this.publicProfileService.remove(id);
   }
 }

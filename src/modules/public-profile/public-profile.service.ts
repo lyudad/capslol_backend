@@ -18,7 +18,6 @@ export default class PublicProfileService {
         ...dto,
         user: { id: dto.userId },
       });
-      await this.repository.save(newProfile);
       return newProfile;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);

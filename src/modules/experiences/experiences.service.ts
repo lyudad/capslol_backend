@@ -14,10 +14,7 @@ export default class ExperiencesService {
 
   async create(experiense: CreateExperienceDto) {
     try {
-      const newExperienses = await this.repository.save({
-        ...experiense,
-      });
-      await this.repository.save(newExperienses);
+      const newExperienses = await this.repository.save(experiense);
       return newExperienses;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);

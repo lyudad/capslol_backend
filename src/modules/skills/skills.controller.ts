@@ -29,17 +29,17 @@ export default class SkillsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.skillsService.findOne(+id);
+  findOne(@Param('id') id: number) {
+    return this.skillsService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateExperienceDto: UpdateSkillDto) {
-    return this.skillsService.update(+id, updateExperienceDto);
+  update(@Param('id') id: number, @Body() updateExperienceDto: UpdateSkillDto) {
+    return this.skillsService.update(id, updateExperienceDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.skillsService.remove(+id);
+  remove(@Param('id') id: number) {
+    return this.skillsService.remove(id);
   }
 }
