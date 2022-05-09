@@ -1,7 +1,7 @@
 import {MigrationInterface, QueryRunner} from "typeorm";
 
-export class AddBeforeUpdate1651740216933 implements MigrationInterface {
-    name = 'AddBeforeUpdate1651740216933'
+export class RefactoringUserEntity1652126924369 implements MigrationInterface {
+    name = 'RefactoringUserEntity1652126924369'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`ALTER TABLE \`users\` CHANGE \`role\` \`role\` int(1) NULL`);
