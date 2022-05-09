@@ -26,6 +26,7 @@ import LoginUserDto from './dto/user-login.dto';
 import UserEntity from './entity/user.entity';
 import JWTGuard from './guards/jwt.guard';
 import { IResponse } from './types/response.interface';
+import { IToken } from './types/password.verifyToken';
 
 @ApiTags('Authorization')
 @Controller('auth')
@@ -170,15 +171,35 @@ export default class AuthController {
   @Put('changePassword')
   @UsePipes(new ValidationPipe())
   async changePassword(
-    @User() user: UserEntity,
-    @Body('user')
+    @Body()
     changePasswordDto: ChangePasswordDto,
+    @Query()
+    verifyToken: IToken,
   ): Promise<boolean> {
     try {
-      const response = await this.authService.changePassword(
-        user.id,
+      const response = await this.authService.changePasswordWithToken(
+        verifyToken,
         changePasswordDto,
       );
+      return response;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @ApiBody({ type: ChangePasswordDto })
+  @Put('changePasswordWithId/:id')
+  @UseGuards(JWTGuard)
+  async changePasswordWithId(
+    @Param('id') userId: number,
+    @Body() passwordDto: ChangePasswordDto,
+  ): Promise<boolean> {
+    try {
+      const response = await this.authService.changePasswordWithId(
+        userId,
+        passwordDto,
+      );
+
       return response;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);

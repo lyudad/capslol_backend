@@ -21,6 +21,7 @@ import { IUserVerify } from '../mail/interface/userVerify.interface';
 import ChangePasswordDto from './dto/change-password.dto';
 import { RESPONSE_MESSAGE } from './constants/auth.constants';
 import { IUserResponse, UserType } from './types/user.interface';
+import { IToken } from './types/password.verifyToken';
 
 @Injectable()
 export default class AuthServive {
@@ -251,24 +252,6 @@ export default class AuthServive {
     }
   }
 
-  async changePassword(
-    userId: number,
-    password: ChangePasswordDto,
-  ): Promise<boolean> {
-    try {
-      await this.userRepository
-        .createQueryBuilder()
-        .update()
-        .set(password)
-        .where('id =:id', { id: userId })
-        .execute();
-
-      return true;
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
-    }
-  }
-
   async forgotPassword(
     forgotPasswordDto: ForgotPasswordDto,
   ): Promise<UserEntity> {
@@ -280,7 +263,8 @@ export default class AuthServive {
       if (!user.email) {
         throw new BadRequestException('Invalid email');
       }
-      const token = user.id;
+
+      const token = await this.jwtService.sign({ id: user.id });
       const url = `${this.configService.get(
         'FE_APP_URL',
       )}/reset_password/?token=${token}`;
@@ -292,6 +276,44 @@ export default class AuthServive {
       await this.mailService.sendUserConfirmation(userVerify, url);
 
       return user;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
+
+  async changePassword(password: ChangePasswordDto, id: number) {
+    try {
+      await this.userRepository
+        .createQueryBuilder()
+        .update()
+        .set(password)
+        .where('id =:id', { id })
+        .execute();
+
+      return true;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
+
+  async changePasswordWithToken(
+    verifyToken: IToken,
+    password: ChangePasswordDto,
+  ): Promise<boolean> {
+    const { id } = await this.jwtService.verify(verifyToken.token);
+    try {
+      return await this.changePassword(password, id);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
+
+  async changePasswordWithId(
+    userId: number,
+    password: ChangePasswordDto,
+  ): Promise<boolean> {
+    try {
+      return await this.changePassword(password, userId);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
