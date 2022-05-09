@@ -184,10 +184,29 @@ export default class AuthController {
     verifyToken: IToken,
   ): Promise<boolean> {
     try {
-      const response = await this.authService.changePassword(
+      const response = await this.authService.changePasswordWithToken(
         verifyToken,
         changePasswordDto,
       );
+      return response;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @ApiBody({ type: ChangePasswordDto })
+  @Put('changePasswordWithId/:id')
+  @UseGuards(JWTGuard)
+  async changePasswordWithId(
+    @Param('id') userId: number,
+    @Body() passwordDto: ChangePasswordDto,
+  ): Promise<boolean> {
+    try {
+      const response = await this.authService.changePasswordWithId(
+        userId,
+        passwordDto,
+      );
+
       return response;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
