@@ -8,13 +8,9 @@
         "name": "@nestjs/swagger"
       }
     ],
-<<<<<<< HEAD
     "assets": [
       "**/*.hbs"
     ],
-=======
-    "assets": ["**/*.hbs"],
->>>>>>> develop
     "watchAssets": true
   }
 }
