@@ -1,6 +1,12 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { hash } from 'bcrypt';
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 enum Role {
   FREELANCER = 'Freelancer',
@@ -42,6 +48,7 @@ export default class UserEntity {
   isGoogle: boolean;
 
   @BeforeInsert()
+  @BeforeUpdate()
   async hashedPassword() {
     try {
       this.password = await hash(this.password, 10);

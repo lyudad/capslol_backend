@@ -8,7 +8,9 @@
         "name": "@nestjs/swagger"
       }
     ],
-    "assets": ["**/*.hbs"],
+    "assets": [
+      "**/*.hbs"
+    ],
     "watchAssets": true
   }
 }

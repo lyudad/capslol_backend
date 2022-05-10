@@ -1,9 +1,4 @@
-import UserEntity from '../entity/user.entity';
-
-export type UserType = Omit<UserEntity, 'password'>;
-
-export interface IUserResponse {
-  user: UserType | UserType[];
-  accessToken?: string;
+export interface IResponse {
+  data: any;
   message: string;
 }
