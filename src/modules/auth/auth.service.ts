@@ -233,6 +233,7 @@ export default class AuthServive {
     }
   }
 
+  //! TODO check and remove this method
   async googleUserRegistration(
     googleUser: GoogleUserType,
   ): Promise<UserEntity> {
