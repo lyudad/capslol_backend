@@ -28,6 +28,8 @@ import JWTGuard from './guards/jwt.guard';
 import { IResponse } from './types/response.interface';
 import { IToken } from './types/password.verifyToken';
 
+classs;
+
 @ApiTags('Authorization')
 @Controller('auth')
 export default class AuthController {
