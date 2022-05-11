@@ -14,7 +14,6 @@ import UserInfoDto from './dto/user-info.dto';
 import LoginUserDto from './dto/user-login.dto';
 import UserEntity from './entity/user.entity';
 import { IResponse } from './types/response.interface';
-import { GoogleUserType } from './types/google.type';
 import MailService from '../mail/mail.service';
 import ForgotPasswordDto from './dto/forgot-password.dto';
 import { IUserVerify } from '../mail/interface/userVerify.interface';
@@ -145,22 +144,31 @@ export default class AuthServive {
     }
   }
 
-  async deleteUser(userId: number): Promise<any> {
+  async deleteUser(userId: number): Promise<UserType> {
     try {
-      const deletedUser = await this.userRepository
+      const removerUser = await this.getUserById(userId);
+
+      if (!removerUser) {
+        throw new HttpException(
+          RESPONSE_MESSAGE.USER_NOT_EXISTS,
+          HttpStatus.UNPROCESSABLE_ENTITY,
+        );
+      }
+
+      await this.userRepository
         .createQueryBuilder()
         .delete()
         .where('id = :userId', { userId })
         .execute();
 
-      return deletedUser;
+      return removerUser;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }
 
-  buildResponse(data: any, message: string): IResponse {
-    const response: IResponse = {
+  buildResponse<T>(data: T, message: string): IResponse<T> {
+    const response = {
       data,
       message,
     };
@@ -199,12 +207,22 @@ export default class AuthServive {
     }
   }
 
-  async login(loginUserDto: LoginUserDto): Promise<UserEntity> {
+  async login(loginUserDto: LoginUserDto): Promise<IUserResponse> {
     try {
       const { email } = loginUserDto;
       const user: UserEntity = await this.userRepository
         .createQueryBuilder('user')
-        .select(['user.password', 'user.email', 'user.firstName'])
+        .select([
+          'user.id',
+          'user.email',
+          'user.lastName',
+          'user.firstName',
+          'user.phoneNumber',
+          'user.createdAt',
+          'user.role',
+          'user.isGoogle',
+          'user.password',
+        ])
         .where('user.email = :email', { email })
         .getOne();
 
@@ -227,27 +245,11 @@ export default class AuthServive {
       }
 
       delete user.password;
-      return user;
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
-    }
-  }
 
-  //! TODO check and remove this method
-  async googleUserRegistration(
-    googleUser: GoogleUserType,
-  ): Promise<UserEntity> {
-    try {
-      const newUser = new UserEntity();
-      const entity = Object.assign(newUser, googleUser, { isGoogle: true });
-      const createdUser = await this.userRepository
-        .createQueryBuilder()
-        .insert()
-        .values(entity)
-        .execute();
+      const loggedUser = await this.getUserById(user.id);
+      const userWithToken = await this.generateJWT(loggedUser);
 
-      const user = await this.getUserById(createdUser.raw.insertId);
-      return user;
+      return userWithToken;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }

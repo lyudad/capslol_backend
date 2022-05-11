@@ -10,4 +10,6 @@ export enum RESPONSE_MESSAGE {
   CREDENTIAL_NOT_VALID = 'Credential are not valid',
   USER_NOT_FOUND = 'User not found',
   EMAIL_EXISTS = 'email exists',
+  USER_NOT_EXISTS = 'User not exists',
+  HAS_GOOGLE_ACCOUNT = 'User has google account. Please use Google Sign In button',
 }

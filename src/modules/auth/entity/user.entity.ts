@@ -51,7 +51,6 @@ export default class UserEntity {
   @BeforeUpdate()
   async hashedPassword() {
     try {
-      this.password = await hash(this.password, 10);
       if (this.password) {
         this.password = await hash(this.password, 10);
       }
