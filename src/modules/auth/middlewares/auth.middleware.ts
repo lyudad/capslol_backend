@@ -7,6 +7,7 @@ import {
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { NextFunction, Request, Response } from 'express';
 import AuthServive from '../auth.service';
+import { RESPONSE_MESSAGE } from '../constants/auth.constants';
 
 @Injectable()
 export default class AuthMiddlerware implements NestMiddleware {
@@ -25,8 +26,7 @@ export default class AuthMiddlerware implements NestMiddleware {
           throw new HttpException(
             {
               status: 401,
-              message:
-                'User has google account. Please use Google Sign In button',
+              message: RESPONSE_MESSAGE.HAS_GOOGLE_ACCOUNT,
             },
             HttpStatus.UNPROCESSABLE_ENTITY,
           );

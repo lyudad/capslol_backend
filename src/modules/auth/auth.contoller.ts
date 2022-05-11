@@ -27,6 +27,7 @@ import UserEntity from './entity/user.entity';
 import JWTGuard from './guards/jwt.guard';
 import { IResponse } from './types/response.interface';
 import { IToken } from './types/password.verifyToken';
+import { IUserResponse, UserType } from './types/user.interface';
 
 @ApiTags('Authorization')
 @Controller('auth')
@@ -44,13 +45,14 @@ export default class AuthController {
   })
   @Get('allUsers')
   @UseGuards(JWTGuard)
-  async allUsers() {
+  async allUsers(): Promise<IResponse<UserEntity[]>> {
     try {
       const users = await this.authService.allUsers();
-      return this.authService.buildResponse(
+      const response = await this.authService.buildResponse(
         users,
         RESPONSE_MESSAGE.USERS_FOUND,
       );
+      return response;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
@@ -58,10 +60,10 @@ export default class AuthController {
 
   @Get('getUser/:id')
   @UseGuards(JWTGuard)
-  async getUserById(@Param('id') userId: number): Promise<IResponse> {
+  async getUserById(@Param('id') userId: number): Promise<IResponse<UserType>> {
     try {
       const user = await this.authService.getUserById(userId);
-      const response = await this.authService.buildResponse(
+      const response = this.authService.buildResponse(
         user,
         RESPONSE_MESSAGE.USER_FOUND,
       );
@@ -74,10 +76,12 @@ export default class AuthController {
   @ApiBody({ type: CreateUserDto })
   @UsePipes(new ValidationPipe())
   @Post('createUser')
-  async createUser(@Body('user') userInfoDto: UserInfoDto): Promise<IResponse> {
+  async createUser(
+    @Body('user') userInfoDto: UserInfoDto,
+  ): Promise<IResponse<IUserResponse>> {
     try {
       const createdUser = await this.authService.createUser(userInfoDto);
-      const response = this.authService.buildResponse(
+      const response = this.authService.buildResponse<IUserResponse>(
         createdUser,
         RESPONSE_MESSAGE.USER_CREATED,
       );
@@ -93,7 +97,7 @@ export default class AuthController {
   async updateUser(
     @Param('id') userId: number,
     @User() userInfoDto: UserInfoDto,
-  ): Promise<IResponse> {
+  ): Promise<IResponse<UserEntity>> {
     try {
       const updatedUser = await this.authService.updateUser(
         userId,
@@ -111,7 +115,7 @@ export default class AuthController {
 
   @Delete('deleteUser/:id')
   @UseGuards(JWTGuard)
-  async deleteUser(@Param('id') userId: number) {
+  async deleteUser(@Param('id') userId: number): Promise<IResponse<UserType>> {
     try {
       const user = await this.authService.deleteUser(userId);
       const response = this.authService.buildResponse(
@@ -126,7 +130,9 @@ export default class AuthController {
 
   @Post('login')
   @UsePipes(new ValidationPipe())
-  async login(@Body('user') loginUserDto: LoginUserDto): Promise<IResponse> {
+  async login(
+    @Body('user') loginUserDto: LoginUserDto,
+  ): Promise<IResponse<IUserResponse>> {
     try {
       const loggedUser = await this.authService.login(loginUserDto);
       const response = this.authService.buildResponse(
@@ -140,7 +146,9 @@ export default class AuthController {
   }
 
   @Get('createUserUseGoogle')
-  async googleAuth(@Query('tokenId') tokenId: string) {
+  async googleAuth(
+    @Query('tokenId') tokenId: string,
+  ): Promise<IResponse<IUserResponse>> {
     try {
       const user = await this.authService.createGoogleUser(tokenId);
       const response = this.authService.buildResponse(
