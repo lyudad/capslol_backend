@@ -9,7 +9,7 @@ const {
   DATABASE_NAME,
 } = process.env;
 
-const migrationConfig: ConnectionOptions = {
+const seedConfig: ConnectionOptions = {
   type: 'mysql',
   host: DATABASE_HOST,
   port: parseInt(DATABASE_PORT, 10),
@@ -18,10 +18,10 @@ const migrationConfig: ConnectionOptions = {
   database: DATABASE_NAME,
   entities: [`${__dirname}/**/*.entity{.ts,.js}`],
   synchronize: false,
-  migrations: [`${__dirname}/migrations/**/*{.ts,.js}`],
+  migrations: [`${__dirname}/seeds/**/*{.ts,.js}`],
   cli: {
-    migrationsDir: 'src/migrations',
+    migrationsDir: 'src/seeds',
   },
 };
 
-export default migrationConfig;
+export default seedConfig;

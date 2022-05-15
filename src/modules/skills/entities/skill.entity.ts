@@ -1,3 +1,4 @@
+import JobEntity from 'src/modules/jobs/entities/job.entity';
 import PublicProfile from 'src/modules/public-profile/entities/public-profile.entity';
 import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -6,9 +7,12 @@ export default class SkillEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ type: 'varchar', length: 255 })
+  name: string;
+
   @ManyToMany(() => PublicProfile, (post: PublicProfile) => post.skills)
   post: PublicProfile[];
 
-  @Column({ type: 'varchar', length: 255 })
-  name: string;
+  @ManyToMany(() => JobEntity, (job: JobEntity) => job.skills)
+  job: JobEntity[];
 }

@@ -38,12 +38,13 @@ I used MySQL v8.0
 If you haven`t installed database in your machine, you can use docker container.
 
 ```bash
-docker run --name mysqldb \
+docker run --name mysql \
            --volume "$(pwd)/data:/var/lib/mysql" \
            --env MYSQL_ROOT_PASSWORD=secret \
            --publish 3306:3306 \
            --detach \
            --restart unless-stopped \
+           --net freelancer \
            mysql:8.0
 ```
 
@@ -126,3 +127,23 @@ Body:
   }
 }
 ```
+
+# PhpMyAdmin
+
+```bash
+docker run --name phpmyadmin \
+           --net freelancer \
+           --env PMA_HOST=mysql \
+           --detach \
+           --publish 8081:80 \
+           phpmyadmin/phpmyadmin
+```
+
+### Create a Docker network
+
+`docker network create freelancer`
+
+# Connect MySQL and phpMyAdmin containers to our network
+
+`docker network connect freelancer mysql`
+`docker network connect freelancer phpmyadmin`
