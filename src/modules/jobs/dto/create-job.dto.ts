@@ -1,1 +1,1 @@
-export class CreateJobDto {}
+export default class CreateJobDto {}

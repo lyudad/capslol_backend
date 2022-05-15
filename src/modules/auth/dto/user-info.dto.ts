@@ -1,19 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,
-  IsEnum,
   IsNotEmpty,
+  IsNumber,
   IsString,
   MinLength,
 } from 'class-validator';
 import { HasCapitalLetter } from 'src/shared/validators/HasCapitalLetter.validator';
 import { HasNumber } from 'src/shared/validators/HasNumber.validator';
-
-enum Role {
-  FREELANCER = 'Freelancer',
-  JOBOWNER = 'Job Owner',
-  NOSET = 'No set',
-}
 
 export default class UserInfoDto {
   @ApiProperty({
@@ -42,10 +36,10 @@ export default class UserInfoDto {
 
   @ApiProperty({
     description: 'Choose one of the role',
-    enum: Role,
+    example: '0 - freelancer | 1 - job owner',
   })
-  @IsEnum(Role)
-  role: Role;
+  @IsNumber()
+  role: number;
 
   @ApiProperty({
     description:
