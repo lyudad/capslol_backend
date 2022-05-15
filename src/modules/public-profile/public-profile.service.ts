@@ -36,25 +36,25 @@ export default class PublicProfileService {
     }
   }
 
-  findOne(id: number) {
+  async findOne(id: number) {
     try {
-      return this.repository.findOne(id);
+      return await this.repository.findOne(id);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }
 
-  update(id: number, dto: UpdatePublicProfileDto) {
+  async update(id: number, dto: UpdatePublicProfileDto) {
     try {
-      return this.repository.update(id, dto);
+      return await this.repository.update(id, dto);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }
 
-  remove(id: number) {
+  async remove(id: number) {
     try {
-      return this.repository.delete(id);
+      return await this.repository.delete(id);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }

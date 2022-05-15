@@ -6,11 +6,14 @@ export default class ExperienceEntity {
   id: number;
 
   @Column({ type: 'varchar', length: 255 })
-  name: string;
+  companyName: string;
 
   @Column({ type: 'varchar', length: 255 })
-  startAt?: string;
+  position: string;
 
   @Column({ type: 'varchar', length: 255 })
-  endAt?: string;
+  startAt: string;
+
+  @Column({ type: 'varchar', length: 255 })
+  endAt: string;
 }
