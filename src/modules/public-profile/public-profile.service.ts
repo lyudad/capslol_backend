@@ -27,9 +27,14 @@ export default class PublicProfileService {
   async findAll(): Promise<PublicProfile[]> {
     try {
       const profiles = await this.repository
-        .createQueryBuilder()
-        .select()
+        .createQueryBuilder('profile')
+        .leftJoinAndSelect('profile.user', 'user')
+        .leftJoinAndSelect('profile.experiense', 'experiense')
+        .leftJoinAndSelect('profile.educations', 'educations')
+        .leftJoinAndSelect('profile.categories', 'categories')
+        .leftJoinAndSelect('profile.skills', 'skills')
         .getMany();
+
       return profiles;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
@@ -38,7 +43,15 @@ export default class PublicProfileService {
 
   async findOne(id: number) {
     try {
-      return await this.repository.findOne(id);
+      return await this.repository
+        .createQueryBuilder('profile')
+        .leftJoinAndSelect('profile.user', 'user')
+        .leftJoinAndSelect('profile.experiense', 'experiense')
+        .leftJoinAndSelect('profile.educations', 'educations')
+        .leftJoinAndSelect('profile.categories', 'categories')
+        .leftJoinAndSelect('profile.skills', 'skills')
+        .where('profile.id = :profileId', { profileId: id })
+        .getOne();
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }

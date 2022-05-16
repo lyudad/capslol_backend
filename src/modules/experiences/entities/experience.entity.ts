@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import PublicProfile from 'src/modules/public-profile/entities/public-profile.entity';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('experiences')
 export default class ExperienceEntity {
@@ -16,4 +17,9 @@ export default class ExperienceEntity {
 
   @Column({ type: 'varchar', length: 255 })
   endAt: string;
+
+  @ManyToOne(() => PublicProfile, (profile) => profile.experiense, {
+    onDelete: 'SET NULL',
+  })
+  profile: PublicProfile;
 }

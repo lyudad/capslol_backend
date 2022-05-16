@@ -64,14 +64,14 @@ export default class PublicProfile {
 
   @ManyToOne(
     () => ExperienceEntity,
-    (experiens: ExperienceEntity) => experiens.id,
+    (experiens: ExperienceEntity) => experiens.profile,
   )
-  experiense: ExperienceEntity[];
+  experiense: ExperienceEntity;
 
   @ManyToOne(() => CategoryEntity, (category: CategoryEntity) => category.id)
   categories: CategoryEntity[];
 
-  @ManyToMany(() => SkillEntity)
+  @ManyToMany(() => SkillEntity, (skill: SkillEntity) => skill.id)
   @JoinTable({ name: 'profiles_skills' })
   skills: SkillEntity[];
 
