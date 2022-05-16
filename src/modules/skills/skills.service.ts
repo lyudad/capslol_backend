@@ -14,10 +14,7 @@ export default class SkillsService {
 
   async create(skills: CreateSkillDto) {
     try {
-      const newSkills = await this.repository.save({
-        ...skills,
-        // profile: skills.profiles,
-      });
+      const newSkills = await this.repository.save(skills);
       return newSkills;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
