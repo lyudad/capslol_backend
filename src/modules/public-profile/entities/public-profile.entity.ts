@@ -34,7 +34,7 @@ export default class PublicProfile {
   @JoinColumn({ name: 'userId' })
   user: UserEntity;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar', length: 385 })
   profileImage?: string;
 
   @Column({ type: 'integer' })
@@ -56,22 +56,28 @@ export default class PublicProfile {
   @Column({ type: 'text' })
   other?: string;
 
-  @ManyToOne(() => EducationEntity, (e: EducationEntity) => e.id)
+  @ManyToOne(
+    () => EducationEntity,
+    (education: EducationEntity) => education.id,
+  )
   educations: EducationEntity[];
 
-  @ManyToOne(() => ExperienceEntity, (e: ExperienceEntity) => e.id)
-  experiense: ExperienceEntity[];
+  @ManyToOne(
+    () => ExperienceEntity,
+    (experiens: ExperienceEntity) => experiens.profile,
+  )
+  experiense: ExperienceEntity;
 
-  @ManyToOne(() => CategoryEntity, (e: CategoryEntity) => e.id)
+  @ManyToOne(() => CategoryEntity, (category: CategoryEntity) => category.id)
   categories: CategoryEntity[];
 
-  @ManyToMany(() => SkillEntity)
-  @JoinTable()
+  @ManyToMany(() => SkillEntity, (skill: SkillEntity) => skill.id)
+  @JoinTable({ name: 'profiles_skills' })
   skills: SkillEntity[];
 
-  @CreateDateColumn({ type: 'timestamp' })
-  createdAt: Date;
+  @CreateDateColumn({ type: 'datetime' })
+  createdAt: string;
 
-  @UpdateDateColumn({ type: 'timestamp' })
-  updatedAt: Date;
+  @UpdateDateColumn({ type: 'datetime' })
+  updatedAt: string;
 }

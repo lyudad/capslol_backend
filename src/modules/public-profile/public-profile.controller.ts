@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import PublicProfileService from './public-profile.service';
@@ -23,15 +24,15 @@ export default class PublicProfileController {
     return profile;
   }
 
+  @Get('getById')
+  findOne(@Query('user') id: number) {
+    return this.publicProfileService.findOne(id);
+  }
+
   @Get()
   async findAll() {
     const profile = await this.publicProfileService.findAll();
     return profile;
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: number) {
-    return this.publicProfileService.findOne(id);
   }
 
   @Patch(':id')

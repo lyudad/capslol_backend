@@ -6,5 +6,5 @@ export default class CategoryEntity {
   id: number;
 
   @Column({ type: 'varchar', length: 255 })
-  categoryТame: string;
+  categoryName: string;
 }

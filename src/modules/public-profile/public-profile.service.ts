@@ -27,34 +27,47 @@ export default class PublicProfileService {
   async findAll(): Promise<PublicProfile[]> {
     try {
       const profiles = await this.repository
-        .createQueryBuilder()
-        .select()
+        .createQueryBuilder('profile')
+        .leftJoinAndSelect('profile.user', 'user')
+        .leftJoinAndSelect('profile.experiense', 'experiense')
+        .leftJoinAndSelect('profile.educations', 'educations')
+        .leftJoinAndSelect('profile.categories', 'categories')
+        .leftJoinAndSelect('profile.skills', 'skills')
         .getMany();
+
       return profiles;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }
 
-  findOne(id: number) {
+  async findOne(id: number) {
     try {
-      return this.repository.findOne(id);
+      return await this.repository
+        .createQueryBuilder('profile')
+        .leftJoinAndSelect('profile.user', 'user')
+        .leftJoinAndSelect('profile.experiense', 'experiense')
+        .leftJoinAndSelect('profile.educations', 'educations')
+        .leftJoinAndSelect('profile.categories', 'categories')
+        .leftJoinAndSelect('profile.skills', 'skills')
+        .where('profile.id = :profileId', { profileId: id })
+        .getOne();
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }
 
-  update(id: number, dto: UpdatePublicProfileDto) {
+  async update(id: number, dto: UpdatePublicProfileDto) {
     try {
-      return this.repository.update(id, dto);
+      return await this.repository.update(id, dto);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }
 
-  remove(id: number) {
+  async remove(id: number) {
     try {
-      return this.repository.delete(id);
+      return await this.repository.delete(id);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
