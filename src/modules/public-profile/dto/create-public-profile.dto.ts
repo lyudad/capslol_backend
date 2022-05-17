@@ -64,6 +64,5 @@ export default class CreatePublicProfileDto {
   other: string;
 
   @IsArray()
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  skills: any;
+  skills: [];
 }
