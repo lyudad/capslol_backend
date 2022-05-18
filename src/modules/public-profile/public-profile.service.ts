@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import SkillEntity from '../skills/entities/skill.entity';
 import CreatePublicProfileDto from './dto/create-public-profile.dto';
 import UpdatePublicProfileDto from './dto/update-public-profile.dto';
 import PublicProfile from './entities/public-profile.entity';
@@ -12,11 +13,12 @@ export default class PublicProfileService {
     private repository: Repository<PublicProfile>,
   ) {}
 
-  async create(dto: CreatePublicProfileDto) {
+  async create(dto: CreatePublicProfileDto): Promise<SkillEntity[]> {
     try {
       const newProfile = await this.repository.save({
         ...dto,
         user: { id: dto.userId },
+        skills: dto.skills.map((e: number) => ({ id: e })),
       });
       return newProfile;
     } catch (error) {

@@ -71,8 +71,8 @@ export default class PublicProfile {
   @ManyToOne(() => CategoryEntity, (category: CategoryEntity) => category.id)
   categories: CategoryEntity[];
 
-  @ManyToMany(() => SkillEntity, (skill: SkillEntity) => skill.id)
-  @JoinTable({ name: 'profiles_skills' })
+  @ManyToMany(() => SkillEntity, (skill) => skill.profiles)
+  @JoinTable()
   skills: SkillEntity[];
 
   @CreateDateColumn({ type: 'datetime' })

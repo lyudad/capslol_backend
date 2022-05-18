@@ -1,4 +1,10 @@
-import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 enum English {
@@ -40,9 +46,6 @@ export default class CreatePublicProfileDto {
   @IsNumber()
   categoryId: number;
 
-  @IsNumber()
-  skillsId: number;
-
   @ApiProperty({
     description: 'Please indicate the desired position',
     example: 'Frontend Developer',
@@ -59,4 +62,7 @@ export default class CreatePublicProfileDto {
 
   @IsString()
   other: string;
+
+  @IsArray()
+  skills: [];
 }
