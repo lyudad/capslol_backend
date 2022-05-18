@@ -71,13 +71,4 @@ export default class JobsService {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  update(id: number, updateJobDto: UpdateJobDto) {
-    return `This action updates a #${id} job`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} job`;
-  }
 }
