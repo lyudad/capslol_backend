@@ -22,14 +22,14 @@ export default class EducationsController {
     return this.educationsService.create(createEducationDto);
   }
 
-  @Get()
-  findAll() {
-    return this.educationsService.findAll();
-  }
-
   @Get(':id')
   findOne(@Param('id') id: number) {
     return this.educationsService.findOne(id);
+  }
+
+  @Get()
+  findAll() {
+    return this.educationsService.findAll();
   }
 
   @Patch(':id')

@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import SkillEntity from '../skills/entities/skill.entity';
 import CreatePublicProfileDto from './dto/create-public-profile.dto';
 import UpdatePublicProfileDto from './dto/update-public-profile.dto';
 import PublicProfile from './entities/public-profile.entity';
@@ -12,11 +13,12 @@ export default class PublicProfileService {
     private repository: Repository<PublicProfile>,
   ) {}
 
-  async create(dto: CreatePublicProfileDto) {
+  async create(dto: CreatePublicProfileDto): Promise<SkillEntity[]> {
     try {
       const newProfile = await this.repository.save({
         ...dto,
         user: { id: dto.userId },
+        skills: dto.skills.map((e: number) => ({ id: e })),
       });
       return newProfile;
     } catch (error) {
@@ -27,34 +29,47 @@ export default class PublicProfileService {
   async findAll(): Promise<PublicProfile[]> {
     try {
       const profiles = await this.repository
-        .createQueryBuilder()
-        .select()
+        .createQueryBuilder('profile')
+        .leftJoinAndSelect('profile.user', 'user')
+        .leftJoinAndSelect('profile.experiense', 'experiense')
+        .leftJoinAndSelect('profile.educations', 'educations')
+        .leftJoinAndSelect('profile.categories', 'categories')
+        .leftJoinAndSelect('profile.skills', 'skills')
         .getMany();
+
       return profiles;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }
 
-  findOne(id: number) {
+  async findOne(id: number) {
     try {
-      return this.repository.findOne(id);
+      return await this.repository
+        .createQueryBuilder('profile')
+        .leftJoinAndSelect('profile.user', 'user')
+        .leftJoinAndSelect('profile.experiense', 'experiense')
+        .leftJoinAndSelect('profile.educations', 'educations')
+        .leftJoinAndSelect('profile.categories', 'categories')
+        .leftJoinAndSelect('profile.skills', 'skills')
+        .where('profile.id = :profileId', { profileId: id })
+        .getOne();
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }
 
-  update(id: number, dto: UpdatePublicProfileDto) {
+  async update(id: number, dto: UpdatePublicProfileDto) {
     try {
-      return this.repository.update(id, dto);
+      return await this.repository.update(id, dto);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }
 
-  remove(id: number) {
+  async remove(id: number) {
     try {
-      return this.repository.delete(id);
+      return await this.repository.delete(id);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }

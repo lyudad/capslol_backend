@@ -10,7 +10,7 @@ export default class CreateExperienceDto {
     example: 'Development [Js, Java, Python]',
   })
   @IsString()
-  company_name: string;
+  companyName: string;
 
   @IsString()
   position: string;

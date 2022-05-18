@@ -2,7 +2,7 @@ import JobEntity from 'src/modules/jobs/entities/job.entity';
 import PublicProfile from 'src/modules/public-profile/entities/public-profile.entity';
 import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity('skills')
+@Entity()
 export default class SkillEntity {
   @PrimaryGeneratedColumn()
   id: number;
