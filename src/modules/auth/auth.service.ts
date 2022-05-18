@@ -9,7 +9,7 @@ import { Repository } from 'typeorm';
 import { compare } from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { OAuth2Client } from 'google-auth-library';
+import { OAuth2Client, TokenPayload } from 'google-auth-library';
 import UserInfoDto from './dto/user-info.dto';
 import LoginUserDto from './dto/user-login.dto';
 import UserEntity from './entity/user.entity';
@@ -102,12 +102,7 @@ export default class AuthServive {
 
   async createGoogleUser(idToken: string) {
     try {
-      const ticket = await this.client.verifyIdToken({
-        idToken,
-        audience: this.configService.get('GOOGLE_CLIENT_ID'),
-      });
-
-      const payload = ticket.getPayload();
+      const payload = await this.verifyGoogleUser(idToken);
       const { email, given_name: firstName } = payload;
       await this.checkEmail(email);
 
@@ -120,6 +115,45 @@ export default class AuthServive {
 
       const createdGoogleUser = await this.createUser(entity);
       return createdGoogleUser;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
+
+  async loginGoogleUser(idToken: string): Promise<IUserResponse> {
+    try {
+      const payload = await this.verifyGoogleUser(idToken);
+      const { email } = payload;
+      const loggedUser = await this.getUserByEmail(email);
+      const userWithToken = await this.generateJWT(loggedUser);
+      return userWithToken;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
+
+  async getUserByEmail(email: string) {
+    try {
+      const user = await this.userRepository
+        .createQueryBuilder('user')
+        .select()
+        .where('user.email = :email', { email })
+        .getOne();
+      return user;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
+
+  async verifyGoogleUser(idToken: string): Promise<TokenPayload> {
+    try {
+      const ticket = await this.client.verifyIdToken({
+        idToken,
+        audience: this.configService.get('GOOGLE_CLIENT_ID'),
+      });
+
+      const payload = ticket.getPayload();
+      return payload;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }

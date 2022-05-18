@@ -14,5 +14,5 @@ export default class SkillEntity {
   post: PublicProfile[];
 
   @ManyToMany(() => JobEntity, (job: JobEntity) => job.skills)
-  job: JobEntity[];
+  jobs: JobEntity[];
 }

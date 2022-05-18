@@ -67,6 +67,7 @@ export default class PublicProfile {
 
   @ManyToMany(() => SkillEntity)
   @JoinTable()
+  @JoinColumn({ name: 'skills_id' })
   skills: SkillEntity[];
 
   @CreateDateColumn({ type: 'timestamp' })

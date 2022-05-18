@@ -26,7 +26,7 @@ export default class UserEntity {
   email: string;
 
   @Column({ type: 'varchar', length: 25, nullable: true })
-  phoneNumber: number;
+  phoneNumber: string;
 
   @Column({ select: false, nullable: true })
   password: string;

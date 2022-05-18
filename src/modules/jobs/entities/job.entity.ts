@@ -7,7 +7,7 @@ import {
   JoinColumn,
   JoinTable,
   ManyToMany,
-  OneToOne,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -31,25 +31,17 @@ export default class JobEntity {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: string;
 
-  @OneToOne(() => UserEntity, { nullable: false })
+  @ManyToOne(() => UserEntity, { nullable: false })
   @JoinColumn({ name: 'ownerId' })
-  owner: UserEntity;
+  ownerId: UserEntity;
 
-  @OneToOne(() => CategoryEntity, { nullable: false })
+  @ManyToOne(() => CategoryEntity, { nullable: false })
   @JoinColumn({ name: 'categoryId' })
-  category: CategoryEntity;
+  categoryId: CategoryEntity;
 
-  @ManyToMany(() => SkillEntity)
+  @ManyToMany(() => SkillEntity, (skill) => skill.jobs, { cascade: true })
   @JoinTable({
     name: 'skills_jobs',
-    joinColumn: {
-      name: 'jobId',
-      referencedColumnName: 'id',
-    },
-    inverseJoinColumn: {
-      name: 'skillId',
-      referencedColumnName: 'id',
-    },
   })
   skills: SkillEntity[];
 

@@ -161,6 +161,22 @@ export default class AuthController {
     }
   }
 
+  @Get('loginUseGoogle')
+  async loginGoogleAuth(
+    @Query('tokenId') tokenId: string,
+  ): Promise<IResponse<IUserResponse>> {
+    try {
+      const user = await this.authService.createGoogleUser(tokenId);
+      const response = this.authService.buildResponse(
+        user,
+        RESPONSE_MESSAGE.USER_CREATED,
+      );
+      return response;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
   @ApiBody({ type: ForgotPasswordDto })
   @Post('forgotPassword')
   @UsePipes(new ValidationPipe())
