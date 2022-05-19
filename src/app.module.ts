@@ -12,6 +12,7 @@ import AppController from './app.controller';
 import AppService from './app.service';
 import AuthModule from './modules/auth/auth.module';
 import LoggerMiddleware from './utils/logger.middleware';
+import JobsModule from './modules/jobs/jobs.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import LoggerMiddleware from './utils/logger.middleware';
     CategoriesModule,
     SkillsModule,
     MailModule,
+    JobsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
