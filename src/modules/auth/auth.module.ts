@@ -29,6 +29,7 @@ import JWTStrategy from './strategies/jwt.strategy';
   ],
   controllers: [AuthController],
   providers: [AuthServive, JWTStrategy],
+  exports: [AuthServive],
 })
 export default class AuthModule {
   configure(consumer: MiddlewareConsumer) {

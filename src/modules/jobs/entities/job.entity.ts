@@ -10,15 +10,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-
-enum English {
-  NOENGLISH = 'No English',
-  BEGINNER = 'Beginner',
-  PREINTERMEDIATE = 'Pre-Intermediate',
-  INTERMEDIATE = 'Intermediate',
-  ADVANCED = 'Advanced',
-  NOSET = 'No set',
-}
+import English from '../constants/request.constants';
 
 @Entity({ name: 'jobs' })
 export default class JobEntity {

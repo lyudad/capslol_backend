@@ -3,17 +3,17 @@ import {
   Get,
   Post,
   Body,
-  Patch,
-  Param,
-  Delete,
   UsePipes,
   ValidationPipe,
   UseGuards,
+  Query,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import JobsService from './jobs.service';
 import CreateJobDto from './dto/create-job.dto';
-import UpdateJobDto from './dto/update-job.dto';
 import JWTGuard from '../auth/guards/jwt.guard';
+import SearchQuery from './dto/search.query';
 
 @Controller('jobs')
 export default class JobsController {
@@ -22,18 +22,33 @@ export default class JobsController {
   @Post()
   @UsePipes(new ValidationPipe())
   @UseGuards(JWTGuard)
-  create(@Body() createJobDto: CreateJobDto) {
-    return this.jobsService.create(createJobDto);
+  async create(@Body() createJobDto: CreateJobDto) {
+    try {
+      const response = await this.jobsService.create(createJobDto);
+      return response;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 
   @Get()
-  findAll() {
-    return this.jobsService.findAll();
+  @UseGuards(JWTGuard)
+  async findAll() {
+    try {
+      const response = await this.jobsService.findAll();
+      return response;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 
   @Get('search')
-  async search() {
-    const response = await this.jobsService.search();
+  @UsePipes(new ValidationPipe())
+  @UseGuards(JWTGuard)
+  async search(@Query() searchQuery: SearchQuery) {
+    const { q, category, skills } = searchQuery;
+    const response = await this.jobsService.search(q, category, skills);
+
     return response;
   }
 }

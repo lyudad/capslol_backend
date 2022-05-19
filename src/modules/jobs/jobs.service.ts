@@ -1,6 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import AuthServive from '../auth/auth.service';
+import CategoriesService from '../categories/categories.service';
+import SkillsService from '../skills/skills.service';
 import JobResponse from './constants/response.constants';
 import CreateJobDto from './dto/create-job.dto';
 import JobEntity from './entities/job.entity';
@@ -10,11 +13,32 @@ export default class JobsService {
   constructor(
     @InjectRepository(JobEntity)
     private readonly jobRepository: Repository<JobEntity>,
+    private readonly userService: AuthServive,
+    private readonly categoryService: CategoriesService,
+    private readonly skillService: SkillsService,
   ) {}
 
   async create(createJobDto: CreateJobDto): Promise<JobEntity> {
     try {
-      if (createJobDto.skills.length <= 0) {
+      const { skills, categoryId, ownerId } = createJobDto;
+      const user = await this.userService.getUserById(ownerId);
+      if (!user) {
+        throw new HttpException(
+          JobResponse.INVALID_OWNER_ID,
+          HttpStatus.UNPROCESSABLE_ENTITY,
+        );
+      }
+
+      const category = await this.categoryService.findOne(categoryId);
+
+      if (!category) {
+        throw new HttpException(
+          JobResponse.INVALID_CATEGORY_ID,
+          HttpStatus.UNPROCESSABLE_ENTITY,
+        );
+      }
+
+      if (skills.length <= 0) {
         throw new HttpException(
           JobResponse.HAS_SKILLS,
           HttpStatus.UNPROCESSABLE_ENTITY,
@@ -23,16 +47,24 @@ export default class JobsService {
 
       const newJob = new JobEntity();
 
-      const formatedSkills = createJobDto.skills.map((skillId) => ({
-        id: skillId,
-      }));
+      const formatedSkills = await Promise.all(
+        createJobDto.skills.map(async (skillId) => {
+          const skill = await this.skillService.findOne(skillId);
+          if (!skill) {
+            throw new HttpException(
+              JobResponse.INVALID_SKILL_ID + skillId,
+              HttpStatus.UNPROCESSABLE_ENTITY,
+            );
+          }
+          return { id: skillId };
+        }),
+      );
 
       const jobEntity = Object.assign(newJob, createJobDto, {
         skills: formatedSkills,
       });
 
-      const createdJob = await this.jobRepository.save(jobEntity)[0];
-
+      const createdJob = await this.jobRepository.save(jobEntity);
       const response = await this.findById(createdJob.id);
 
       return response;
@@ -55,15 +87,34 @@ export default class JobsService {
     }
   }
 
-  async search() {
+  async search(query?: string, categoryId?: number, skills?: string) {
     try {
-      const query = await this.jobRepository
+      let qb = await this.jobRepository
         .createQueryBuilder('jobs')
-        .leftJoinAndSelect('jobs.ownerId', 'owner')
+        .leftJoinAndSelect('jobs.ownerId', 'user')
         .leftJoinAndSelect('jobs.categoryId', 'categories')
         .leftJoinAndSelect('jobs.skills', 'skills')
-        .getSql();
-      return query;
+        .orderBy('jobs.createdAt');
+
+      if (query) {
+        qb = qb.andWhere('jobs.title like :q OR jobs.description like :q', {
+          q: `%${query}%`,
+        });
+      }
+      if (categoryId) {
+        qb = qb.andWhere('categories.id = :id', {
+          id: categoryId,
+        });
+      }
+
+      if (skills) {
+        const skillIds = skills.split('');
+        qb = qb.andWhere('skills.id IN (:ids)', {
+          ids: skillIds,
+        });
+      }
+
+      return qb.getMany();
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
@@ -71,7 +122,7 @@ export default class JobsService {
 
   async findById(id: number): Promise<JobEntity> {
     try {
-      const job = this.jobRepository
+      const job = await this.jobRepository
         .createQueryBuilder('job')
         .select('')
         .where('job.id = :id', { id })

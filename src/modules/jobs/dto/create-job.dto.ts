@@ -1,10 +1,12 @@
 import {
   ArrayNotEmpty,
   IsArray,
+  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsString,
 } from 'class-validator';
+import English from '../constants/request.constants';
 
 export default class CreateJobDto {
   @IsNotEmpty()
@@ -37,6 +39,6 @@ export default class CreateJobDto {
   skills: number[];
 
   @IsNotEmpty()
-  @IsNumber()
-  languageLevel: number;
+  @IsEnum(English)
+  languageLevel: English;
 }
