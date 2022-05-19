@@ -11,6 +11,15 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
+enum English {
+  NOENGLISH = 'No English',
+  BEGINNER = 'Beginner',
+  PREINTERMEDIATE = 'Pre-Intermediate',
+  INTERMEDIATE = 'Intermediate',
+  ADVANCED = 'Advanced',
+  NOSET = 'No set',
+}
+
 @Entity({ name: 'jobs' })
 export default class JobEntity {
   @PrimaryGeneratedColumn()
@@ -45,6 +54,10 @@ export default class JobEntity {
   })
   skills: SkillEntity[];
 
-  @Column({ type: 'integer' })
-  languageLevel: number;
+  @Column({
+    type: 'enum',
+    enum: English,
+    default: English.NOSET,
+  })
+  languageLevel: English;
 }

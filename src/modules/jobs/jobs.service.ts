@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import JobResponse from './constants/response.constants';
 import CreateJobDto from './dto/create-job.dto';
-import UpdateJobDto from './dto/update-job.dto';
 import JobEntity from './entities/job.entity';
 
 @Injectable()
@@ -32,7 +31,8 @@ export default class JobsService {
         skills: formatedSkills,
       });
 
-      const createdJob = await this.jobRepository.save(jobEntity);
+      const createdJob = await this.jobRepository.save(jobEntity)[0];
+
       const response = await this.findById(createdJob.id);
 
       return response;
@@ -55,8 +55,18 @@ export default class JobsService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} job`;
+  async search() {
+    try {
+      const query = await this.jobRepository
+        .createQueryBuilder('jobs')
+        .leftJoinAndSelect('jobs.ownerId', 'owner')
+        .leftJoinAndSelect('jobs.categoryId', 'categories')
+        .leftJoinAndSelect('jobs.skills', 'skills')
+        .getSql();
+      return query;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
   }
 
   async findById(id: number): Promise<JobEntity> {

@@ -1,11 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsNumber,
-  IsString,
-  MinLength,
-} from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 import { HasCapitalLetter } from 'src/shared/validators/HasCapitalLetter.validator';
 import { HasNumber } from 'src/shared/validators/HasNumber.validator';
 
@@ -33,13 +27,6 @@ export default class UserInfoDto {
   @IsNotEmpty()
   @IsEmail()
   email: string;
-
-  @ApiProperty({
-    description: 'Choose one of the role',
-    example: '0 - freelancer | 1 - job owner',
-  })
-  @IsNumber()
-  role: number;
 
   @ApiProperty({
     description:

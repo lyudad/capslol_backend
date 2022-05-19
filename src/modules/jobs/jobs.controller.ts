@@ -30,4 +30,10 @@ export default class JobsController {
   findAll() {
     return this.jobsService.findAll();
   }
+
+  @Get('search')
+  async search() {
+    const response = await this.jobsService.search();
+    return response;
+  }
 }
