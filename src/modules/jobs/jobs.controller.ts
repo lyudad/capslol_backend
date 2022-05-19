@@ -46,8 +46,16 @@ export default class JobsController {
   @UsePipes(new ValidationPipe())
   @UseGuards(JWTGuard)
   async search(@Query() searchQuery: SearchQuery) {
-    const { q, category, skills } = searchQuery;
-    const response = await this.jobsService.search(q, category, skills);
+    const { q, category, skills, timeAvailable, price, languageLevel } =
+      searchQuery;
+    const response = await this.jobsService.search(
+      q,
+      category,
+      skills,
+      timeAvailable,
+      price,
+      languageLevel,
+    );
 
     return response;
   }

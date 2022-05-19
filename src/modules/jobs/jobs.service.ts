@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import AuthServive from '../auth/auth.service';
 import CategoriesService from '../categories/categories.service';
 import SkillsService from '../skills/skills.service';
+import English from './constants/request.constants';
 import JobResponse from './constants/response.constants';
 import CreateJobDto from './dto/create-job.dto';
 import JobEntity from './entities/job.entity';
@@ -87,7 +88,14 @@ export default class JobsService {
     }
   }
 
-  async search(query?: string, categoryId?: number, skills?: string) {
+  async search(
+    query?: string,
+    categoryId?: number,
+    skills?: string,
+    timeAvailable?: number,
+    price?: number,
+    languageLevel?: English,
+  ) {
     try {
       let qb = await this.jobRepository
         .createQueryBuilder('jobs')
@@ -112,6 +120,22 @@ export default class JobsService {
         qb = qb.andWhere('skills.id IN (:ids)', {
           ids: skillIds,
         });
+      }
+
+      if (timeAvailable) {
+        qb = qb.andWhere('jobs.timeAvailable = :timeAvailable', {
+          timeAvailable,
+        });
+      }
+
+      if (languageLevel) {
+        qb = qb.andWhere('jobs.languageLevel = :languageLevel', {
+          languageLevel,
+        });
+      }
+
+      if (price) {
+        qb = qb.andWhere('jobs.price = :price', { price });
       }
 
       return qb.getMany();
