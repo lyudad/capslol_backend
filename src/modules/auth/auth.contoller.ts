@@ -166,7 +166,7 @@ export default class AuthController {
     @Query('tokenId') tokenId: string,
   ): Promise<IResponse<IUserResponse>> {
     try {
-      const user = await this.authService.createGoogleUser(tokenId);
+      const user = await this.authService.loginGoogleUser(tokenId);
       const response = this.authService.buildResponse(
         user,
         RESPONSE_MESSAGE.USER_CREATED,
