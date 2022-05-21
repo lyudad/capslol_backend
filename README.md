@@ -147,3 +147,5 @@ docker run --name phpmyadmin \
 
 `docker network connect freelancer mysql`
 `docker network connect freelancer phpmyadmin`
+
+### Seeder
