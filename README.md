@@ -149,3 +149,7 @@ docker run --name phpmyadmin \
 `docker network connect freelancer phpmyadmin`
 
 ### Seeder
+
+1. Drop current database using `npm run migration:drop`
+2. Run new migration `npm run migration:run`
+3. Run command `npm run seed:run` to seed
