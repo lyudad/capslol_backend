@@ -9,6 +9,7 @@ import {
   Query,
   HttpException,
   HttpStatus,
+  Param,
 } from '@nestjs/common';
 import JobsService from './jobs.service';
 import CreateJobDto from './dto/create-job.dto';
@@ -58,5 +59,12 @@ export default class JobsController {
     );
 
     return response;
+  }
+
+  @Get('/:id')
+  @UseGuards(JWTGuard)
+  async UserId(@Param('id') id: number) {
+    const job = await this.jobsService.findById(id);
+    return job;
   }
 }
