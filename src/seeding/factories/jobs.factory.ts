@@ -10,15 +10,11 @@ define(JobEntity, (faker: typeof Faker) => {
 
   job.title = faker.lorem.words(5);
   job.description = faker.lorem.paragraphs();
-  //   job.price = faker.mersenne.rand(100, 10);
   job.price = 10;
-  //   job.timeAvailable = faker.mersenne.rand(40, 1);
   job.timeAvailable = 12;
   job.languageLevel = englishLevels[
     Math.floor(Math.random() * englishLevels.length)
   ] as English;
-
-  console.log(job);
 
   return job;
 });
