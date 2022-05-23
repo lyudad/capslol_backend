@@ -74,4 +74,18 @@ export default class PublicProfileService {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }
+
+  async getByUserId(userId: number) {
+    try {
+      const profile = await this.repository
+        .createQueryBuilder('ownerProfile')
+        .select('')
+        .where('userId = :userId', { userId })
+        .getOne();
+
+      return profile;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
 }

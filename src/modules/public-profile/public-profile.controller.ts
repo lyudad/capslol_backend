@@ -47,4 +47,10 @@ export default class PublicProfileController {
   remove(@Param('id') id: number) {
     return this.publicProfileService.remove(id);
   }
+
+  @Get('getByUserId/:id')
+  async UserId(@Param('id') userId: number) {
+    const profile = await this.publicProfileService.getByUserId(userId);
+    return profile;
+  }
 }
