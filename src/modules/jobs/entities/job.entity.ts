@@ -17,10 +17,10 @@ export default class JobEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'text' })
   title: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'text' })
   description: string;
 
   @Column({ type: 'integer' })

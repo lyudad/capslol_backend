@@ -1,5 +1,4 @@
 import 'dotenv/config';
-import { ConnectionOptions } from 'typeorm';
 
 const {
   DATABASE_HOST,
@@ -9,19 +8,18 @@ const {
   DATABASE_NAME,
 } = process.env;
 
-const seedConfig: ConnectionOptions = {
+const seedConfig = {
   type: 'mysql',
   host: DATABASE_HOST,
   port: parseInt(DATABASE_PORT, 10),
   username: DATABASE_USERNAME,
   password: DATABASE_PASSWORD,
   database: DATABASE_NAME,
-  entities: [`${__dirname}/**/*.entity{.ts,.js}`],
+  entities: ['dist/**/*.entity.js'],
   synchronize: false,
-  migrations: [`${__dirname}/seeds/**/*{.ts,.js}`],
-  cli: {
-    migrationsDir: 'src/seeds',
-  },
+  // These two lines have been added:
+  seeds: ['dist/**/seeding/seeds/**/*.js'],
+  factories: ['dist/**/seeding/factories/**/*.js'],
 };
 
 export default seedConfig;
