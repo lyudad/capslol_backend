@@ -62,7 +62,6 @@ export default class JobsController {
   }
 
   @Get('/:id')
-  @UseGuards(JWTGuard)
   async UserId(@Param('id') id: number) {
     const job = await this.jobsService.findById(id);
     return job;
