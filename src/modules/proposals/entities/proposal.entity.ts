@@ -1,9 +1,9 @@
-﻿import JobEntity from 'src/modules/jobs/entities/job.entity';
+﻿import UserEntity from 'src/modules/auth/entity/user.entity';
+import JobEntity from 'src/modules/jobs/entities/job.entity';
 import {
   Column,
   Entity,
   JoinColumn,
-  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -17,8 +17,9 @@ export default class ProposalEntity {
   @JoinColumn({ name: 'jobId' })
   jobId: JobEntity;
 
-  @Column({ type: 'integer' })
-  freelancerId: number;
+  @OneToOne(() => UserEntity, { nullable: false })
+  @JoinColumn({ name: 'freelancerId' })
+  freelancerId: UserEntity;
 
   @Column({ type: 'integer' })
   hourRate: number;

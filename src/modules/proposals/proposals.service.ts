@@ -1,5 +1,4 @@
-﻿/* eslint-disable @typescript-eslint/no-explicit-any */
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+﻿import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import CreateProposalDto from './dto/create-proposal.dto';
@@ -12,67 +11,75 @@ export default class ProposalsService {
     private readonly proposalRepository: Repository<ProposalEntity>,
   ) {}
 
-  // eslint-disable-next-line consistent-return
-  async createProposal(createProposalDto: CreateProposalDto): Promise<any> {
+  async createProposal(
+    createProposalDto: CreateProposalDto,
+  ): Promise<ProposalEntity> {
     try {
       const newProposal = new ProposalEntity();
       const entity = Object.assign(newProposal, createProposalDto);
 
-      // if (!entity.jobId) {
-      //   throw new HttpException('Invalid id', HttpStatus.UNPROCESSABLE_ENTITY);
-      // }
-
-      // const proposal = await this.proposalRepository.save(entity);
-
-      const proposal = await this.proposalRepository
+      const createdProposal = await this.proposalRepository
         .createQueryBuilder()
         .insert()
         .values(entity)
         .execute();
 
+      const proposal = await this.getProposalById(createdProposal.raw.insertId);
+
       return proposal;
     } catch (error) {
-      // return new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }
 
-  async getAll(): Promise<any> {
+  async getAll(): Promise<ProposalEntity[]> {
     try {
       const proposals = await this.proposalRepository
         .createQueryBuilder('proposal')
         .leftJoinAndSelect('proposal.jobId', 'jobs')
+        .leftJoinAndSelect('proposal.freelancerId', 'user')
         .getMany();
 
       return proposals;
     } catch (error) {
-      return new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }
 
-  async getSingleProposal(id: number): Promise<any> {
+  async getProposalById(id: number): Promise<ProposalEntity> {
     try {
       const proposal = await this.proposalRepository
         .createQueryBuilder('proposal')
+        .select('')
         .where('proposal.id = :id', { id })
         .getOne();
 
       return proposal;
     } catch (error) {
-      return new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }
 
-  async delete(id: number): Promise<any> {
+  async getOne(id: number): Promise<ProposalEntity> {
     try {
       const proposal = await this.proposalRepository
-        .createQueryBuilder()
-        .delete()
-        .where('id = :id', { id })
-        .execute();
+        .createQueryBuilder('proposal')
+        .leftJoinAndSelect('proposal.jobId', 'jobs')
+        .leftJoinAndSelect('proposal.freelancerId', 'user')
+        .where('proposal.id = :id', { id })
+        .getOne();
 
       return proposal;
     } catch (error) {
-      return new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
+
+  async deleteProposal(proposalId: number) {
+    try {
+      return await this.proposalRepository.delete(proposalId);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }
 }

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Body,
   Controller,
@@ -8,17 +7,25 @@ import {
   HttpStatus,
   Param,
   Post,
+  Query,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
+import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import CreateProposalDto from './dto/create-proposal.dto';
 import ProposalEntity from './entities/proposal.entity';
 import ProposalsService from './proposals.service';
 
+@ApiTags('Authorization')
 @Controller('proposals')
 export default class ProposalsController {
   constructor(private readonly proposalService: ProposalsService) {}
 
+  @ApiBody({
+    type: ProposalEntity,
+  })
   @Post()
-  // eslint-disable-next-line consistent-return
+  @UsePipes(new ValidationPipe())
   async createProposal(
     @Body() createProposalDto: CreateProposalDto,
   ): Promise<ProposalEntity> {
@@ -29,40 +36,45 @@ export default class ProposalsController {
 
       return createdProposal;
     } catch (error) {
-      // return new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
+  @ApiResponse({
+    type: ProposalEntity,
+  })
   @Get()
-  async getAll(): Promise<any> {
+  async getAll(): Promise<ProposalEntity[]> {
     try {
       const allProposals = await this.proposalService.getAll();
 
       return allProposals;
     } catch (error) {
-      return new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
-  @Get('getOne/:id')
-  async getSingleProposal(@Param() id: number): Promise<any> {
+  @Get('getById')
+  @UsePipes(new ValidationPipe())
+  async getById(@Query('proposal') id: number): Promise<ProposalEntity> {
     try {
-      const singleProposal = await this.proposalService.getSingleProposal(id);
+      const singleProposal = await this.proposalService.getOne(id);
 
       return singleProposal;
     } catch (error) {
-      return new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
-  @Delete('deleteOne/:id')
-  async delete(@Param() id: number): Promise<any> {
+  @Delete('deleteById/:id')
+  @UsePipes(new ValidationPipe())
+  async deleteProposal(@Param() id: number) {
     try {
-      const deletedProposal = await this.proposalService.delete(id);
+      const deletedProposal = await this.proposalService.deleteProposal(id);
 
       return deletedProposal;
     } catch (error) {
-      return new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }
 }
