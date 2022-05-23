@@ -5,10 +5,7 @@ import UserEntity from 'src/modules/auth/entity/user.entity';
 import SkillEntity from 'src/modules/skills/entities/skill.entity';
 import CategoryEntity from 'src/modules/categories/entities/category.entity';
 import JobEntity from 'src/modules/jobs/entities/job.entity';
-
-function getRandomElement<T>(array: T[]) {
-  return array[Math.floor(Math.random() * array.length)];
-}
+import { getRandomElement } from '../helpers/random.helper';
 
 export default class AddJobs implements Seeder {
   public async run(factory: Factory, connection: Connection): Promise<void> {
