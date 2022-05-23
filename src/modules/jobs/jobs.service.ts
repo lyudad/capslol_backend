@@ -147,9 +147,12 @@ export default class JobsService {
   async findById(id: number): Promise<JobEntity> {
     try {
       const job = await this.jobRepository
-        .createQueryBuilder('job')
+        .createQueryBuilder('jobs')
+        .leftJoinAndSelect('jobs.ownerId', 'user')
+        .leftJoinAndSelect('jobs.categoryId', 'categories')
+        .leftJoinAndSelect('jobs.skills', 'skills')
         .select('')
-        .where('job.id = :id', { id })
+        .where('jobs.id = :id', { id })
         .getOne();
       return job;
     } catch (error) {
