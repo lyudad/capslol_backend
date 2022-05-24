@@ -84,7 +84,7 @@ export default class PublicProfileService {
         .select('')
         .where('userId = :userId', { userId })
         .getOne();
-      // .leftJoinAndSelect('userProfile.skills', 'skills')
+
       return profile;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
