@@ -4,6 +4,7 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -13,7 +14,7 @@ export default class ProposalEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(() => JobEntity, { nullable: false })
+  @ManyToOne(() => JobEntity, (jobs: JobEntity) => jobs.id, { nullable: false })
   @JoinColumn({ name: 'jobId' })
   jobId: JobEntity;
 
