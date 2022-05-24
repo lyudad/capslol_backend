@@ -78,7 +78,9 @@ export default class PublicProfileService {
   async getByUserId(userId: number) {
     try {
       const profile = await this.repository
-        .createQueryBuilder('ownerProfile')
+        .createQueryBuilder('userProfile')
+        .leftJoinAndSelect('userProfile.categories', 'categories')
+        .leftJoinAndSelect('userProfile.skills', 'skills')
         .select('')
         .where('userId = :userId', { userId })
         .getOne();
