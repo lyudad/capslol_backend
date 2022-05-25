@@ -1,6 +1,7 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import ProposalsModule from './modules/proposals/proposals.module';
 import ExperiencesModule from './modules/experiences/experiences.module';
 import EducationsModule from './modules/educations/educations.module';
 import CategoriesModule from './modules/categories/categories.module';
@@ -26,6 +27,7 @@ import JobsModule from './modules/jobs/jobs.module';
     SkillsModule,
     MailModule,
     JobsModule,
+    ProposalsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
