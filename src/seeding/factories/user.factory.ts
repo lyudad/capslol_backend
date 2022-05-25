@@ -2,12 +2,7 @@ import { faker as Faker } from '@faker-js/faker';
 import { define } from 'typeorm-seeding';
 
 import UserEntity from 'src/modules/auth/entity/user.entity';
-
-enum Role {
-  FREELANCER = 'Freelancer',
-  JOBOWNER = 'Job Owner',
-  NOSET = 'No set',
-}
+import { Role } from 'src/modules/auth/types/user.interface';
 
 define(UserEntity, (faker: typeof Faker) => {
   const user = new UserEntity();

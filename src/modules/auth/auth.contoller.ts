@@ -28,6 +28,7 @@ import JWTGuard from './guards/jwt.guard';
 import { IResponse } from './types/response.interface';
 import { IToken } from './types/password.verifyToken';
 import { IUserResponse, UserType } from './types/user.interface';
+import SelectRole from './dto/select-role.query';
 
 @ApiTags('Authorization')
 @Controller('auth')
@@ -224,6 +225,23 @@ export default class AuthController {
         passwordDto,
       );
 
+      return response;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @ApiBody({ type: SelectRole })
+  @Get('/setRole')
+  @UsePipes(new ValidationPipe())
+  @UseGuards(JWTGuard)
+  async setRole(@Query() role: SelectRole): Promise<IResponse<IUserResponse>> {
+    try {
+      const updatedUser = await this.authService.setRole(role);
+      const response = this.authService.buildResponse(
+        updatedUser,
+        RESPONSE_MESSAGE.ROLE_UPDATED,
+      );
       return response;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
