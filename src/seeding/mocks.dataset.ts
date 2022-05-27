@@ -17,6 +17,12 @@ export const englishLevels: string[] = [
   'Advanced',
 ];
 
+export const projectDuration: string[] = [
+  'До 6 месяцев',
+  '6 месяцев',
+  'Больше 6 месяцев',
+];
+
 export const skills: string[] = [
   'Git',
   'Wireframing',

@@ -4,10 +4,10 @@ import { Repository } from 'typeorm';
 import AuthServive from '../auth/auth.service';
 import CategoriesService from '../categories/categories.service';
 import SkillsService from '../skills/skills.service';
-import English from './constants/request.constants';
 import JobResponse from './constants/response.constants';
 import CreateJobDto from './dto/create-job.dto';
 import JobEntity from './entities/job.entity';
+import { English } from './types/entity.types';
 
 @Injectable()
 export default class JobsService {
@@ -95,7 +95,7 @@ export default class JobsService {
     timeAvailable?: number,
     price?: number,
     languageLevel?: English,
-  ) {
+  ): Promise<JobEntity[]> {
     try {
       let qb = await this.jobRepository
         .createQueryBuilder('jobs')
