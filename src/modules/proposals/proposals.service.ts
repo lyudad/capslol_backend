@@ -1,6 +1,7 @@
 ﻿import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { categories } from '../../seeding/mocks.dataset';
 import CreateProposalDto from './dto/create-proposal.dto';
 import ProposalEntity from './entities/proposal.entity';
 
@@ -78,6 +79,27 @@ export default class ProposalsService {
   async deleteProposal(proposalId: number) {
     try {
       return await this.proposalRepository.delete(proposalId);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
+
+  async searchByFreelancerId(freelancerId: number) {
+    try {
+      let proposals = await this.proposalRepository
+        .createQueryBuilder('proposal')
+        .leftJoinAndSelect('proposal.jobId', 'jobs')
+        .leftJoinAndSelect('proposal.freelancerId', 'user')
+        // .leftJoinAndSelect('proposal.jobOwner', 'jobs.ownerId')
+        .orderBy('proposal.createdAt');
+
+      if (freelancerId) {
+        proposals = proposals.andWhere('freelancerId = :id', {
+          id: freelancerId,
+        });
+      }
+
+      return proposals.getMany();
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
