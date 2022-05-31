@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   ArrayNotEmpty,
   IsArray,
@@ -6,39 +7,52 @@ import {
   IsNumber,
   IsString,
 } from 'class-validator';
-import English from '../constants/request.constants';
+import { English, ProjectDuration } from '../types/entity.types';
 
 export default class CreateJobDto {
+  @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  title: string;
+  readonly title: string;
 
+  @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  description: string;
+  readonly description: string;
 
+  @ApiProperty()
   @IsNotEmpty()
   @IsNumber()
-  price: number;
+  readonly price: number;
 
+  @ApiProperty()
   @IsNotEmpty()
   @IsNumber()
-  timeAvailable: number;
+  readonly timeAvailable: number;
 
+  @ApiProperty()
   @IsNumber()
   @IsNotEmpty()
-  ownerId: number;
+  readonly ownerId: number;
 
+  @ApiProperty()
   @IsNumber()
   @IsNotEmpty()
-  categoryId: number;
+  readonly categoryId: number;
 
+  @ApiProperty()
   @IsNotEmpty()
   @IsArray()
   @ArrayNotEmpty()
-  skills: number[];
+  readonly skills: number[];
 
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsEnum(ProjectDuration)
+  readonly projectDuration: ProjectDuration;
+
+  @ApiProperty()
   @IsNotEmpty()
   @IsEnum(English)
-  languageLevel: English;
+  readonly languageLevel: English;
 }

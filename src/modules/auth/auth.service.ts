@@ -101,7 +101,7 @@ export default class AuthServive {
     }
   }
 
-  async createGoogleUser(idToken: string) {
+  async createGoogleUser(idToken: string): Promise<IUserResponse> {
     try {
       const payload = await this.verifyGoogleUser(idToken);
       const { email, given_name: firstName } = payload;
@@ -140,7 +140,7 @@ export default class AuthServive {
     }
   }
 
-  async getUserByEmail(email: string) {
+  async getUserByEmail(email: string): Promise<UserEntity> {
     try {
       const user = await this.userRepository
         .createQueryBuilder('user')
@@ -326,7 +326,10 @@ export default class AuthServive {
     }
   }
 
-  async changePassword(password: ChangePasswordDto, id: number) {
+  async changePassword(
+    password: ChangePasswordDto,
+    id: number,
+  ): Promise<boolean> {
     try {
       await this.userRepository
         .createQueryBuilder()

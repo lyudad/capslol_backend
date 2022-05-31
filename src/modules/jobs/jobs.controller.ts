@@ -9,13 +9,21 @@ import {
   Query,
   HttpException,
   HttpStatus,
-  Param,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
 import JobsService from './jobs.service';
 import CreateJobDto from './dto/create-job.dto';
 import JWTGuard from '../auth/guards/jwt.guard';
 import SearchQuery from './dto/search.query';
+import JobEntity from './entities/job.entity';
+import GetJobQuery from './dto/get-job.query';
 
+@ApiTags('Jobs')
+@ApiBearerAuth()
+@ApiHeader({
+  name: 'Authorization',
+  description: 'Bearer $your.token',
+})
 @Controller('jobs')
 export default class JobsController {
   constructor(private readonly jobsService: JobsService) {}
@@ -23,7 +31,7 @@ export default class JobsController {
   @Post()
   @UsePipes(new ValidationPipe())
   @UseGuards(JWTGuard)
-  async create(@Body() createJobDto: CreateJobDto) {
+  async create(@Body() createJobDto: CreateJobDto): Promise<JobEntity> {
     try {
       const response = await this.jobsService.create(createJobDto);
       return response;
@@ -34,7 +42,7 @@ export default class JobsController {
 
   @Get()
   @UseGuards(JWTGuard)
-  async findAll() {
+  async findAll(): Promise<JobEntity[]> {
     try {
       const response = await this.jobsService.findAll();
       return response;
@@ -46,7 +54,7 @@ export default class JobsController {
   @Get('search')
   @UsePipes(new ValidationPipe())
   @UseGuards(JWTGuard)
-  async search(@Query() searchQuery: SearchQuery) {
+  async search(@Query() searchQuery: SearchQuery): Promise<JobEntity[]> {
     const { q, category, skills, timeAvailable, price, languageLevel } =
       searchQuery;
     const response = await this.jobsService.search(
@@ -61,9 +69,11 @@ export default class JobsController {
     return response;
   }
 
-  @Get('/:id')
-  async UserId(@Param('id') id: number) {
-    const job = await this.jobsService.findById(id);
+  @Get('getJob')
+  @UsePipes(new ValidationPipe())
+  @UseGuards(JWTGuard)
+  async getJobById(@Query() query: GetJobQuery): Promise<JobEntity> {
+    const job = await this.jobsService.findById(query.jobId);
     return job;
   }
 }

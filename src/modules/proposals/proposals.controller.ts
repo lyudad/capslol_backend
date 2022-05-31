@@ -69,6 +69,7 @@ export default class ProposalsController {
 
   @Delete('deleteById/:id')
   @UsePipes(new ValidationPipe())
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   async deleteProposal(@Param() id: number) {
     try {
       const deletedProposal = await this.proposalService.deleteProposal(id);
@@ -81,6 +82,7 @@ export default class ProposalsController {
 
   @Get('search')
   @UsePipes(new ValidationPipe())
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   async searchByFreelancerId(@Query() searchQuery: SearchQuery) {
     try {
       const { freelancerId } = searchQuery;

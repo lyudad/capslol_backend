@@ -44,7 +44,7 @@ export default class UserEntity {
 
   @BeforeInsert()
   @BeforeUpdate()
-  async hashedPassword() {
+  async hashedPassword(): Promise<void> {
     try {
       if (this.password) {
         this.password = await hash(this.password, 10);

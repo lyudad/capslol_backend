@@ -1,6 +1,7 @@
 ﻿import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { categories } from '../../seeding/mocks.dataset';
 import CreateProposalDto from './dto/create-proposal.dto';
 import ProposalEntity from './entities/proposal.entity';
@@ -76,6 +77,7 @@ export default class ProposalsService {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   async deleteProposal(proposalId: number) {
     try {
       return await this.proposalRepository.delete(proposalId);
@@ -84,6 +86,7 @@ export default class ProposalsService {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   async searchByFreelancerId(freelancerId: number) {
     try {
       let proposals = await this.proposalRepository
