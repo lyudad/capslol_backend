@@ -81,6 +81,7 @@ export default class JobsService {
         .leftJoinAndSelect('jobs.ownerId', 'owner')
         .leftJoinAndSelect('jobs.categoryId', 'categories')
         .leftJoinAndSelect('jobs.skills', 'skills')
+        .orderBy('jobs.createdAt', 'DESC')
         .getMany();
       return jobs;
     } catch (error) {
