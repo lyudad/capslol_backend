@@ -21,6 +21,7 @@ import ChangePasswordDto from './dto/change-password.dto';
 import { RESPONSE_MESSAGE } from './constants/auth.constants';
 import { IUserResponse, UserType } from './types/user.interface';
 import { IToken } from './types/password.verifyToken';
+import SelectRole from './dto/select-role.query';
 
 @Injectable()
 export default class AuthServive {
@@ -124,14 +125,15 @@ export default class AuthServive {
     try {
       const payload = await this.verifyGoogleUser(idToken);
       const { email } = payload;
-      const user = await this.getUserByEmail(email);
-      if (!user) {
+
+      const loggedUser = await this.getUserByEmail(email);
+      if (!loggedUser) {
         throw new HttpException(
           RESPONSE_MESSAGE.USER_NOT_FOUND,
           HttpStatus.UNPROCESSABLE_ENTITY,
         );
       }
-      const userWithToken = await this.generateJWT(user);
+      const userWithToken = await this.generateJWT(loggedUser);
       return userWithToken;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
@@ -360,6 +362,28 @@ export default class AuthServive {
   ): Promise<boolean> {
     try {
       return await this.changePassword(password, userId);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
+
+  async setRole(role: SelectRole): Promise<IUserResponse> {
+    try {
+      await this.userRepository
+        .createQueryBuilder('user')
+        .update()
+        .set({
+          role: role.role,
+        })
+        .where('id = :id', { id: role.userId })
+        .execute();
+      const updatedUser = await this.userRepository
+        .createQueryBuilder('user')
+        .where('user.id = :id', { id: role.userId })
+        .getOne();
+      return {
+        user: updatedUser,
+      };
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }

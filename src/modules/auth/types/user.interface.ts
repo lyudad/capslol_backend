@@ -6,3 +6,9 @@ export interface IUserResponse {
   accessToken?: string;
   refreshToken?: string;
 }
+
+export enum Role {
+  FREELANCER = 'Freelancer',
+  JOB_OWNER = 'Job Owner',
+  NOSET = 'No set',
+}
