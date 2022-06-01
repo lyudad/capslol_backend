@@ -69,8 +69,7 @@ export default class ProposalsController {
 
   @Delete('deleteById/:id')
   @UsePipes(new ValidationPipe())
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async deleteProposal(@Param() id: number): Promise<any> {
+  async deleteProposal(@Param() id: number): Promise<ProposalEntity> {
     try {
       const deletedProposal = await this.proposalService.deleteProposal(id);
 

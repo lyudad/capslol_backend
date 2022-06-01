@@ -75,10 +75,10 @@ export default class ProposalsService {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async deleteProposal(proposalId: number): Promise<any> {
+  async deleteProposal(proposalId: number): Promise<ProposalEntity> {
     try {
-      return await this.proposalRepository.delete(proposalId);
+      await this.proposalRepository.delete(proposalId);
+      return;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
