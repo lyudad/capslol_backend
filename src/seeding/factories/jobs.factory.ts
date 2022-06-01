@@ -2,8 +2,8 @@ import { faker as Faker } from '@faker-js/faker';
 import { define } from 'typeorm-seeding';
 
 import JobEntity from 'src/modules/jobs/entities/job.entity';
-import English from 'src/modules/jobs/constants/request.constants';
-import { englishLevels } from '../mocks.dataset';
+import { English, ProjectDuration } from 'src/modules/jobs/types/entity.types';
+import { englishLevels, projectDuration } from '../mocks.dataset';
 import { getRandomElement, getRandomInt } from '../helpers/random.helper';
 
 define(JobEntity, (faker: typeof Faker) => {
@@ -13,6 +13,7 @@ define(JobEntity, (faker: typeof Faker) => {
   job.description = faker.lorem.paragraphs();
   job.price = getRandomInt(1, 1000);
   job.timeAvailable = getRandomInt(1, 12);
+  job.projectDuration = getRandomElement(projectDuration) as ProjectDuration;
   job.languageLevel = getRandomElement(englishLevels) as English;
 
   return job;

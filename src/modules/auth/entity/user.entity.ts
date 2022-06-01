@@ -7,12 +7,7 @@ import {
   Entity,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-
-enum Role {
-  FREELANCER = 'Freelancer',
-  JOBOWNER = 'Job Owner',
-  NOSET = 'No set',
-}
+import { Role } from '../types/user.interface';
 
 @Entity({ name: 'users' })
 export default class UserEntity {
@@ -28,7 +23,7 @@ export default class UserEntity {
   @Column({
     type: 'enum',
     enum: Role,
-    default: Role.NOSET,
+    nullable: true,
   })
   role: Role;
 
@@ -49,7 +44,7 @@ export default class UserEntity {
 
   @BeforeInsert()
   @BeforeUpdate()
-  async hashedPassword() {
+  async hashedPassword(): Promise<void> {
     try {
       if (this.password) {
         this.password = await hash(this.password, 10);
