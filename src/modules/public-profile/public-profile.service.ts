@@ -47,7 +47,7 @@ export default class PublicProfileService {
     }
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<PublicProfile> {
     try {
       return await this.repository
         .createQueryBuilder('profile')
@@ -63,23 +63,28 @@ export default class PublicProfileService {
     }
   }
 
-  async update(id: number, dto: UpdatePublicProfileDto) {
+  async update(
+    id: number,
+    dto: UpdatePublicProfileDto,
+  ): Promise<PublicProfile> {
     try {
-      return await this.repository.update(id, dto);
+      await this.repository.update(id, dto);
+      return;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }
 
-  async remove(id: number) {
+  async remove(id: number): Promise<PublicProfile> {
     try {
-      return await this.repository.delete(id);
+      await this.repository.delete(id);
+      return;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }
 
-  async getByUserId(userId: number) {
+  async getByUserId(userId: number): Promise<PublicProfile> {
     try {
       const profile = await this.repository
         .createQueryBuilder('userProfile')

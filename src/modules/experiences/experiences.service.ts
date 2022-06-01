@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import CreateExperienceDto from './dto/create-experience.dto';
 import UpdateExperienceDto from './dto/update-experience.dto';
 import ExperienceEntity from './entities/experience.entity';
@@ -12,7 +12,7 @@ export default class ExperiencesService {
     private repository: Repository<ExperienceEntity>,
   ) {}
 
-  async create(experiense: CreateExperienceDto) {
+  async create(experiense: CreateExperienceDto): Promise<ExperienceEntity> {
     try {
       const newExperienses = await this.repository.save(experiense);
       return newExperienses;
@@ -33,7 +33,7 @@ export default class ExperiencesService {
     }
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<ExperienceEntity> {
     try {
       const expirience = await this.repository.findOne(id);
       return expirience;
@@ -42,7 +42,7 @@ export default class ExperiencesService {
     }
   }
 
-  async update(id: number, dto: UpdateExperienceDto) {
+  async update(id: number, dto: UpdateExperienceDto): Promise<UpdateResult> {
     try {
       const expirience = await this.repository.update(id, dto);
       return expirience;
@@ -51,7 +51,7 @@ export default class ExperiencesService {
     }
   }
 
-  async remove(id: number) {
+  async remove(id: number): Promise<DeleteResult> {
     try {
       const expirience = await this.repository.delete(id);
       return expirience;
