@@ -10,8 +10,10 @@ import { ApiProperty } from '@nestjs/swagger';
 enum English {
   NOENGLISH = 'No English',
   BEGINNER = 'Beginner',
+  PREINTERMEDIATE = 'Pre-Intermediate',
   INTERMEDIATE = 'Intermediate',
   ADVANCED = 'Advanced',
+  NOSET = 'No set',
 }
 
 export default class CreatePublicProfileDto {
@@ -38,10 +40,10 @@ export default class CreatePublicProfileDto {
   availableHours: number;
 
   @IsNumber()
-  experienseId: number;
+  experienseId?: number;
 
   @IsNumber()
-  educationsId: number;
+  educationsId?: number;
 
   @IsNumber()
   categoryId: number;
@@ -51,18 +53,18 @@ export default class CreatePublicProfileDto {
     example: 'Frontend Developer',
   })
   @IsString()
-  position: string;
+  position?: string;
 
   @ApiProperty({
     description: 'Choose one of the level English',
     enum: English,
   })
   @IsEnum(English)
-  english: English;
+  english?: English;
 
   @IsString()
-  other: string;
+  other?: string;
 
   @IsArray()
-  skills: [];
+  skills?: [];
 }

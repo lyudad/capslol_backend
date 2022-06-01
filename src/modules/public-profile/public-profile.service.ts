@@ -18,7 +18,10 @@ export default class PublicProfileService {
       const newProfile = await this.repository.save({
         ...dto,
         user: { id: dto.userId },
-        skills: dto.skills.map((e: number) => ({ id: e })),
+
+        skills: dto.skills
+          ? dto.skills.map((e: number) => ({ id: e }))
+          : undefined,
       });
       return newProfile;
     } catch (error) {
