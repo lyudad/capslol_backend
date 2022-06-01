@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-shadow */
-/* eslint-disable import/no-extraneous-dependencies */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   WebSocketGateway,
   SubscribeMessage,
@@ -9,12 +6,13 @@ import {
   OnGatewayConnection,
   OnGatewayDisconnect,
   WebSocketServer,
-  ConnectedSocket,
+  WsException,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
 import MessageService from './message.service';
 import CreateMessageDto from './dto/create-message.dto';
+import MessageEntity from './entities/message.entity';
 
 @WebSocketGateway({
   cors: {
@@ -31,46 +29,53 @@ export default class MessageGateway
   constructor(private readonly messageService: MessageService) {}
 
   @SubscribeMessage('msgToServer')
-  async create(@MessageBody() createMessageDto: CreateMessageDto) {
-    const message = await this.messageService.create(createMessageDto);
+  async create(
+    @MessageBody() createMessageDto: CreateMessageDto,
+  ): Promise<MessageEntity> {
+    try {
+      const message = await this.messageService.create(createMessageDto);
 
-    this.server.emit('msgToClient', message);
+      this.server.emit('msgToClient', message);
 
-    return message;
+      return message;
+    } catch (error) {
+      throw new WsException(error.message);
+    }
   }
 
   @SubscribeMessage('join_room')
-  async joinRoom(@MessageBody() roomId: any) {
-    const room = await this.messageService.join(roomId);
+  async joinRoom(@MessageBody() roomId: number): Promise<MessageEntity[]> {
+    try {
+      const roomMessages = await this.messageService.findMessagesByRoomId(
+        roomId,
+      );
 
-    // this.server.socketsJoin(room);
-    return room;
+      return roomMessages;
+    } catch (error) {
+      throw new WsException(error.message);
+    }
   }
 
-  @SubscribeMessage('typing')
-  async typing(
-    @MessageBody('isTyping') isTyping: boolean,
-    @ConnectedSocket() client: Socket,
-  ) {
-    const clientName = await this.messageService.getClientName(client.id);
+  @SubscribeMessage('findAllMessages')
+  async findAll(): Promise<MessageEntity[]> {
+    try {
+      const allMessages = await this.messageService.findAll();
 
-    client.broadcast.emit('typing', { clientName, isTyping });
+      return allMessages;
+    } catch (error) {
+      throw new WsException(error.message);
+    }
   }
 
-  @SubscribeMessage('findAllMessage')
-  findAll() {
-    return this.messageService.findAll();
-  }
-
-  afterInit() {
+  afterInit(): void {
     this.logger.log(`Initialized...`);
   }
 
-  handleConnection(client: Socket) {
+  handleConnection(client: Socket): void {
     this.logger.log(`Client connected: ${client.id}`);
   }
 
-  handleDisconnect(client: Socket) {
+  handleDisconnect(client: Socket): void {
     this.logger.log(`Client disconnected: ${client.id}`);
   }
 }

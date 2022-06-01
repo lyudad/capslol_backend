@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -7,14 +6,12 @@ import MessageEntity from './entities/message.entity';
 
 @Injectable()
 export default class MessageService {
-  clientToUser = {};
-
   constructor(
     @InjectRepository(MessageEntity)
     private readonly messageRepository: Repository<MessageEntity>,
   ) {}
 
-  async create(createMessageDto: CreateMessageDto) {
+  async create(createMessageDto: CreateMessageDto): Promise<MessageEntity> {
     try {
       const newMessage = new MessageEntity();
       const entity = Object.assign(newMessage, createMessageDto);
@@ -25,15 +22,17 @@ export default class MessageService {
         .values(entity)
         .execute();
 
-      const message = await this.getChatMessages(createdMessage.raw.insertId);
-      console.log(createdMessage);
+      const message = await this.getChatMessageById(
+        createdMessage.raw.insertId,
+      );
+
       return message;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }
 
-  async findAll() {
+  async findAll(): Promise<MessageEntity[]> {
     try {
       const message = await this.messageRepository
         .createQueryBuilder('message')
@@ -46,7 +45,7 @@ export default class MessageService {
     }
   }
 
-  async getChatMessages(id: any) {
+  async getChatMessageById(id: number): Promise<MessageEntity> {
     try {
       const message = await this.messageRepository
         .createQueryBuilder('message')
@@ -61,30 +60,20 @@ export default class MessageService {
     }
   }
 
-  async join(roomId: number) {
+  async findMessagesByRoomId(roomId: number): Promise<MessageEntity[]> {
     try {
-      const roomMessages = await this.findMessagesByChatId(roomId);
-
-      return roomMessages;
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
-    }
-  }
-
-  getClientName(clientId: string) {
-    return this.clientToUser[clientId];
-  }
-
-  async findMessagesByChatId(chatId: number) {
-    try {
-      const message = await this.messageRepository
+      let message = await this.messageRepository
         .createQueryBuilder('message')
         .leftJoinAndSelect('message.senderId', 'user')
-        .select('')
-        .where('message.roomId = :roomId', { roomId: chatId })
-        .getMany();
+        .leftJoinAndSelect('message.roomId', 'chat-contacts');
 
-      return message;
+      if (roomId) {
+        message = message.andWhere('roomId = :id', {
+          id: roomId,
+        });
+      }
+
+      return message.getMany();
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }

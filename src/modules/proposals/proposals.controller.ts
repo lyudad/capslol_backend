@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Body,
   Controller,
@@ -24,7 +23,7 @@ export default class ProposalsController {
   constructor(private readonly proposalService: ProposalsService) {}
 
   @ApiBody({
-    type: ProposalEntity,
+    type: CreateProposalDto,
   })
   @Post()
   @UsePipes(new ValidationPipe())
@@ -70,7 +69,7 @@ export default class ProposalsController {
 
   @Delete('deleteById/:id')
   @UsePipes(new ValidationPipe())
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async deleteProposal(@Param() id: number): Promise<any> {
     try {
       const deletedProposal = await this.proposalService.deleteProposal(id);
@@ -83,8 +82,9 @@ export default class ProposalsController {
 
   @Get('search')
   @UsePipes(new ValidationPipe())
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  async searchByFreelancerId(@Query() searchQuery: SearchQuery) {
+  async searchByFreelancerId(
+    @Query() searchQuery: SearchQuery,
+  ): Promise<ProposalEntity[]> {
     try {
       const { freelancerId } = searchQuery;
       const proposals = await this.proposalService.searchByFreelancerId(
