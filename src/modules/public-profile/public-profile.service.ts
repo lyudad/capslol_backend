@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -18,7 +19,10 @@ export default class PublicProfileService {
       const newProfile = await this.repository.save({
         ...dto,
         user: { id: dto.userId },
-        skills: dto.skills.map((e: number) => ({ id: e })),
+
+        skills: dto.skills
+          ? dto.skills.map((e: number) => ({ id: e }))
+          : undefined,
       });
       return newProfile;
     } catch (error) {

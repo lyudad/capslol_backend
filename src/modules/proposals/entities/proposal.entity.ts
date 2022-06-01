@@ -17,9 +17,7 @@ export default class ProposalEntity {
   @JoinColumn({ name: 'jobId' })
   jobId: JobEntity;
 
-  @ManyToOne(() => UserEntity, (users: UserEntity) => users.id, {
-    nullable: false,
-  })
+  @ManyToOne(() => UserEntity, { nullable: false })
   @JoinColumn({ name: 'freelancerId' })
   freelancerId: UserEntity;
 

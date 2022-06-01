@@ -1,3 +1,6 @@
+﻿/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable prefer-const */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -62,11 +65,25 @@ export default class ChatContactsService {
     }
   }
 
-  update(id: number, updateChatContactDto: UpdateChatContactDto) {
-    return `This action updates a #${id} chatContact`;
-  }
+  async searchByFreelancerId(freelancerId: number) {
+    try {
+      let proposals = await this.repository
+        .createQueryBuilder('chat-contacts')
+        .leftJoinAndSelect('chat-contacts.proposalId', 'proposals')
+        .leftJoinAndSelect('proposals.freelancerId', 'users')
+        .leftJoinAndSelect('proposals.jobId', 'jobs');
+      // .leftJoinAndSelect('proposal.jobOwner', 'jobs.ownerId')
 
-  remove(id: number) {
-    return `This action removes a #${id} chatContact`;
+      console.log(proposals);
+      // if (freelancerId) {
+      //   proposals = proposals.andWhere('freelancerId = :id', {
+      //     id: freelancerId,
+      //   });
+      // }
+
+      // return proposals.getMany();
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
   }
 }

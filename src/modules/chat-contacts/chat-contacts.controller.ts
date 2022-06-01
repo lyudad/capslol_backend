@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import {
   Controller,
   Get,
@@ -30,16 +31,16 @@ export default class ChatContactsController {
   //   return this.chatContactsService.findOne(+id);
   // }
 
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateChatContactDto: UpdateChatContactDto,
-  ) {
-    return this.chatContactsService.update(+id, updateChatContactDto);
-  }
+  // @Patch(':id')
+  // update(
+  //   @Param('id') id: string,
+  //   @Body() updateChatContactDto: UpdateChatContactDto,
+  // ) {
+  //   return this.chatContactsService.update(+id, updateChatContactDto);
+  // }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.chatContactsService.remove(+id);
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.chatContactsService.remove(+id);
+  // }
 }

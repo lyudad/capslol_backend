@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Body,
   Controller,
@@ -15,6 +16,7 @@ import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import CreateProposalDto from './dto/create-proposal.dto';
 import ProposalEntity from './entities/proposal.entity';
 import ProposalsService from './proposals.service';
+import SearchQuery from './dto/search.query';
 
 @ApiTags('Proposals')
 @Controller('proposals')
@@ -68,13 +70,29 @@ export default class ProposalsController {
 
   @Delete('deleteById/:id')
   @UsePipes(new ValidationPipe())
-  async deleteProposal(@Param() id: number) {
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  async deleteProposal(@Param() id: number): Promise<any> {
     try {
       const deletedProposal = await this.proposalService.deleteProposal(id);
 
       return deletedProposal;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
+
+  @Get('search')
+  @UsePipes(new ValidationPipe())
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  async searchByFreelancerId(@Query() searchQuery: SearchQuery) {
+    try {
+      const { freelancerId } = searchQuery;
+      const proposals = await this.proposalService.searchByFreelancerId(
+        freelancerId,
+      );
+      return proposals;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 }

@@ -51,7 +51,7 @@ export default class PublicProfile {
     enum: English,
     default: English.NOSET,
   })
-  english?: English;
+  english: English;
 
   @Column({ type: 'text' })
   other?: string;

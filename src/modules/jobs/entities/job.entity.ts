@@ -10,7 +10,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import English from '../constants/request.constants';
+import { English, ProjectDuration } from '../types/entity.types';
 
 @Entity({ name: 'jobs' })
 export default class JobEntity {
@@ -49,7 +49,10 @@ export default class JobEntity {
   @Column({
     type: 'enum',
     enum: English,
-    default: English.NOSET,
+    nullable: true,
   })
   languageLevel: English;
+
+  @Column({ type: 'enum', enum: ProjectDuration, nullable: true })
+  projectDuration: ProjectDuration;
 }
