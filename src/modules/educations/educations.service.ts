@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import CreateEducationDto from './dto/create-education.dto';
 import UpdateEducationDto from './dto/update-education.dto';
 import EducationEntity from './entities/education.entity';
@@ -12,7 +12,7 @@ export default class EducationsService {
     private repository: Repository<EducationEntity>,
   ) {}
 
-  async create(educations: CreateEducationDto) {
+  async create(educations: CreateEducationDto): Promise<EducationEntity> {
     try {
       const newEducatio = await this.repository.save(educations);
       return newEducatio;
@@ -33,7 +33,7 @@ export default class EducationsService {
     }
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<EducationEntity> {
     try {
       const newEducatio = await this.repository.findOne(id);
       return newEducatio;
@@ -42,7 +42,7 @@ export default class EducationsService {
     }
   }
 
-  async update(id: number, dto: UpdateEducationDto) {
+  async update(id: number, dto: UpdateEducationDto): Promise<UpdateResult> {
     try {
       const newEducatio = await this.repository.update(id, dto);
       return newEducatio;
@@ -51,7 +51,7 @@ export default class EducationsService {
     }
   }
 
-  async remove(id: number) {
+  async remove(id: number): Promise<DeleteResult> {
     try {
       const newEducatio = await this.repository.delete(id);
       return newEducatio;

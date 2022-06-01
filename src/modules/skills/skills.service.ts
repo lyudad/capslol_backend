@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import CreateSkillDto from './dto/create-skill.dto';
 import UpdateSkillDto from './dto/update-skill.dto';
 import SkillEntity from './entities/skill.entity';
@@ -12,7 +12,7 @@ export default class SkillsService {
     private repository: Repository<SkillEntity>,
   ) {}
 
-  async create(skills: CreateSkillDto) {
+  async create(skills: CreateSkillDto): Promise<SkillEntity> {
     try {
       const newSkills = await this.repository.save(skills);
       return newSkills;
@@ -33,7 +33,7 @@ export default class SkillsService {
     }
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<SkillEntity> {
     try {
       const newSkills = await this.repository.findOne(id);
       return newSkills;
@@ -42,7 +42,7 @@ export default class SkillsService {
     }
   }
 
-  async update(id: number, dto: UpdateSkillDto) {
+  async update(id: number, dto: UpdateSkillDto): Promise<UpdateResult> {
     try {
       const newSkills = await this.repository.update(id, dto);
       return newSkills;
@@ -51,7 +51,7 @@ export default class SkillsService {
     }
   }
 
-  async remove(id: number) {
+  async remove(id: number): Promise<DeleteResult> {
     try {
       const newSkills = await this.repository.delete(id);
       return newSkills;
