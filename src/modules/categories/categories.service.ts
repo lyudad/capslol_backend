@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import CreateCategoryDto from './dto/create-category.dto';
 import UpdateCategoryDto from './dto/update-category.dto';
 import CategoryEntity from './entities/category.entity';
@@ -12,7 +12,7 @@ export default class CategoriesService {
     private repository: Repository<CategoryEntity>,
   ) {}
 
-  async create(categories: CreateCategoryDto) {
+  async create(categories: CreateCategoryDto): Promise<CategoryEntity> {
     try {
       const newCategories = await this.repository.save(categories);
       return newCategories;
@@ -33,7 +33,7 @@ export default class CategoriesService {
     }
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<CategoryEntity> {
     try {
       const newCategories = await this.repository.findOne(id);
       return newCategories;
@@ -42,7 +42,7 @@ export default class CategoriesService {
     }
   }
 
-  async update(id: number, dto: UpdateCategoryDto) {
+  async update(id: number, dto: UpdateCategoryDto): Promise<UpdateResult> {
     try {
       const newCategories = await this.repository.update(id, dto);
       return newCategories;
@@ -51,7 +51,7 @@ export default class CategoriesService {
     }
   }
 
-  async remove(id: number) {
+  async remove(id: number): Promise<DeleteResult> {
     try {
       const newCategories = await this.repository.delete(id);
       return newCategories;
