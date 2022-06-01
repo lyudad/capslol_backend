@@ -40,11 +40,11 @@ export default class MessageGateway
   }
 
   @SubscribeMessage('join_room')
-  async joinRoom(@MessageBody() room: any) {
-    // const room = await this.messageService.join(name, client.id);
+  async joinRoom(@MessageBody() roomId: any) {
+    const room = await this.messageService.join(roomId);
 
-    this.server.socketsJoin(room);
-    // return room;
+    // this.server.socketsJoin(room);
+    return room;
   }
 
   @SubscribeMessage('typing')
