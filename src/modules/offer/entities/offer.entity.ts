@@ -7,6 +7,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import Status from '../types/ offer.type';
 
 @Entity('offers')
 export default class OfferEntity {
@@ -27,6 +28,13 @@ export default class OfferEntity {
 
   @Column({ type: 'integer' })
   hourRate: number;
+
+  @Column({
+    type: 'enum',
+    enum: Status,
+    default: Status.PENDING,
+  })
+  status: Status;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: string;
