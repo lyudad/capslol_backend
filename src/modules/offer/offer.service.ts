@@ -110,4 +110,25 @@ export default class OfferService {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }
+
+  async findByUserId(id: number): Promise<OfferEntity[]> {
+    try {
+      let offers = await this.offerRepository
+        .createQueryBuilder('offer')
+        .leftJoinAndSelect('offer.ownerId', 'owner')
+        .leftJoinAndSelect('offer.freelancerId', 'freelancer')
+        .leftJoinAndSelect('offer.jobId', 'job')
+        .orderBy('offer.createdAt');
+
+      if (id) {
+        offers = offers.andWhere('freelancerId = :id', {
+          id,
+        });
+      }
+
+      return offers.getMany();
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
 }

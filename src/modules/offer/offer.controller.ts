@@ -18,7 +18,8 @@ import CreateOfferDto from './dto/create-offer.dto';
 import OfferEntity from './entities/offer.entity';
 import JWTGuard from '../auth/guards/jwt.guard';
 import GetOfferParam from './dto/get-offer.param';
-import UpdateStatusQuery from './dto/update-status.query';
+import SearchOffersQuery from './dto/search-offers.query';
+// import UpdateStatusQuery from './dto/update-status.query';
 
 @ApiTags('Offers')
 @ApiBearerAuth()
@@ -64,5 +65,15 @@ export default class OfferController {
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
+  }
+
+  @Get('getOffers')
+  @UsePipes(new ValidationPipe())
+  @UseGuards(JWTGuard)
+  async getOffersByUserId(
+    @Query() query: SearchOffersQuery,
+  ): Promise<OfferEntity[]> {
+    const offers = await this.offerService.findByUserId(query.freelancerId);
+    return offers;
   }
 }
