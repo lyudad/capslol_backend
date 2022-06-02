@@ -14,6 +14,7 @@ import AppService from './app.service';
 import AuthModule from './modules/auth/auth.module';
 import LoggerMiddleware from './utils/logger.middleware';
 import JobsModule from './modules/jobs/jobs.module';
+import OfferModule from './modules/offer/offer.module';
 
 @Module({
   imports: [
@@ -28,12 +29,13 @@ import JobsModule from './modules/jobs/jobs.module';
     MailModule,
     JobsModule,
     ProposalsModule,
+    OfferModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export default class AppModule {
-  configure(consumer: MiddlewareConsumer) {
+  configure(consumer: MiddlewareConsumer): void {
     consumer.apply(LoggerMiddleware).forRoutes('*');
   }
 }
