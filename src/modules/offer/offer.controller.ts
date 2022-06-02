@@ -9,7 +9,6 @@ import {
   UseGuards,
   UsePipes,
   ValidationPipe,
-  Put,
   Query,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiHeader } from '@nestjs/swagger';
@@ -19,7 +18,6 @@ import OfferEntity from './entities/offer.entity';
 import JWTGuard from '../auth/guards/jwt.guard';
 import GetOfferParam from './dto/get-offer.param';
 import SearchOffersQuery from './dto/search-offers.query';
-// import UpdateStatusQuery from './dto/update-status.query';
 
 @ApiTags('Offers')
 @ApiBearerAuth()
