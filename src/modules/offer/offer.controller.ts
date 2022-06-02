@@ -9,6 +9,8 @@ import {
   UseGuards,
   UsePipes,
   ValidationPipe,
+  Put,
+  Query,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiHeader } from '@nestjs/swagger';
 import OfferService from './offer.service';
@@ -16,6 +18,7 @@ import CreateOfferDto from './dto/create-offer.dto';
 import OfferEntity from './entities/offer.entity';
 import JWTGuard from '../auth/guards/jwt.guard';
 import GetOfferParam from './dto/get-offer.param';
+import UpdateStatusQuery from './dto/update-status.query';
 
 @ApiTags('Offers')
 @ApiBearerAuth()
@@ -43,15 +46,23 @@ export default class OfferController {
   @UsePipes(new ValidationPipe())
   @UseGuards(JWTGuard)
   async findAll(): Promise<OfferEntity[]> {
-    const payload = await this.offerService.findAll();
-    return payload;
+    try {
+      const payload = await this.offerService.findAll();
+      return payload;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 
-  @Get(':id')
+  @Get('getById/:id')
   @UsePipes(new ValidationPipe())
   @UseGuards(JWTGuard)
   async findOne(@Param() params: GetOfferParam): Promise<OfferEntity> {
-    const payload = await this.offerService.findOfferById(params.id);
-    return payload;
+    try {
+      const payload = await this.offerService.findOfferById(params.id);
+      return payload;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 }
