@@ -119,12 +119,9 @@ export default class OfferService {
         .leftJoinAndSelect('offer.freelancerId', 'freelancer')
         .leftJoinAndSelect('offer.jobId', 'job')
         .orderBy('offer.createdAt');
-
-      if (id) {
-        offers = offers.andWhere('freelancerId = :id', {
-          id,
-        });
-      }
+      offers = offers.andWhere('freelancerId = :id', {
+        id,
+      });
 
       return offers.getMany();
     } catch (error) {
