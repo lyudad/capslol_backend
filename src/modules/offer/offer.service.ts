@@ -5,7 +5,6 @@ import AuthServive from '../auth/auth.service';
 import { Role } from '../auth/types/user.interface';
 import JobsService from '../jobs/jobs.service';
 import CreateOfferDto from './dto/create-offer.dto';
-import UpdateOfferDto from './dto/update-offer.dto';
 import OfferEntity from './entities/offer.entity';
 import ResponseMessage from './types/response.type';
 
