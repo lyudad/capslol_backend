@@ -10,6 +10,7 @@ import {
   UsePipes,
   ValidationPipe,
   Query,
+  Patch,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiHeader } from '@nestjs/swagger';
 import OfferService from './offer.service';
@@ -18,6 +19,8 @@ import OfferEntity from './entities/offer.entity';
 import JWTGuard from '../auth/guards/jwt.guard';
 import GetOfferParam from './dto/get-offer.param';
 import SearchOffersQuery from './dto/search-offers.query';
+import UpdateOfferDto from './dto/update-offer.dto';
+import UpdateStatusDto from './dto/update-status.dto';
 
 @ApiTags('Offers')
 @ApiBearerAuth()
@@ -73,5 +76,15 @@ export default class OfferController {
   ): Promise<OfferEntity[]> {
     const offers = await this.offerService.findByUserId(query.freelancerId);
     return offers;
+  }
+
+  @Patch('status/:id')
+  @UsePipes(new ValidationPipe())
+  @UseGuards(JWTGuard)
+  async update(
+    @Param('id') id: number,
+    @Body() updateStatusDto: UpdateStatusDto,
+  ): Promise<OfferEntity> {
+    return this.offerService.updateStatus(id, updateStatusDto);
   }
 }
