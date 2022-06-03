@@ -121,8 +121,9 @@ export default class OfferService {
         .orderBy('offer.createdAt')
         .andWhere('freelancerId = :id', {
           id,
-        });
-      return offers.getMany();
+        })
+        .getMany();
+      return offers;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
