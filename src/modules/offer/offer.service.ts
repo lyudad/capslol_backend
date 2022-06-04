@@ -130,15 +130,12 @@ export default class OfferService {
     }
   }
 
-  async updateStatus(
-    id: number,
-    updateStatusDto: UpdateStatusDto,
-  ): Promise<OfferEntity> {
+  async updateStatus(updateStatusDto: UpdateStatusDto): Promise<OfferEntity> {
     try {
-      const { status } = updateStatusDto;
-      await this.offerRepository.update(id, { status });
-      const newStatusOffer = await this.findOfferById(id);
-      return newStatusOffer;
+      const { id, status } = updateStatusDto;
+      const offer = await this.offerRepository.findOne(id);
+      offer.status = status;
+      return await this.offerRepository.save(offer);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
