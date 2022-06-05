@@ -10,7 +10,6 @@ import {
   UsePipes,
   ValidationPipe,
   Query,
-  Patch,
   Put,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiHeader } from '@nestjs/swagger';

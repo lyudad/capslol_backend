@@ -5,7 +5,6 @@ import AuthServive from '../auth/auth.service';
 import { Role } from '../auth/types/user.interface';
 import JobsService from '../jobs/jobs.service';
 import CreateOfferDto from './dto/create-offer.dto';
-import UpdateOfferDto from './dto/update-offer.dto';
 import UpdateStatusDto from './dto/update-status.dto';
 import OfferEntity from './entities/offer.entity';
 import ResponseMessage from './types/response.type';
@@ -133,9 +132,9 @@ export default class OfferService {
   async updateStatus(updateStatusDto: UpdateStatusDto): Promise<OfferEntity> {
     try {
       const { id, status } = updateStatusDto;
-      const offer = await this.offerRepository.findOne(id);
-      offer.status = status;
-      return await this.offerRepository.save(offer);
+      await this.offerRepository.update(id, { status });
+      const newOfferStatus = await this.offerRepository.findOne(id);
+      return newOfferStatus;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
