@@ -1,7 +1,7 @@
 export enum ProjectDuration {
-  UNTIL_SIX_MONTHS = 'До 6 месяцев',
-  SIX_MONTHS = '6 месяцев',
-  MORE_SIX_MONTHS = 'Больше 6 месяцев',
+  UNTIL_SIX_MONTHS = 'until 6 months',
+  SIX_MONTHS = '6 months',
+  MORE_SIX_MONTHS = 'over 6 months',
 }
 
 export enum English {

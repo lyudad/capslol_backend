@@ -17,5 +17,6 @@ import SkillsModule from '../skills/skills.module';
   ],
   controllers: [JobsController],
   providers: [JobsService],
+  exports: [JobsService],
 })
 export default class JobsModule {}

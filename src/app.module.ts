@@ -16,6 +16,7 @@ import LoggerMiddleware from './utils/logger.middleware';
 import JobsModule from './modules/jobs/jobs.module';
 import MessageModule from './modules/message/message.module';
 import ChatContactsModule from './modules/chat-contacts/chat-contacts.module';
+import OfferModule from './modules/offer/offer.module';
 
 @Module({
   imports: [
@@ -32,12 +33,13 @@ import ChatContactsModule from './modules/chat-contacts/chat-contacts.module';
     ProposalsModule,
     MessageModule,
     ChatContactsModule,
+    OfferModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export default class AppModule {
-  configure(consumer: MiddlewareConsumer) {
+  configure(consumer: MiddlewareConsumer): void {
     consumer.apply(LoggerMiddleware).forRoutes('*');
   }
 }
