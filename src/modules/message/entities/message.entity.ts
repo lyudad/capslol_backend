@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import UserEntity from 'src/modules/auth/entity/user.entity';
 import ChatContactEntity from 'src/modules/chat-contacts/entities/chat-contact.entity';
 import {

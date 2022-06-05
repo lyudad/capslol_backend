@@ -37,6 +37,7 @@ export default class MessageService {
       const message = await this.messageRepository
         .createQueryBuilder('message')
         .leftJoinAndSelect('message.senderId', 'user')
+        .leftJoinAndSelect('message.roomId', 'chat-contacts')
         .getMany();
 
       return message;
@@ -50,6 +51,7 @@ export default class MessageService {
       const message = await this.messageRepository
         .createQueryBuilder('message')
         .leftJoinAndSelect('message.senderId', 'user')
+        .leftJoinAndSelect('message.roomId', 'chat-contacts')
         .select('')
         .where('message.id = :id', { id })
         .getOne();
@@ -62,18 +64,14 @@ export default class MessageService {
 
   async findMessagesByRoomId(roomId: number): Promise<MessageEntity[]> {
     try {
-      let message = await this.messageRepository
+      const message = await this.messageRepository
         .createQueryBuilder('message')
         .leftJoinAndSelect('message.senderId', 'user')
-        .leftJoinAndSelect('message.roomId', 'chat-contacts');
+        .leftJoinAndSelect('message.roomId', 'chat-contacts')
+        .where('message.roomId.id = :id', { id: roomId })
+        .getMany();
 
-      if (roomId) {
-        message = message.andWhere('roomId = :id', {
-          id: roomId,
-        });
-      }
-
-      return message.getMany();
+      return message;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }

@@ -43,19 +43,6 @@ export default class MessageGateway
     }
   }
 
-  @SubscribeMessage('join_room')
-  async joinRoom(@MessageBody() roomId: number): Promise<MessageEntity[]> {
-    try {
-      const roomMessages = await this.messageService.findMessagesByRoomId(
-        roomId,
-      );
-
-      return roomMessages;
-    } catch (error) {
-      throw new WsException(error.message);
-    }
-  }
-
   @SubscribeMessage('findAllMessages')
   async findAll(): Promise<MessageEntity[]> {
     try {
@@ -65,6 +52,12 @@ export default class MessageGateway
     } catch (error) {
       throw new WsException(error.message);
     }
+  }
+
+  @SubscribeMessage('join_room')
+  async messageRoom(@MessageBody() room: number): Promise<MessageEntity[]> {
+    const newMessage = await this.messageService.findMessagesByRoomId(room);
+    return newMessage;
   }
 
   afterInit(): void {

@@ -1,7 +1,7 @@
 import {MigrationInterface, QueryRunner} from "typeorm";
 
-export class CreateMessages1653990065611 implements MigrationInterface {
-    name = 'CreateMessages1653990065611'
+export class CreateMessages1654439307239 implements MigrationInterface {
+    name = 'CreateMessages1654439307239'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TABLE \`chat-contacts\` (\`id\` int NOT NULL AUTO_INCREMENT, \`isActive\` tinyint NULL DEFAULT 0, \`proposalId\` int NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
