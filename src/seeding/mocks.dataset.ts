@@ -18,9 +18,9 @@ export const englishLevels: string[] = [
 ];
 
 export const projectDuration: string[] = [
-  'До 6 месяцев',
-  '6 месяцев',
-  'Больше 6 месяцев',
+  'less then 6 months',
+  'from 6 months to 1 year',
+  'over 1 year',
 ];
 
 export const skills: string[] = [
