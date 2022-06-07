@@ -153,3 +153,8 @@ docker run --name phpmyadmin \
 1. Drop current database using `npm run migration:drop`
 2. Run new migration `npm run migration:run`
 3. Run command `npm run seed:run` to seed
+
+### TODO
+
+1. Надо настроить seeder на работу с тайпскриптом во время режима разработки, чтобы "понимал" ни только js, но и ts файлы.
+2. Научиться добавлять/изменять/удалять данные в сущностях, которые имеют связи с использованием qb
