@@ -5,6 +5,7 @@ import AuthServive from '../auth/auth.service';
 import { Role } from '../auth/types/user.interface';
 import JobsService from '../jobs/jobs.service';
 import CreateOfferDto from './dto/create-offer.dto';
+import UpdateStatusDto from './dto/update-status.dto';
 import OfferEntity from './entities/offer.entity';
 import ResponseMessage from './types/response.type';
 
@@ -105,6 +106,35 @@ export default class OfferService {
         .leftJoinAndSelect('offer.jobId', 'job')
         .getMany();
       return result;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
+
+  async findByUserId(id: number): Promise<OfferEntity[]> {
+    try {
+      const offers = await this.offerRepository
+        .createQueryBuilder('offer')
+        .leftJoinAndSelect('offer.ownerId', 'owner')
+        .leftJoinAndSelect('offer.freelancerId', 'freelancer')
+        .leftJoinAndSelect('offer.jobId', 'job')
+        .orderBy('offer.createdAt')
+        .andWhere('freelancerId = :id', {
+          id,
+        })
+        .getMany();
+      return offers;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
+
+  async updateStatus(updateStatusDto: UpdateStatusDto): Promise<OfferEntity> {
+    try {
+      const { id, status } = updateStatusDto;
+      await this.offerRepository.update(id, { status });
+      const newOfferStatus = await this.offerRepository.findOne(id);
+      return newOfferStatus;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
