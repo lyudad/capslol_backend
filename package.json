@@ -26,7 +26,7 @@
     "migration:revert": "npm run typeorm migration:revert",
     "seed:config": "ts-node ./node_modules/typeorm-seeding/dist/cli.js config --configName ./src/typeorm.seed.ts",
     "seed:run": "ts-node ./node_modules/typeorm-seeding/dist/cli.js seed --configName ./src/typeorm.seed.ts",
-    "prepare": "husky install"
+    "husky:init": "husky install"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^1.6.1",
