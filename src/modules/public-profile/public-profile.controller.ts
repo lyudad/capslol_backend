@@ -37,12 +37,11 @@ export default class PublicProfileController {
     return profile;
   }
 
-  @Patch(':id')
+  @Patch()
   update(
-    @Param('id') id: number,
     @Body() updatePublicProfileDto: UpdatePublicProfileDto,
   ): Promise<PublicProfile> {
-    return this.publicProfileService.update(id, updatePublicProfileDto);
+    return this.publicProfileService.update(updatePublicProfileDto);
   }
 
   @Delete(':id')

@@ -18,7 +18,12 @@ export default class PublicProfileService {
       const newProfile = await this.repository.save({
         ...dto,
         user: { id: dto.userId },
-
+        educations: dto.educations
+          ? dto.educations.map((e: number) => ({ id: e }))
+          : undefined,
+        experiense: dto.experiense
+          ? dto.experiense.map((e: number) => ({ id: e }))
+          : undefined,
         skills: dto.skills
           ? dto.skills.map((e: number) => ({ id: e }))
           : undefined,
@@ -62,13 +67,22 @@ export default class PublicProfileService {
     }
   }
 
-  async update(
-    id: number,
-    dto: UpdatePublicProfileDto,
-  ): Promise<PublicProfile> {
+  async update(dto: UpdatePublicProfileDto): Promise<PublicProfile> {
     try {
-      await this.repository.update(id, dto);
-      return;
+      const newProfile = await this.repository.save({
+        ...dto,
+        user: { id: dto.userId },
+        skills: dto.skills
+          ? dto.skills.map((e: number) => ({ id: e }))
+          : undefined,
+        experiense: dto.experiense
+          ? dto.experiense.map((e: number) => ({ id: e }))
+          : undefined,
+        educations: dto.educations
+          ? dto.educations.map((e: number) => ({ id: e }))
+          : undefined,
+      });
+      return newProfile;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
