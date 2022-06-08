@@ -17,13 +17,13 @@ import ProposalEntity from './entities/proposal.entity';
 import ProposalsService from './proposals.service';
 import SearchQuery from './dto/search.query';
 
-@ApiTags('Authorization')
+@ApiTags('Proposals')
 @Controller('proposals')
 export default class ProposalsController {
   constructor(private readonly proposalService: ProposalsService) {}
 
   @ApiBody({
-    type: ProposalEntity,
+    type: CreateProposalDto,
   })
   @Post()
   @UsePipes(new ValidationPipe())
@@ -69,8 +69,7 @@ export default class ProposalsController {
 
   @Delete('deleteById/:id')
   @UsePipes(new ValidationPipe())
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  async deleteProposal(@Param() id: number) {
+  async deleteProposal(@Param() id: number): Promise<ProposalEntity> {
     try {
       const deletedProposal = await this.proposalService.deleteProposal(id);
 
@@ -82,8 +81,9 @@ export default class ProposalsController {
 
   @Get('search')
   @UsePipes(new ValidationPipe())
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  async searchByFreelancerId(@Query() searchQuery: SearchQuery) {
+  async searchByFreelancerId(
+    @Query() searchQuery: SearchQuery,
+  ): Promise<ProposalEntity[]> {
     try {
       const { freelancerId } = searchQuery;
       const proposals = await this.proposalService.searchByFreelancerId(

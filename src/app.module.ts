@@ -15,6 +15,8 @@ import AppService from './app.service';
 import AuthModule from './modules/auth/auth.module';
 import LoggerMiddleware from './utils/logger.middleware';
 import JobsModule from './modules/jobs/jobs.module';
+import MessageModule from './modules/message/message.module';
+import ChatContactsModule from './modules/chat-contacts/chat-contacts.module';
 import OfferModule from './modules/offer/offer.module';
 
 @Module({
@@ -30,6 +32,8 @@ import OfferModule from './modules/offer/offer.module';
     MailModule,
     JobsModule,
     ProposalsModule,
+    MessageModule,
+    ChatContactsModule,
     OfferModule,
     InvitationModule,
   ],
