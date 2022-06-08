@@ -3,6 +3,7 @@ import {
   IsEnum,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
@@ -25,27 +26,33 @@ export default class CreatePublicProfileDto {
     example: 'https://assets.imgix.net/unsplash/transport.jpg',
   })
   @IsString()
-  profileImage: string;
+  @IsOptional()
+  profileImage?: string;
 
   @IsNumber()
   @ApiProperty({
     description: 'Recommended hourly rate in dollars (number)',
   })
+  @IsNotEmpty()
   hourRate: number;
 
   @ApiProperty({
     description: 'Ability to set aside time for daily work (number)',
   })
   @IsNumber()
+  @IsNotEmpty()
   availableHours: number;
 
-  @IsNumber()
-  experienseId?: number;
+  @IsArray()
+  @IsOptional()
+  experiense?: [];
+
+  @IsArray()
+  @IsOptional()
+  educations?: [];
 
   @IsNumber()
-  educationsId?: number;
-
-  @IsNumber()
+  @IsNotEmpty()
   categoryId: number;
 
   @ApiProperty({
@@ -53,6 +60,7 @@ export default class CreatePublicProfileDto {
     example: 'Frontend Developer',
   })
   @IsString()
+  @IsOptional()
   position?: string;
 
   @ApiProperty({
@@ -60,11 +68,14 @@ export default class CreatePublicProfileDto {
     enum: English,
   })
   @IsEnum(English)
-  english?: English;
+  @IsNotEmpty()
+  english: English;
 
   @IsString()
+  @IsOptional()
   other?: string;
 
   @IsArray()
-  skills?: [];
+  @IsOptional()
+  skills: [];
 }

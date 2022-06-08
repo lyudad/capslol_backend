@@ -56,17 +56,13 @@ export default class PublicProfile {
   @Column({ type: 'text' })
   other?: string;
 
-  @ManyToOne(
-    () => EducationEntity,
-    (education: EducationEntity) => education.id,
-  )
+  @ManyToMany(() => EducationEntity)
+  @JoinTable({ name: 'educations_profiles' })
   educations: EducationEntity[];
 
-  @ManyToOne(
-    () => ExperienceEntity,
-    (experiens: ExperienceEntity) => experiens.profile,
-  )
-  experiense: ExperienceEntity;
+  @ManyToMany(() => ExperienceEntity)
+  @JoinTable({ name: 'experiense_profiles' })
+  experiense: ExperienceEntity[];
 
   @ManyToOne(() => CategoryEntity, (category: CategoryEntity) => category.id)
   categories: CategoryEntity[];
