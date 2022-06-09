@@ -5,8 +5,6 @@ import AuthServive from '../auth/auth.service';
 import { Role } from '../auth/types/user.interface';
 import JobsService from '../jobs/jobs.service';
 import CreateOfferDto from './dto/create-offer.dto';
-import GetOfferParam from './dto/get-offer.param';
-import UpdateOfferDto from './dto/update-offer.dto';
 import UpdateStatusDto from './dto/update-status.dto';
 import OfferEntity from './entities/offer.entity';
 import ResponseMessage from './types/response.type';
@@ -137,27 +135,6 @@ export default class OfferService {
       await this.offerRepository.update(id, { status });
       const newOfferStatus = await this.offerRepository.findOne(id);
       return newOfferStatus;
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
-    }
-  }
-
-  async updateHourlyRate(
-    params: GetOfferParam,
-    updateOfferDto: UpdateOfferDto,
-  ): Promise<OfferEntity> {
-    try {
-      const { id } = params;
-      await this.offerRepository
-        .createQueryBuilder()
-        .update()
-        .set({ hourRate: updateOfferDto.hourRate })
-        .where('id = :id', { id })
-        .execute();
-
-      const updateOffer = await this.findOfferById(id);
-
-      return updateOffer;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
