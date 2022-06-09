@@ -1,11 +1,11 @@
 import {MigrationInterface, QueryRunner} from "typeorm";
 
-export class NewMigration1654609712499 implements MigrationInterface {
-    name = 'NewMigration1654609712499'
+export class NewMigration1654616662467 implements MigrationInterface {
+    name = 'NewMigration1654616662467'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`CREATE TABLE \`categories\` (\`id\` int NOT NULL AUTO_INCREMENT, \`categoryName\` varchar(255) NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
         await queryRunner.query(`CREATE TABLE \`users\` (\`id\` int NOT NULL AUTO_INCREMENT, \`firstName\` varchar(50) NOT NULL, \`lastName\` varchar(50) NOT NULL DEFAULT '', \`role\` enum ('Freelancer', 'Job Owner', 'No set') NULL, \`email\` varchar(50) NOT NULL, \`phoneNumber\` varchar(25) NULL, \`password\` varchar(255) NULL, \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, \`isGoogle\` tinyint NULL DEFAULT 0, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
+        await queryRunner.query(`CREATE TABLE \`categories\` (\`id\` int NOT NULL AUTO_INCREMENT, \`categoryName\` varchar(255) NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
         await queryRunner.query(`CREATE TABLE \`educations\` (\`id\` int NOT NULL AUTO_INCREMENT, \`name\` varchar(255) NOT NULL, \`specialization\` varchar(255) NOT NULL, \`startAt\` varchar(255) NOT NULL, \`endAt\` varchar(255) NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
         await queryRunner.query(`CREATE TABLE \`experiences\` (\`id\` int NOT NULL AUTO_INCREMENT, \`companyName\` varchar(255) NOT NULL, \`position\` varchar(255) NOT NULL, \`startAt\` varchar(255) NOT NULL, \`endAt\` varchar(255) NOT NULL, \`profileId\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
         await queryRunner.query(`CREATE TABLE \`profiles\` (\`id\` int NOT NULL AUTO_INCREMENT, \`profileImage\` varchar(385) NOT NULL, \`hourRate\` int NOT NULL, \`availableHours\` int NOT NULL, \`position\` varchar(255) NOT NULL, \`english\` enum ('No English', 'Beginner', 'Pre-Intermediate', 'Intermediate', 'Advanced', 'No set') NOT NULL DEFAULT 'No set', \`other\` text NOT NULL, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`updatedAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`userId\` int NULL, \`educationsId\` int NULL, \`experienseId\` int NULL, \`categoriesId\` int NULL, UNIQUE INDEX \`REL_315ecd98bd1a42dcf2ec4e2e98\` (\`userId\`), PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
@@ -74,8 +74,8 @@ export class NewMigration1654609712499 implements MigrationInterface {
         await queryRunner.query(`DROP TABLE \`profiles\``);
         await queryRunner.query(`DROP TABLE \`experiences\``);
         await queryRunner.query(`DROP TABLE \`educations\``);
-        await queryRunner.query(`DROP TABLE \`users\``);
         await queryRunner.query(`DROP TABLE \`categories\``);
+        await queryRunner.query(`DROP TABLE \`users\``);
     }
 
 }

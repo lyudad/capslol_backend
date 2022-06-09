@@ -20,6 +20,7 @@ import JWTGuard from '../auth/guards/jwt.guard';
 import GetOfferParam from './dto/get-offer.param';
 import SearchOffersQuery from './dto/search-offers.query';
 import UpdateStatusDto from './dto/update-status.dto';
+import UpdateOfferDto from './dto/update-offer.dto';
 
 @ApiTags('Offers')
 @ApiBearerAuth()
@@ -83,5 +84,24 @@ export default class OfferController {
   async update(@Body() updateStatusDto: UpdateStatusDto): Promise<OfferEntity> {
     const offer = await this.offerService.updateStatus(updateStatusDto);
     return offer;
+  }
+
+  @Put('updateOffer/:id')
+  @UsePipes(new ValidationPipe())
+  @UseGuards(JWTGuard)
+  async updateHourRate(
+    @Body() updateOfferDto: UpdateOfferDto,
+    @Param() params: GetOfferParam,
+  ): Promise<OfferEntity> {
+    try {
+      const payload = await this.offerService.updateHourlyRate(
+        params,
+        updateOfferDto,
+      );
+
+      return payload;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 }
