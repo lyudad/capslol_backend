@@ -10,5 +10,6 @@ import JobsModule from '../jobs/jobs.module';
   imports: [TypeOrmModule.forFeature([OfferEntity]), AuthModule, JobsModule],
   controllers: [OfferController],
   providers: [OfferService],
+  exports: [OfferService],
 })
 export default class OfferModule {}
