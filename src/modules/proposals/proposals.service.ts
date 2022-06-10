@@ -86,19 +86,14 @@ export default class ProposalsService {
 
   async searchByFreelancerId(freelancerId: number): Promise<ProposalEntity[]> {
     try {
-      let proposals = await this.proposalRepository
+      const proposals = await this.proposalRepository
         .createQueryBuilder('proposal')
         .leftJoinAndSelect('proposal.jobId', 'jobs')
         .leftJoinAndSelect('proposal.freelancerId', 'user')
-        // .leftJoinAndSelect('proposal.jobOwner', 'jobs.ownerId')
-        .orderBy('proposal.createdAt');
-
-      if (freelancerId) {
-        proposals = proposals.andWhere('freelancerId = :id', {
+        .orderBy('proposal.createdAt')
+        .andWhere('freelancerId = :id', {
           id: freelancerId,
         });
-      }
-
       return proposals.getMany();
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
