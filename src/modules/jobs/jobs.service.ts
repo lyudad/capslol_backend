@@ -160,4 +160,21 @@ export default class JobsService {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }
+
+  async searchByOwner(ownerId: number): Promise<JobEntity[]> {
+    try {
+      const jobs = await this.jobRepository
+        .createQueryBuilder('jobs')
+        .leftJoinAndSelect('jobs.ownerId', 'owner')
+        .leftJoinAndSelect('jobs.categoryId', 'categories')
+        .leftJoinAndSelect('jobs.skills', 'skills')
+        .orderBy('jobs.createdAt', 'DESC')
+        .andWhere('ownerId = :id', {
+          id: ownerId,
+        });
+      return jobs.getMany();
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
 }

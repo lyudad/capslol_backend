@@ -8,12 +8,14 @@ import {
   ValidationPipe,
   HttpException,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiHeader } from '@nestjs/swagger';
 import InvitationService from './invitation.service';
 import CreateInvitationDto from './dto/create-invitation.dto';
 import JWTGuard from '../auth/guards/jwt.guard';
 import InvitationEntity from './entities/invitation.entity';
+import SearchInvitationsQuery from './dto/search-ivitations.dto';
 
 @ApiTags('Invitation')
 @ApiBearerAuth()
@@ -47,5 +49,17 @@ export default class InvitationController {
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
+  }
+
+  @Get('getInvitations')
+  @UsePipes(new ValidationPipe())
+  @UseGuards(JWTGuard)
+  async getInvitationsFreelancer(
+    @Query() query: SearchInvitationsQuery,
+  ): Promise<InvitationEntity[]> {
+    const offers = await this.invitationService.findByFreelancer(
+      query.freelancerId,
+    );
+    return offers;
   }
 }

@@ -17,6 +17,7 @@ import JWTGuard from '../auth/guards/jwt.guard';
 import SearchQuery from './dto/search.query';
 import JobEntity from './entities/job.entity';
 import GetJobQuery from './dto/get-job.query';
+import SearchByOwnerQuery from './dto/search-by-owner.query';
 
 @ApiTags('Jobs')
 @ApiBearerAuth()
@@ -75,5 +76,19 @@ export default class JobsController {
   async getJobById(@Query() query: GetJobQuery): Promise<JobEntity> {
     const job = await this.jobsService.findById(query.jobId);
     return job;
+  }
+
+  @Get('searchByOwner')
+  @UsePipes(new ValidationPipe())
+  async searchByOwner(
+    @Query() searchQuery: SearchByOwnerQuery,
+  ): Promise<JobEntity[]> {
+    try {
+      const { ownerId } = searchQuery;
+      const jobs = await this.jobsService.searchByOwner(ownerId);
+      return jobs;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 }
