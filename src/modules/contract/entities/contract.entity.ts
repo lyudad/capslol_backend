@@ -14,14 +14,6 @@ export default class ContractEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => UserEntity)
-  @JoinColumn({ name: 'ownerId' })
-  ownerId: number;
-
-  @ManyToOne(() => UserEntity)
-  @JoinColumn({ name: 'freelancerId' })
-  freelancerId: number;
-
   @ManyToOne(() => OfferEntity)
   @JoinColumn({ name: 'offerId' })
   offerId: number;
