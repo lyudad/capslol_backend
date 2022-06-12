@@ -1,4 +1,3 @@
-import UserEntity from 'src/modules/auth/entity/user.entity';
 import OfferEntity from 'src/modules/offer/entities/offer.entity';
 import {
   Column,
