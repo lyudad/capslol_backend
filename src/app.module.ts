@@ -1,6 +1,7 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import ContractModule from './modules/contract/contract.module';
 import InvitationModule from './modules/invitation/invitation.module';
 import ProposalsModule from './modules/proposals/proposals.module';
 import ExperiencesModule from './modules/experiences/experiences.module';
@@ -36,6 +37,7 @@ import OfferModule from './modules/offer/offer.module';
     ChatContactsModule,
     OfferModule,
     InvitationModule,
+    ContractModule,
   ],
   controllers: [AppController],
   providers: [AppService],
