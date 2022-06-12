@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsOptional, IsEnum } from 'class-validator';
-import Status from 'src/modules/offer/types/ offer.type';
+import { IsNotEmpty, IsNumber } from 'class-validator';
 
 export default class CreateContractDto {
   @ApiProperty()
@@ -12,11 +11,6 @@ export default class CreateContractDto {
   @IsNotEmpty()
   @IsNumber()
   readonly freelancerId: number;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsNumber()
-  readonly jobId: number;
 
   @ApiProperty()
   @IsNotEmpty()

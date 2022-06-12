@@ -21,10 +21,9 @@ export default class ContractService {
 
   async create(createContractDto: CreateContractDto): Promise<ContractEntity> {
     try {
-      const { ownerId, freelancerId, jobId, offerId } = createContractDto;
+      const { ownerId, freelancerId, offerId } = createContractDto;
       const owner = await this.userService.getUserById(ownerId);
       const freelancer = await this.userService.getUserById(freelancerId);
-      const job = await this.jobService.findById(jobId);
       const offer = await this.offerService.findOfferById(offerId);
 
       if (!owner) {
@@ -54,12 +53,6 @@ export default class ContractService {
         );
       }
 
-      if (!job) {
-        throw new HttpException(
-          ResponseMessage.JOB_NOT_FOUND,
-          HttpStatus.UNPROCESSABLE_ENTITY,
-        );
-      }
       if (!offer) {
         throw new HttpException(
           ResponseMessage.OFFER_NOT_FOUND,
@@ -89,8 +82,8 @@ export default class ContractService {
         .createQueryBuilder('contract')
         .leftJoinAndSelect('contract.ownerId', 'owner')
         .leftJoinAndSelect('contract.freelancerId', 'freelancer')
-        .leftJoinAndSelect('contract.jobId', 'job')
         .leftJoinAndSelect('contract.offerId', 'offer')
+        .leftJoinAndSelect('offer.jobId', 'job')
         .where('contract.id = :id', { id })
         .getOne();
       if (!result) {
@@ -111,8 +104,8 @@ export default class ContractService {
         .createQueryBuilder('contract')
         .leftJoinAndSelect('contract.ownerId', 'owner')
         .leftJoinAndSelect('contract.freelancerId', 'freelancer')
-        .leftJoinAndSelect('contract.jobId', 'job')
         .leftJoinAndSelect('contract.offerId', 'offer')
+        .leftJoinAndSelect('offer.jobId', 'job')
         .getMany();
       return result;
     } catch (error) {
