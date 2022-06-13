@@ -17,7 +17,7 @@ import JWTGuard from '../auth/guards/jwt.guard';
 import SearchQuery from './dto/search.query';
 import JobEntity from './entities/job.entity';
 import GetJobQuery from './dto/get-job.query';
-import CloseQuery from './dto/close-job.query';
+import ToogleQuery from './dto/toggle-job.query';
 
 @ApiTags('Jobs')
 @ApiBearerAuth()
@@ -78,8 +78,8 @@ export default class JobsController {
     return job;
   }
 
-  @Get('close')
-  async closeJob(@Query() query: CloseQuery): Promise<JobEntity> {
+  @Get('toggle')
+  async toogleStatus(@Query() query: ToogleQuery): Promise<JobEntity> {
     try {
       const response = await this.jobsService.toogleStatus(query.id);
       return response;
