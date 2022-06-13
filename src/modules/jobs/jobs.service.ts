@@ -160,4 +160,21 @@ export default class JobsService {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }
+
+  async toogleStatus(id: number): Promise<JobEntity> {
+    try {
+      await this.jobRepository
+        .createQueryBuilder()
+        .update()
+        .set({
+          isArchived: () => 'NOT isArchived',
+        })
+        .where('id = :id', { id })
+        .execute();
+      const result = await this.findById(id);
+      return result;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
 }

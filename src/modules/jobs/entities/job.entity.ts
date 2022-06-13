@@ -55,4 +55,7 @@ export default class JobEntity {
 
   @Column({ type: 'enum', enum: ProjectDuration, nullable: true })
   projectDuration: ProjectDuration;
+
+  @Column({ type: 'boolean', default: false })
+  isArchived: false;
 }

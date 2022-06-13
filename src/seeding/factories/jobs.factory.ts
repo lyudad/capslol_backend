@@ -15,6 +15,7 @@ define(JobEntity, (faker: typeof Faker) => {
   job.timeAvailable = getRandomInt(1, 12);
   job.projectDuration = getRandomElement(projectDuration) as ProjectDuration;
   job.languageLevel = getRandomElement(englishLevels) as English;
+  job.isArchived = false;
 
   return job;
 });

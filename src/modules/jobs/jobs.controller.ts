@@ -17,6 +17,7 @@ import JWTGuard from '../auth/guards/jwt.guard';
 import SearchQuery from './dto/search.query';
 import JobEntity from './entities/job.entity';
 import GetJobQuery from './dto/get-job.query';
+import ToogleQuery from './dto/toggle-job.query';
 
 @ApiTags('Jobs')
 @ApiBearerAuth()
@@ -75,5 +76,15 @@ export default class JobsController {
   async getJobById(@Query() query: GetJobQuery): Promise<JobEntity> {
     const job = await this.jobsService.findById(query.jobId);
     return job;
+  }
+
+  @Get('toggle')
+  async toogleStatus(@Query() query: ToogleQuery): Promise<JobEntity> {
+    try {
+      const response = await this.jobsService.toogleStatus(query.id);
+      return response;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 }
