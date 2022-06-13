@@ -120,7 +120,7 @@ export default class OfferService {
         .leftJoinAndSelect('offer.ownerId', 'owner')
         .leftJoinAndSelect('offer.freelancerId', 'freelancer')
         .leftJoinAndSelect('offer.jobId', 'job')
-        .orderBy('offer.createdAt')
+        .orderBy('-offer.createdAt')
         .andWhere('freelancerId = :id', {
           id,
         })

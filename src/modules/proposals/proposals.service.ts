@@ -90,7 +90,7 @@ export default class ProposalsService {
         .createQueryBuilder('proposal')
         .leftJoinAndSelect('proposal.jobId', 'jobs')
         .leftJoinAndSelect('proposal.freelancerId', 'user')
-        .orderBy('proposal.createdAt')
+        .orderBy('-proposal.createdAt')
         .andWhere('freelancerId = :id', {
           id: freelancerId,
         });

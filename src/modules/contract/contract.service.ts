@@ -1,9 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Role } from '../auth/types/user.interface';
-import AuthServive from '../auth/auth.service';
-import JobsService from '../jobs/jobs.service';
 import OfferService from '../offer/offer.service';
 import CreateContractDto from './dto/create-contract.dto';
 import ContractEntity from './entities/contract.entity';
@@ -15,52 +12,14 @@ export default class ContractService {
   constructor(
     @InjectRepository(ContractEntity)
     private readonly contractRepository: Repository<ContractEntity>,
-    private readonly userService: AuthServive,
-    private readonly jobService: JobsService,
     private readonly offerService: OfferService,
   ) {}
 
   async create(createContractDto: CreateContractDto): Promise<ContractEntity> {
     try {
-      const { ownerId, freelancerId, jobId, offerId } = createContractDto;
-      const owner = await this.userService.getUserById(ownerId);
-      const freelancer = await this.userService.getUserById(freelancerId);
-      const job = await this.jobService.findById(jobId);
+      const { offerId } = createContractDto;
       const offer = await this.offerService.findOfferById(offerId);
 
-      if (!owner) {
-        throw new HttpException(
-          ResponseMessage.OWNER_NOT_FOUND,
-          HttpStatus.UNPROCESSABLE_ENTITY,
-        );
-      }
-
-      if (!freelancer) {
-        throw new HttpException(
-          ResponseMessage.FREELANCER_NOT_FOUND,
-          HttpStatus.UNPROCESSABLE_ENTITY,
-        );
-      }
-
-      if (owner.role !== Role.JOB_OWNER) {
-        throw new HttpException(
-          ResponseMessage.OWNER_HAS_INVALID_ROLE,
-          HttpStatus.UNPROCESSABLE_ENTITY,
-        );
-      }
-      if (freelancer.role !== Role.FREELANCER) {
-        throw new HttpException(
-          ResponseMessage.FREELANCER_HAS_INVALID_ROLE,
-          HttpStatus.UNPROCESSABLE_ENTITY,
-        );
-      }
-
-      if (!job) {
-        throw new HttpException(
-          ResponseMessage.JOB_NOT_FOUND,
-          HttpStatus.UNPROCESSABLE_ENTITY,
-        );
-      }
       if (!offer) {
         throw new HttpException(
           ResponseMessage.OFFER_NOT_FOUND,
@@ -88,10 +47,10 @@ export default class ContractService {
     try {
       const result = await this.contractRepository
         .createQueryBuilder('contract')
-        .leftJoinAndSelect('contract.ownerId', 'owner')
-        .leftJoinAndSelect('contract.freelancerId', 'freelancer')
-        .leftJoinAndSelect('contract.jobId', 'job')
         .leftJoinAndSelect('contract.offerId', 'offer')
+        .leftJoinAndSelect('offer.jobId', 'job')
+        .leftJoinAndSelect('offer.ownerId', 'owner')
+        .leftJoinAndSelect('offer.freelancerId', 'freelancer')
         .where('contract.id = :id', { id })
         .getOne();
       if (!result) {
@@ -110,10 +69,10 @@ export default class ContractService {
     try {
       const result = await this.contractRepository
         .createQueryBuilder('contract')
-        .leftJoinAndSelect('contract.ownerId', 'owner')
-        .leftJoinAndSelect('contract.freelancerId', 'freelancer')
-        .leftJoinAndSelect('contract.jobId', 'job')
         .leftJoinAndSelect('contract.offerId', 'offer')
+        .leftJoinAndSelect('offer.jobId', 'job')
+        .leftJoinAndSelect('offer.ownerId', 'owner')
+        .leftJoinAndSelect('offer.freelancerId', 'freelancer')
         .getMany();
       return result;
     } catch (error) {
@@ -125,14 +84,14 @@ export default class ContractService {
     try {
       const contracts = await this.contractRepository
         .createQueryBuilder('contract')
+        .leftJoinAndSelect('contract.offerId', 'offer')
+        .leftJoinAndSelect('offer.jobId', 'job')
+        .leftJoinAndSelect('offer.ownerId', 'owner')
+        .leftJoinAndSelect('offer.freelancerId', 'freelancer')
+        .orderBy('-contract.createdAt')
         .andWhere('freelancerId = :id', {
           id,
         })
-        .leftJoinAndSelect('contract.ownerId', 'owner')
-        .leftJoinAndSelect('contract.freelancerId', 'freelancer')
-        .leftJoinAndSelect('contract.jobId', 'job')
-        // .leftJoinAndSelect('contract.offerId', 'offer')
-        .orderBy('contract.createdAt')
         .getMany();
       return contracts;
     } catch (error) {

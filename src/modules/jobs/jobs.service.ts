@@ -103,7 +103,7 @@ export default class JobsService {
         .leftJoinAndSelect('jobs.ownerId', 'user')
         .leftJoinAndSelect('jobs.categoryId', 'categories')
         .leftJoinAndSelect('jobs.skills', 'skills')
-        .orderBy('jobs.createdAt');
+        .orderBy('-jobs.createdAt');
 
       if (query) {
         qb = qb.andWhere('jobs.title like :q OR jobs.description like :q', {
@@ -168,7 +168,7 @@ export default class JobsService {
         .leftJoinAndSelect('jobs.ownerId', 'owner')
         .leftJoinAndSelect('jobs.categoryId', 'categories')
         .leftJoinAndSelect('jobs.skills', 'skills')
-        .orderBy('jobs.createdAt', 'DESC')
+        .orderBy('-jobs.createdAt', 'DESC')
         .andWhere('ownerId = :id', {
           id: ownerId,
         });

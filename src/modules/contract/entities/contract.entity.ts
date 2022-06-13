@@ -1,5 +1,3 @@
-import UserEntity from 'src/modules/auth/entity/user.entity';
-import JobEntity from 'src/modules/jobs/entities/job.entity';
 import OfferEntity from 'src/modules/offer/entities/offer.entity';
 import {
   Column,
@@ -14,18 +12,6 @@ import ContractStatus from '../types/contract.type';
 export default class ContractEntity {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @ManyToOne(() => JobEntity)
-  @JoinColumn({ name: 'jobId' })
-  jobId: number;
-
-  @ManyToOne(() => UserEntity)
-  @JoinColumn({ name: 'ownerId' })
-  ownerId: number;
-
-  @ManyToOne(() => UserEntity)
-  @JoinColumn({ name: 'freelancerId' })
-  freelancerId: number;
 
   @ManyToOne(() => OfferEntity)
   @JoinColumn({ name: 'offerId' })
