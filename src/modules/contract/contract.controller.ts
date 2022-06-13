@@ -9,12 +9,16 @@ import {
   UseGuards,
   HttpException,
   HttpStatus,
+  Query,
+  Put,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiHeader } from '@nestjs/swagger';
 import JWTGuard from '../auth/guards/jwt.guard';
 import ContractService from './contract.service';
 import CreateContractDto from './dto/create-contract.dto';
 import GetContractParam from './dto/get-contract.param';
+import SearchContractsQuery from './dto/search-contracts.query';
+import UpdateContractDto from './dto/update-contract.dto';
 import ContractEntity from './entities/contract.entity';
 
 @ApiTags('Contracts')
@@ -61,5 +65,40 @@ export default class ContractController {
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
+  }
+
+  @Get('search')
+  @UsePipes(new ValidationPipe())
+  @UseGuards(JWTGuard)
+  async getOffersByFreelancer(
+    @Query() query: SearchContractsQuery,
+  ): Promise<ContractEntity[]> {
+    try {
+      const offers = await this.contractService.findByFreelancer(
+        query.freelancerId,
+      );
+      return offers;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+    // async getOffersByFreelancer(
+    //   @Query() query: SearchContractsQuery,
+    // ): Promise<ContractEntity[]> {
+    //   const offers = await this.contractService.findByFreelancer(
+    //     query.freelancerId,
+    //   );
+    //   return offers;
+  }
+
+  @Put('changeStatus')
+  @UsePipes(new ValidationPipe())
+  @UseGuards(JWTGuard)
+  async update(
+    @Body() updateContractStatusDto: UpdateContractDto,
+  ): Promise<ContractEntity> {
+    const updatedStatus = await this.contractService.updateContractStatus(
+      updateContractStatusDto,
+    );
+    return updatedStatus;
   }
 }
