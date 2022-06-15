@@ -51,6 +51,46 @@ export default class PublicProfileService {
     }
   }
 
+  async search(
+    query?: string,
+    categoryId?: number,
+    skills?: string,
+  ): Promise<PublicProfile[]> {
+    try {
+      let qb = await this.repository
+        .createQueryBuilder('profile')
+        .leftJoinAndSelect('profile.user', 'user')
+        .leftJoinAndSelect('profile.categories', 'categories')
+        .leftJoinAndSelect('profile.skills', 'skills')
+        .orderBy('profile.createdAt');
+
+      if (query) {
+        qb = qb.andWhere(
+          'user.firstName like :q OR user.lastName like :q OR profile.other like :q',
+          {
+            q: `%${query}%`,
+          },
+        );
+      }
+      if (categoryId) {
+        qb = qb.andWhere('categories.id = :id', {
+          id: categoryId,
+        });
+      }
+
+      if (skills) {
+        const skillIds = skills.split('');
+        qb = qb.andWhere('skills.id IN (:ids)', {
+          ids: skillIds,
+        });
+      }
+
+      return qb.getMany();
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
+
   async findOne(id: number): Promise<PublicProfile> {
     try {
       return await this.repository

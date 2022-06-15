@@ -60,6 +60,7 @@ export default class JobsController {
   async search(@Query() searchQuery: SearchQuery): Promise<JobEntity[]> {
     const { q, category, skills, timeAvailable, price, languageLevel } =
       searchQuery;
+
     const response = await this.jobsService.search(
       q,
       category,
