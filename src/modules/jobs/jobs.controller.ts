@@ -9,6 +9,7 @@ import {
   Query,
   HttpException,
   HttpStatus,
+  Put,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
 import JobsService from './jobs.service';
@@ -17,9 +18,10 @@ import JWTGuard from '../auth/guards/jwt.guard';
 import SearchQuery from './dto/search.query';
 import JobEntity from './entities/job.entity';
 import GetJobQuery from './dto/get-job.query';
-import ToogleQuery from './dto/toggle-job.query';
+import ToggleQuery from './dto/toggle-job.query';
 import PageOptionsDto from './dto/page-options.dto';
 import PageDto from './dto/page.dto';
+import SearchByOwnerQuery from './dto/search-by-owner.query';
 
 @ApiTags('Jobs')
 @ApiBearerAuth()
@@ -63,6 +65,7 @@ export default class JobsController {
   async search(@Query() searchQuery: SearchQuery): Promise<JobEntity[]> {
     const { q, category, skills, timeAvailable, price, languageLevel } =
       searchQuery;
+
     const response = await this.jobsService.search(
       q,
       category,
@@ -83,10 +86,24 @@ export default class JobsController {
     return job;
   }
 
-  @Get('toggle')
-  async toogleStatus(@Query() query: ToogleQuery): Promise<JobEntity> {
+  @Get('searchByOwner')
+  @UsePipes(new ValidationPipe())
+  async searchByOwner(
+    @Query() searchQuery: SearchByOwnerQuery,
+  ): Promise<JobEntity[]> {
     try {
-      const response = await this.jobsService.toogleStatus(query.id);
+      const { ownerId } = searchQuery;
+      const jobs = await this.jobsService.searchByOwner(ownerId);
+      return jobs;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Put('toggle')
+  async toggleStatus(@Query() query: ToggleQuery): Promise<JobEntity> {
+    try {
+      const response = await this.jobsService.toggleStatus(query.id);
       return response;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
