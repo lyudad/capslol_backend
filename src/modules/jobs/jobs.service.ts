@@ -6,6 +6,9 @@ import CategoriesService from '../categories/categories.service';
 import SkillsService from '../skills/skills.service';
 import JobResponse from './constants/response.constants';
 import CreateJobDto from './dto/create-job.dto';
+import PageMetaDto from './dto/page-meta.dto';
+import PageOptionsDto from './dto/page-options.dto';
+import PageDto from './dto/page.dto';
 import JobEntity from './entities/job.entity';
 import { English } from './types/entity.types';
 
@@ -74,16 +77,25 @@ export default class JobsService {
     }
   }
 
-  async findAll(): Promise<JobEntity[]> {
+  async findAll(pageOptionsDto: PageOptionsDto): Promise<PageDto<JobEntity>> {
     try {
-      const jobs = await this.jobRepository
-        .createQueryBuilder('jobs')
+      const queryBuilder = await this.jobRepository.createQueryBuilder('jobs');
+      const jobs = await queryBuilder
         .leftJoinAndSelect('jobs.ownerId', 'owner')
         .leftJoinAndSelect('jobs.categoryId', 'categories')
         .leftJoinAndSelect('jobs.skills', 'skills')
-        .orderBy('jobs.createdAt', 'DESC')
+        .orderBy('jobs.createdAt', pageOptionsDto.order)
+        .skip(pageOptionsDto.skip)
+        .take(pageOptionsDto.take)
         .getMany();
-      return jobs;
+
+      const totalCount = await queryBuilder.getCount();
+
+      const meta = new PageMetaDto({
+        itemCount: totalCount,
+        options: pageOptionsDto,
+      });
+      return new PageDto(jobs, meta);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }

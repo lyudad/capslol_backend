@@ -32,7 +32,7 @@ import JWTStrategy from './strategies/jwt.strategy';
   exports: [AuthServive],
 })
 export default class AuthModule {
-  configure(consumer: MiddlewareConsumer) {
+  configure(consumer: MiddlewareConsumer): void {
     consumer.apply(AuthMiddlerware).forRoutes({
       path: '/auth/login',
       method: RequestMethod.POST,
