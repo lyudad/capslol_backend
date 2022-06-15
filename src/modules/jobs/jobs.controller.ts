@@ -9,6 +9,7 @@ import {
   Query,
   HttpException,
   HttpStatus,
+  Put,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
 import JobsService from './jobs.service';
@@ -18,6 +19,7 @@ import SearchQuery from './dto/search.query';
 import JobEntity from './entities/job.entity';
 import GetJobQuery from './dto/get-job.query';
 import SearchByOwnerQuery from './dto/search-by-owner.query';
+import ToggleQuery from './dto/toggle-job.query';
 
 @ApiTags('Jobs')
 @ApiBearerAuth()
@@ -87,6 +89,16 @@ export default class JobsController {
       const { ownerId } = searchQuery;
       const jobs = await this.jobsService.searchByOwner(ownerId);
       return jobs;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Put('toggle')
+  async toggleStatus(@Query() query: ToggleQuery): Promise<JobEntity> {
+    try {
+      const response = await this.jobsService.toggleStatus(query.id);
+      return response;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }

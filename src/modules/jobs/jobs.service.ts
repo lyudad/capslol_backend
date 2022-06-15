@@ -168,11 +168,28 @@ export default class JobsService {
         .leftJoinAndSelect('jobs.ownerId', 'owner')
         .leftJoinAndSelect('jobs.categoryId', 'categories')
         .leftJoinAndSelect('jobs.skills', 'skills')
-        .orderBy('-jobs.createdAt', 'DESC')
+        .orderBy('jobs.createdAt', 'DESC')
         .andWhere('ownerId = :id', {
           id: ownerId,
         });
       return jobs.getMany();
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
+
+  async toggleStatus(id: number): Promise<JobEntity> {
+    try {
+      await this.jobRepository
+        .createQueryBuilder()
+        .update()
+        .set({
+          isArchived: () => 'NOT isArchived',
+        })
+        .where('id = :id', { id })
+        .execute();
+      const result = await this.findById(id);
+      return result;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
