@@ -30,7 +30,7 @@ export default class PublicProfileService {
       });
       return newProfile;
     } catch (error) {
-      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+      throw new HttpException('check', HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }
 
