@@ -7,6 +7,9 @@ import {
   Param,
   Delete,
   Query,
+  Put,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import PublicProfileService from './public-profile.service';
@@ -14,6 +17,7 @@ import CreatePublicProfileDto from './dto/create-public-profile.dto';
 import UpdatePublicProfileDto from './dto/update-public-profile.dto';
 import PublicProfile from './entities/public-profile.entity';
 import SkillEntity from '../skills/entities/skill.entity';
+import UpdateProfileImageDto from './dto/update-image.dto';
 
 @ApiTags('Public Profile')
 @Controller('profiles')
@@ -53,5 +57,21 @@ export default class PublicProfileController {
   async UserId(@Param('id') userId: number): Promise<PublicProfile> {
     const profile = await this.publicProfileService.getByUserId(userId);
     return profile;
+  }
+
+  @Put('update')
+  async updateOwnerImage(
+    @Query('id') id: number,
+    @Body() updateProfileImageDto: UpdateProfileImageDto,
+  ): Promise<PublicProfile> {
+    try {
+      const profile = await this.publicProfileService.updateOwnerPhoto(
+        id,
+        updateProfileImageDto,
+      );
+      return profile;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 }
