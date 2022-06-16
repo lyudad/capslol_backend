@@ -103,7 +103,7 @@ export default class JobsService {
         .leftJoinAndSelect('jobs.ownerId', 'user')
         .leftJoinAndSelect('jobs.categoryId', 'categories')
         .leftJoinAndSelect('jobs.skills', 'skills')
-        .orderBy('jobs.createdAt');
+        .orderBy('-jobs.createdAt');
 
       if (query) {
         qb = qb.andWhere('jobs.title like :q OR jobs.description like :q', {
@@ -161,7 +161,24 @@ export default class JobsService {
     }
   }
 
-  async toogleStatus(id: number): Promise<JobEntity> {
+  async searchByOwner(ownerId: number): Promise<JobEntity[]> {
+    try {
+      const jobs = await this.jobRepository
+        .createQueryBuilder('jobs')
+        .leftJoinAndSelect('jobs.ownerId', 'owner')
+        .leftJoinAndSelect('jobs.categoryId', 'categories')
+        .leftJoinAndSelect('jobs.skills', 'skills')
+        .orderBy('jobs.createdAt', 'DESC')
+        .andWhere('ownerId = :id', {
+          id: ownerId,
+        });
+      return jobs.getMany();
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
+
+  async toggleStatus(id: number): Promise<JobEntity> {
     try {
       await this.jobRepository
         .createQueryBuilder()

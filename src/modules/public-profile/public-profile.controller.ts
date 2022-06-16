@@ -10,6 +10,9 @@ import {
   Put,
   HttpException,
   HttpStatus,
+  ValidationPipe,
+  UsePipes,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import PublicProfileService from './public-profile.service';
@@ -18,6 +21,8 @@ import UpdatePublicProfileDto from './dto/update-public-profile.dto';
 import PublicProfile from './entities/public-profile.entity';
 import SkillEntity from '../skills/entities/skill.entity';
 import UpdateProfileImageDto from './dto/update-image.dto';
+import JWTGuard from '../auth/guards/jwt.guard';
+import SearchQueryProfile from './dto/search.query';
 
 @ApiTags('Public Profile')
 @Controller('profiles')
@@ -33,6 +38,21 @@ export default class PublicProfileController {
   @Get('getById')
   findOne(@Query('user') id: number): Promise<PublicProfile> {
     return this.publicProfileService.findOne(id);
+  }
+
+  @Get('search')
+  @UsePipes(new ValidationPipe())
+  @UseGuards(JWTGuard)
+  async search(
+    @Query() searchQuery: SearchQueryProfile,
+  ): Promise<PublicProfile[]> {
+    const { q, category, skills } = searchQuery;
+    const response = await this.publicProfileService.search(
+      q,
+      category,
+      skills,
+    );
+    return response;
   }
 
   @Get()
