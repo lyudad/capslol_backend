@@ -34,7 +34,7 @@ export default class PublicProfile {
   @JoinColumn({ name: 'userId' })
   user: UserEntity;
 
-  @Column({ type: 'varchar', length: 385, nullable: false })
+  @Column({ type: 'varchar', length: 385, nullable: true })
   profileImage?: string;
 
   @Column({ type: 'integer' })
@@ -43,7 +43,7 @@ export default class PublicProfile {
   @Column({ type: 'integer' })
   availableHours?: number;
 
-  @Column({ type: 'varchar', length: 255, nullable: false })
+  @Column({ type: 'varchar', length: 255, nullable: true })
   position?: string;
 
   @Column({
@@ -53,14 +53,14 @@ export default class PublicProfile {
   })
   english: English;
 
-  @Column({ type: 'text', nullable: false })
+  @Column({ type: 'text', nullable: true })
   other?: string;
 
-  @ManyToMany(() => EducationEntity, { nullable: false })
+  @ManyToMany(() => EducationEntity, { nullable: true })
   @JoinTable({ name: 'educations_profiles' })
   educations: EducationEntity[];
 
-  @ManyToMany(() => ExperienceEntity, { nullable: false })
+  @ManyToMany(() => ExperienceEntity, { nullable: true })
   @JoinTable({ name: 'experiense_profiles' })
   experiense: ExperienceEntity[];
 
