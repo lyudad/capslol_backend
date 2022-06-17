@@ -7,6 +7,7 @@ import {
   HttpStatus,
   UsePipes,
   ValidationPipe,
+  Query,
 } from '@nestjs/common';
 import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import ChatContactsService from './chat-contacts.service';
@@ -44,6 +45,24 @@ export default class ChatContactsController {
   async findAll(): Promise<ChatContactEntity[]> {
     try {
       const chatContacts = await this.chatContactsService.findAll();
+
+      return chatContacts;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @ApiResponse({
+    type: ChatContactEntity,
+  })
+  @Get('getById')
+  async findByJobId(
+    @Query('jobId') jobId: number,
+  ): Promise<ChatContactEntity[]> {
+    try {
+      const chatContacts = await this.chatContactsService.getChatContactByJobId(
+        jobId,
+      );
 
       return chatContacts;
     } catch (error) {

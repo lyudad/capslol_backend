@@ -20,7 +20,7 @@ export default class MessageEntity {
   @JoinColumn({ name: 'senderId' })
   senderId: UserEntity;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', length: 1000 })
   content: string;
 
   @ManyToOne(() => ChatContactEntity, (chats: ChatContactEntity) => chats.id, {
