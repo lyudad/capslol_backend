@@ -11,3 +11,8 @@ export enum English {
   INTERMEDIATE = 'Intermediate',
   ADVANCED = 'Advanced',
 }
+
+export enum Order {
+  ASC = 'ASC',
+  DESC = 'DESC',
+}
