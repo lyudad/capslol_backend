@@ -1,14 +1,14 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class UpdateProfile1655383168259 implements MigrationInterface {
-  name = 'UpdateProfile1655383168259';
+export class NewMigartion1655545347724 implements MigrationInterface {
+  name = 'NewMigartion1655545347724';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `CREATE TABLE \`categories\` (\`id\` int NOT NULL AUTO_INCREMENT, \`categoryName\` varchar(255) NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+      `CREATE TABLE \`users\` (\`id\` int NOT NULL AUTO_INCREMENT, \`firstName\` varchar(50) NOT NULL, \`lastName\` varchar(50) NOT NULL DEFAULT '', \`role\` enum ('Freelancer', 'Job Owner', 'No set') NULL, \`email\` varchar(50) NOT NULL, \`phoneNumber\` varchar(25) NULL, \`password\` varchar(255) NULL, \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, \`isGoogle\` tinyint NULL DEFAULT 0, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
     );
     await queryRunner.query(
-      `CREATE TABLE \`users\` (\`id\` int NOT NULL AUTO_INCREMENT, \`firstName\` varchar(50) NOT NULL, \`lastName\` varchar(50) NOT NULL DEFAULT '', \`role\` enum ('Freelancer', 'Job Owner', 'No set') NULL, \`email\` varchar(50) NOT NULL, \`phoneNumber\` varchar(25) NULL, \`password\` varchar(255) NULL, \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, \`isGoogle\` tinyint NULL DEFAULT 0, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+      `CREATE TABLE \`categories\` (\`id\` int NOT NULL AUTO_INCREMENT, \`categoryName\` varchar(255) NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
     );
     await queryRunner.query(
       `CREATE TABLE \`educations\` (\`id\` int NOT NULL AUTO_INCREMENT, \`name\` varchar(255) NOT NULL, \`specialization\` varchar(255) NOT NULL, \`startAt\` varchar(255) NOT NULL, \`endAt\` varchar(255) NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
@@ -26,22 +26,22 @@ export class UpdateProfile1655383168259 implements MigrationInterface {
       `CREATE TABLE \`jobs\` (\`id\` int NOT NULL AUTO_INCREMENT, \`title\` text NOT NULL, \`description\` text NOT NULL, \`price\` int NOT NULL, \`timeAvailable\` int NOT NULL, \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, \`languageLevel\` enum ('No English', 'Beginner', 'Pre-Intermediate', 'Intermediate', 'Advanced') NULL, \`projectDuration\` enum ('less then 6 months', 'from 6 months to 1 year', 'over 1 year') NULL, \`isArchived\` tinyint NOT NULL DEFAULT 0, \`ownerId\` int NOT NULL, \`categoryId\` int NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
     );
     await queryRunner.query(
+      `CREATE TABLE \`proposals\` (\`id\` int NOT NULL AUTO_INCREMENT, \`hourRate\` int NOT NULL, \`coverLetter\` varchar(255) NOT NULL, \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, \`jobId\` int NOT NULL, \`freelancerId\` int NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE \`chat-contacts\` (\`id\` int NOT NULL AUTO_INCREMENT, \`isActive\` tinyint NULL DEFAULT 0, \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, \`proposalId\` int NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+    );
+    await queryRunner.query(
       `CREATE TABLE \`offers\` (\`id\` int NOT NULL AUTO_INCREMENT, \`hourRate\` int NOT NULL, \`status\` enum ('Declined', 'Accepted', 'Pending') NOT NULL DEFAULT 'Pending', \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, \`ownerId\` int NULL, \`freelancerId\` int NULL, \`jobId\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
     );
     await queryRunner.query(
       `CREATE TABLE \`contracts\` (\`id\` int NOT NULL AUTO_INCREMENT, \`status\` enum ('opened', 'closed') NOT NULL DEFAULT 'opened', \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, \`closedAt\` timestamp NULL, \`offerId\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
     );
     await queryRunner.query(
-      `CREATE TABLE \`proposals\` (\`id\` int NOT NULL AUTO_INCREMENT, \`hourRate\` int NOT NULL, \`coverLetter\` varchar(255) NOT NULL, \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, \`jobId\` int NOT NULL, \`freelancerId\` int NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
-    );
-    await queryRunner.query(
-      `CREATE TABLE \`chat-contacts\` (\`id\` int NOT NULL AUTO_INCREMENT, \`isActive\` tinyint NULL DEFAULT 0, \`proposalId\` int NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
-    );
-    await queryRunner.query(
       `CREATE TABLE \`invitations\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, \`ownerId\` int NULL, \`freelancerId\` int NULL, \`jobId\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
     );
     await queryRunner.query(
-      `CREATE TABLE \`messages\` (\`id\` int NOT NULL AUTO_INCREMENT, \`content\` varchar(255) NOT NULL, \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, \`senderId\` int NOT NULL, \`roomId\` int NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+      `CREATE TABLE \`messages\` (\`id\` int NOT NULL AUTO_INCREMENT, \`content\` varchar(1000) NOT NULL, \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, \`senderId\` int NOT NULL, \`roomId\` int NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
     );
     await queryRunner.query(
       `CREATE TABLE \`educations_profiles\` (\`profilesId\` int NOT NULL, \`educationsId\` int NOT NULL, INDEX \`IDX_7e05552fd1fee37b779b345ee0\` (\`profilesId\`), INDEX \`IDX_ee39d11300a2eab5491701d82f\` (\`educationsId\`), PRIMARY KEY (\`profilesId\`, \`educationsId\`)) ENGINE=InnoDB`,
@@ -71,6 +71,15 @@ export class UpdateProfile1655383168259 implements MigrationInterface {
       `ALTER TABLE \`jobs\` ADD CONSTRAINT \`FK_73a44bd20f3520849aafd304f69\` FOREIGN KEY (\`categoryId\`) REFERENCES \`categories\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
+      `ALTER TABLE \`proposals\` ADD CONSTRAINT \`FK_2c211ba3f45c099feb2a6f72e98\` FOREIGN KEY (\`jobId\`) REFERENCES \`jobs\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`proposals\` ADD CONSTRAINT \`FK_219edc10f7e4cc15dd19ea5d36d\` FOREIGN KEY (\`freelancerId\`) REFERENCES \`users\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`chat-contacts\` ADD CONSTRAINT \`FK_85a9a13329d027ce0c7b77d694d\` FOREIGN KEY (\`proposalId\`) REFERENCES \`proposals\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
       `ALTER TABLE \`offers\` ADD CONSTRAINT \`FK_b3d2e02b02f46a78defedc3650c\` FOREIGN KEY (\`ownerId\`) REFERENCES \`users\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
@@ -81,15 +90,6 @@ export class UpdateProfile1655383168259 implements MigrationInterface {
     );
     await queryRunner.query(
       `ALTER TABLE \`contracts\` ADD CONSTRAINT \`FK_b61e944e4f72458a7cd75e59020\` FOREIGN KEY (\`offerId\`) REFERENCES \`offers\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE \`proposals\` ADD CONSTRAINT \`FK_2c211ba3f45c099feb2a6f72e98\` FOREIGN KEY (\`jobId\`) REFERENCES \`jobs\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE \`proposals\` ADD CONSTRAINT \`FK_219edc10f7e4cc15dd19ea5d36d\` FOREIGN KEY (\`freelancerId\`) REFERENCES \`users\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE \`chat-contacts\` ADD CONSTRAINT \`FK_85a9a13329d027ce0c7b77d694d\` FOREIGN KEY (\`proposalId\`) REFERENCES \`proposals\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
       `ALTER TABLE \`invitations\` ADD CONSTRAINT \`FK_fb023082a27002a896ae4ee559a\` FOREIGN KEY (\`ownerId\`) REFERENCES \`users\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
@@ -173,15 +173,6 @@ export class UpdateProfile1655383168259 implements MigrationInterface {
       `ALTER TABLE \`invitations\` DROP FOREIGN KEY \`FK_fb023082a27002a896ae4ee559a\``,
     );
     await queryRunner.query(
-      `ALTER TABLE \`chat-contacts\` DROP FOREIGN KEY \`FK_85a9a13329d027ce0c7b77d694d\``,
-    );
-    await queryRunner.query(
-      `ALTER TABLE \`proposals\` DROP FOREIGN KEY \`FK_219edc10f7e4cc15dd19ea5d36d\``,
-    );
-    await queryRunner.query(
-      `ALTER TABLE \`proposals\` DROP FOREIGN KEY \`FK_2c211ba3f45c099feb2a6f72e98\``,
-    );
-    await queryRunner.query(
       `ALTER TABLE \`contracts\` DROP FOREIGN KEY \`FK_b61e944e4f72458a7cd75e59020\``,
     );
     await queryRunner.query(
@@ -192,6 +183,15 @@ export class UpdateProfile1655383168259 implements MigrationInterface {
     );
     await queryRunner.query(
       `ALTER TABLE \`offers\` DROP FOREIGN KEY \`FK_b3d2e02b02f46a78defedc3650c\``,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`chat-contacts\` DROP FOREIGN KEY \`FK_85a9a13329d027ce0c7b77d694d\``,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`proposals\` DROP FOREIGN KEY \`FK_219edc10f7e4cc15dd19ea5d36d\``,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`proposals\` DROP FOREIGN KEY \`FK_2c211ba3f45c099feb2a6f72e98\``,
     );
     await queryRunner.query(
       `ALTER TABLE \`jobs\` DROP FOREIGN KEY \`FK_73a44bd20f3520849aafd304f69\``,
@@ -238,10 +238,10 @@ export class UpdateProfile1655383168259 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE \`educations_profiles\``);
     await queryRunner.query(`DROP TABLE \`messages\``);
     await queryRunner.query(`DROP TABLE \`invitations\``);
-    await queryRunner.query(`DROP TABLE \`chat-contacts\``);
-    await queryRunner.query(`DROP TABLE \`proposals\``);
     await queryRunner.query(`DROP TABLE \`contracts\``);
     await queryRunner.query(`DROP TABLE \`offers\``);
+    await queryRunner.query(`DROP TABLE \`chat-contacts\``);
+    await queryRunner.query(`DROP TABLE \`proposals\``);
     await queryRunner.query(`DROP TABLE \`jobs\``);
     await queryRunner.query(`DROP TABLE \`skills\``);
     await queryRunner.query(
@@ -250,7 +250,7 @@ export class UpdateProfile1655383168259 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE \`profiles\``);
     await queryRunner.query(`DROP TABLE \`experiences\``);
     await queryRunner.query(`DROP TABLE \`educations\``);
-    await queryRunner.query(`DROP TABLE \`users\``);
     await queryRunner.query(`DROP TABLE \`categories\``);
+    await queryRunner.query(`DROP TABLE \`users\``);
   }
 }

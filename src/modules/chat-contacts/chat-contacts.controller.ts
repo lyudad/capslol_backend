@@ -12,6 +12,7 @@ import {
 import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import ChatContactsService from './chat-contacts.service';
 import CreateChatContactDto from './dto/create-chat-contact.dto';
+import SearchQuery from './dto/search.query';
 import ChatContactEntity from './entities/chat-contact.entity';
 
 @ApiTags('chat-contacts')
@@ -57,8 +58,10 @@ export default class ChatContactsController {
   })
   @Get('getById')
   async findByJobId(
-    @Query('jobId') jobId: number,
+    @Query() searchQuery: SearchQuery,
   ): Promise<ChatContactEntity[]> {
+    const { jobId } = searchQuery;
+
     try {
       const chatContacts = await this.chatContactsService.getChatContactByJobId(
         jobId,

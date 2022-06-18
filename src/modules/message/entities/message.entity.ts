@@ -31,4 +31,7 @@ export default class MessageEntity {
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: string;
+
+  @Column({ type: 'boolean', default: false })
+  isOffer: boolean;
 }

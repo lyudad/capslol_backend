@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import SkillEntity from '../skills/entities/skill.entity';
 import CreatePublicProfileDto from './dto/create-public-profile.dto';
-import UpdateProfileImageDto from './dto/update-image.dto';
 import UpdatePublicProfileDto from './dto/update-public-profile.dto';
 import PublicProfile from './entities/public-profile.entity';
 
@@ -147,26 +146,6 @@ export default class PublicProfileService {
         .select('')
         .where('userId = :userId', { userId })
         .getOne();
-
-      return profile;
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
-    }
-  }
-
-  async updateOwnerPhoto(
-    id: number,
-    updateProfileImageDto: UpdateProfileImageDto,
-  ): Promise<PublicProfile> {
-    try {
-      await this.repository
-        .createQueryBuilder()
-        .update()
-        .set({ profileImage: updateProfileImageDto.profileImage })
-        .where('id = :id', { id })
-        .execute();
-
-      const profile = await this.findOne(id);
 
       return profile;
     } catch (error) {
