@@ -24,4 +24,7 @@ export default class ChatContactEntity {
 
   @Column({ type: 'boolean', nullable: true, default: false })
   isActive: boolean;
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: string;
 }
