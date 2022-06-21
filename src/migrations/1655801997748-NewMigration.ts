@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class NewMigartion1655545347724 implements MigrationInterface {
-  name = 'NewMigartion1655545347724';
+export class NewMigration1655801997748 implements MigrationInterface {
+  name = 'NewMigration1655801997748';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
@@ -38,10 +38,10 @@ export class NewMigartion1655545347724 implements MigrationInterface {
       `CREATE TABLE \`contracts\` (\`id\` int NOT NULL AUTO_INCREMENT, \`status\` enum ('opened', 'closed') NOT NULL DEFAULT 'opened', \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, \`closedAt\` timestamp NULL, \`offerId\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
     );
     await queryRunner.query(
-      `CREATE TABLE \`invitations\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, \`ownerId\` int NULL, \`freelancerId\` int NULL, \`jobId\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+      `CREATE TABLE \`messages\` (\`id\` int NOT NULL AUTO_INCREMENT, \`content\` varchar(1000) NOT NULL, \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, \`isOffer\` tinyint NOT NULL DEFAULT 0, \`senderId\` int NOT NULL, \`roomId\` int NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
     );
     await queryRunner.query(
-      `CREATE TABLE \`messages\` (\`id\` int NOT NULL AUTO_INCREMENT, \`content\` varchar(1000) NOT NULL, \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, \`senderId\` int NOT NULL, \`roomId\` int NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+      `CREATE TABLE \`invitations\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, \`ownerId\` int NULL, \`freelancerId\` int NULL, \`jobId\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
     );
     await queryRunner.query(
       `CREATE TABLE \`educations_profiles\` (\`profilesId\` int NOT NULL, \`educationsId\` int NOT NULL, INDEX \`IDX_7e05552fd1fee37b779b345ee0\` (\`profilesId\`), INDEX \`IDX_ee39d11300a2eab5491701d82f\` (\`educationsId\`), PRIMARY KEY (\`profilesId\`, \`educationsId\`)) ENGINE=InnoDB`,
@@ -92,6 +92,12 @@ export class NewMigartion1655545347724 implements MigrationInterface {
       `ALTER TABLE \`contracts\` ADD CONSTRAINT \`FK_b61e944e4f72458a7cd75e59020\` FOREIGN KEY (\`offerId\`) REFERENCES \`offers\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
+      `ALTER TABLE \`messages\` ADD CONSTRAINT \`FK_2db9cf2b3ca111742793f6c37ce\` FOREIGN KEY (\`senderId\`) REFERENCES \`users\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`messages\` ADD CONSTRAINT \`FK_aaa8a6effc7bd20a1172d3a3bc8\` FOREIGN KEY (\`roomId\`) REFERENCES \`chat-contacts\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
       `ALTER TABLE \`invitations\` ADD CONSTRAINT \`FK_fb023082a27002a896ae4ee559a\` FOREIGN KEY (\`ownerId\`) REFERENCES \`users\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
@@ -99,12 +105,6 @@ export class NewMigartion1655545347724 implements MigrationInterface {
     );
     await queryRunner.query(
       `ALTER TABLE \`invitations\` ADD CONSTRAINT \`FK_49951fcfd1f7d0b5a5c2e4b07b7\` FOREIGN KEY (\`jobId\`) REFERENCES \`jobs\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE \`messages\` ADD CONSTRAINT \`FK_2db9cf2b3ca111742793f6c37ce\` FOREIGN KEY (\`senderId\`) REFERENCES \`users\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE \`messages\` ADD CONSTRAINT \`FK_aaa8a6effc7bd20a1172d3a3bc8\` FOREIGN KEY (\`roomId\`) REFERENCES \`chat-contacts\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
       `ALTER TABLE \`educations_profiles\` ADD CONSTRAINT \`FK_7e05552fd1fee37b779b345ee08\` FOREIGN KEY (\`profilesId\`) REFERENCES \`profiles\`(\`id\`) ON DELETE CASCADE ON UPDATE CASCADE`,
@@ -158,12 +158,6 @@ export class NewMigartion1655545347724 implements MigrationInterface {
       `ALTER TABLE \`educations_profiles\` DROP FOREIGN KEY \`FK_7e05552fd1fee37b779b345ee08\``,
     );
     await queryRunner.query(
-      `ALTER TABLE \`messages\` DROP FOREIGN KEY \`FK_aaa8a6effc7bd20a1172d3a3bc8\``,
-    );
-    await queryRunner.query(
-      `ALTER TABLE \`messages\` DROP FOREIGN KEY \`FK_2db9cf2b3ca111742793f6c37ce\``,
-    );
-    await queryRunner.query(
       `ALTER TABLE \`invitations\` DROP FOREIGN KEY \`FK_49951fcfd1f7d0b5a5c2e4b07b7\``,
     );
     await queryRunner.query(
@@ -171,6 +165,12 @@ export class NewMigartion1655545347724 implements MigrationInterface {
     );
     await queryRunner.query(
       `ALTER TABLE \`invitations\` DROP FOREIGN KEY \`FK_fb023082a27002a896ae4ee559a\``,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`messages\` DROP FOREIGN KEY \`FK_aaa8a6effc7bd20a1172d3a3bc8\``,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`messages\` DROP FOREIGN KEY \`FK_2db9cf2b3ca111742793f6c37ce\``,
     );
     await queryRunner.query(
       `ALTER TABLE \`contracts\` DROP FOREIGN KEY \`FK_b61e944e4f72458a7cd75e59020\``,
@@ -236,8 +236,8 @@ export class NewMigartion1655545347724 implements MigrationInterface {
       `DROP INDEX \`IDX_7e05552fd1fee37b779b345ee0\` ON \`educations_profiles\``,
     );
     await queryRunner.query(`DROP TABLE \`educations_profiles\``);
-    await queryRunner.query(`DROP TABLE \`messages\``);
     await queryRunner.query(`DROP TABLE \`invitations\``);
+    await queryRunner.query(`DROP TABLE \`messages\``);
     await queryRunner.query(`DROP TABLE \`contracts\``);
     await queryRunner.query(`DROP TABLE \`offers\``);
     await queryRunner.query(`DROP TABLE \`chat-contacts\``);
