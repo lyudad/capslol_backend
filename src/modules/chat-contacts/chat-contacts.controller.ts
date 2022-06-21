@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Controller,
   Get,
@@ -57,14 +58,13 @@ export default class ChatContactsController {
     type: ChatContactEntity,
   })
   @Get('getById')
-  async findByJobId(
-    @Query() searchQuery: SearchQuery,
-  ): Promise<ChatContactEntity[]> {
-    const { jobId } = searchQuery;
+  async findByJobId(@Query() searchQuery: SearchQuery): Promise<any> {
+    const { jobId, freelancerId } = searchQuery;
 
     try {
       const chatContacts = await this.chatContactsService.getChatContactByJobId(
         jobId,
+        freelancerId,
       );
 
       return chatContacts;

@@ -1,4 +1,5 @@
-﻿import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+﻿/* eslint-disable @typescript-eslint/no-explicit-any */
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import CreateChatContactDto from './dto/create-chat-contact.dto';
@@ -65,15 +66,20 @@ export default class ChatContactsService {
     }
   }
 
-  async getChatContactByJobId(jobId: number): Promise<ChatContactEntity[]> {
+  async getChatContactByJobId(
+    jobId: number,
+    freelancerId: number,
+  ): Promise<any> {
     try {
       let chatContact = await this.repository
         .createQueryBuilder('contacts')
         .leftJoinAndSelect('contacts.proposalId', 'proposals')
         .leftJoinAndSelect('proposals.freelancerId', 'users')
         .leftJoinAndSelect('proposals.jobId', 'jobs')
-        .leftJoinAndSelect('jobs.ownerId', 'user')
-        .orderBy('-contacts.createdAt');
+        .leftJoinAndSelect('jobs.ownerId', 'user');
+      // .where('contacts.proposalId.jobId.id =:id', { id: jobId })
+      // .andWhere({ 'users.id': freelancerId });
+      // .orderBy('-contacts.createdAt');
 
       if (jobId) {
         chatContact = chatContact.andWhere('jobId = :id', {
@@ -81,7 +87,13 @@ export default class ChatContactsService {
         });
       }
 
-      return chatContact.getMany();
+      if (freelancerId) {
+        chatContact = chatContact.andWhere('freelancerId = :id', {
+          id: freelancerId,
+        });
+      }
+      console.log(chatContact);
+      return chatContact.getOne();
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
