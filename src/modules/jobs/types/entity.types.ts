@@ -5,14 +5,8 @@ export enum ProjectDuration {
 }
 
 export enum English {
-  NOENGLISH = 'No English',
   BEGINNER = 'Beginner',
   PREINTERMEDIATE = 'Pre-Intermediate',
   INTERMEDIATE = 'Intermediate',
   ADVANCED = 'Advanced',
-}
-
-export enum Order {
-  ASC = 'ASC',
-  DESC = 'DESC',
 }

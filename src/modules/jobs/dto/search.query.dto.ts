@@ -1,8 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNumberString, IsOptional, IsString } from 'class-validator';
+import PageOptionsDto from 'src/shared/DTOs/page-options.dto';
 import { English } from '../types/entity.types';
 
-export default class SearchQuery {
+export default class SearchQueryDto extends PageOptionsDto {
   @ApiProperty({
     description: 'search queries',
     required: false,
@@ -47,4 +48,6 @@ export default class SearchQuery {
   @IsNumberString()
   @IsOptional()
   readonly skills?: string;
+
+  // TODO add projectDuration filter
 }

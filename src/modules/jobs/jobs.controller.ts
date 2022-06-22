@@ -12,16 +12,15 @@ import {
   Put,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
+import PageDto from 'src/shared/DTOs/page.dto';
 import JobsService from './jobs.service';
 import CreateJobDto from './dto/create-job.dto';
 import JWTGuard from '../auth/guards/jwt.guard';
-import SearchQuery from './dto/search.query';
 import JobEntity from './entities/job.entity';
 import GetJobQuery from './dto/get-job.query';
 import ToggleQuery from './dto/toggle-job.query';
-import PageOptionsDto from './dto/page-options.dto';
-import PageDto from './dto/page.dto';
 import SearchByOwnerQuery from './dto/search-by-owner.query';
+import SearchQueryDto from './dto/search.query.dto';
 
 @ApiTags('Jobs')
 @ApiBearerAuth()
@@ -49,33 +48,14 @@ export default class JobsController {
   @UsePipes(new ValidationPipe())
   @UseGuards(JWTGuard)
   async findAll(
-    @Query() pageOptionsDto: PageOptionsDto,
+    @Query() searchQueryDto: SearchQueryDto,
   ): Promise<PageDto<JobEntity>> {
     try {
-      const response = await this.jobsService.findAll(pageOptionsDto);
+      const response = await this.jobsService.findAll(searchQueryDto);
       return response;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
-  }
-
-  @Get('search')
-  @UsePipes(new ValidationPipe())
-  @UseGuards(JWTGuard)
-  async search(@Query() searchQuery: SearchQuery): Promise<JobEntity[]> {
-    const { q, category, skills, timeAvailable, price, languageLevel } =
-      searchQuery;
-
-    const response = await this.jobsService.search(
-      q,
-      category,
-      skills,
-      timeAvailable,
-      price,
-      languageLevel,
-    );
-
-    return response;
   }
 
   @Get('getJob')

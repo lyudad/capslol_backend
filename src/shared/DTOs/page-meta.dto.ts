@@ -8,10 +8,10 @@ interface pageMetaInterface {
 
 export default class PageMetaDto {
   @ApiProperty()
-  readonly page: number = 1;
+  readonly page: number;
 
   @ApiProperty()
-  readonly take: number = 10;
+  readonly take: number;
 
   @ApiProperty()
   readonly itemCount: number;
@@ -26,12 +26,11 @@ export default class PageMetaDto {
   readonly hasNextPage: boolean;
 
   constructor(pageMetaParams: pageMetaInterface) {
-    this.page = Number(pageMetaParams.options.page) || this.page;
-    this.take = Number(pageMetaParams.options.take) || this.take;
+    this.page = pageMetaParams.options.page;
+    this.take = pageMetaParams.options.take;
     this.itemCount = pageMetaParams.itemCount;
-    this.pageCount = Math.floor(this.itemCount / this.take);
+    this.pageCount = Math.ceil(this.itemCount / this.take);
     this.hasPreviousPage = this.page > 1;
     this.hasNextPage = this.page < this.pageCount;
-    Number();
   }
 }

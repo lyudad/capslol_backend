@@ -1,16 +1,16 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import PageOptionsDto from 'src/shared/DTOs/page-options.dto';
+import PageDto from 'src/shared/DTOs/page.dto';
 import AuthServive from '../auth/auth.service';
 import CategoriesService from '../categories/categories.service';
 import SkillsService from '../skills/skills.service';
 import JobResponse from './constants/response.constants';
 import CreateJobDto from './dto/create-job.dto';
-import PageMetaDto from './dto/page-meta.dto';
-import PageOptionsDto from './dto/page-options.dto';
-import PageDto from './dto/page.dto';
+import PageMetaDto from '../../shared/DTOs/page-meta.dto';
+import SearchQueryDto from './dto/search.query.dto';
 import JobEntity from './entities/job.entity';
-import { English } from './types/entity.types';
 
 @Injectable()
 export default class JobsService {
@@ -77,81 +77,66 @@ export default class JobsService {
     }
   }
 
-  async findAll(pageOptionsDto: PageOptionsDto): Promise<PageDto<JobEntity>> {
+  async findAll(searchQueryDto: SearchQueryDto): Promise<PageDto<JobEntity>> {
     try {
-      const queryBuilder = await this.jobRepository.createQueryBuilder('jobs');
-      const jobs = await queryBuilder
-        .leftJoinAndSelect('jobs.ownerId', 'owner')
-        .leftJoinAndSelect('jobs.categoryId', 'categories')
-        .leftJoinAndSelect('jobs.skills', 'skills')
-        .orderBy('jobs.createdAt', pageOptionsDto.order)
-        .skip(pageOptionsDto.skip)
-        .take(pageOptionsDto.take)
-        .getMany();
+      const pagination = new PageOptionsDto();
+      Object.assign(pagination, searchQueryDto);
 
-      const totalCount = await queryBuilder.getCount();
-
-      const meta = new PageMetaDto({
-        itemCount: totalCount,
-        options: pageOptionsDto,
-      });
-      return new PageDto(jobs, meta);
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
-    }
-  }
-
-  async search(
-    query?: string,
-    categoryId?: number,
-    skills?: string,
-    timeAvailable?: number,
-    price?: number,
-    languageLevel?: English,
-  ): Promise<JobEntity[]> {
-    try {
       let qb = await this.jobRepository
         .createQueryBuilder('jobs')
         .leftJoinAndSelect('jobs.ownerId', 'user')
         .leftJoinAndSelect('jobs.categoryId', 'categories')
         .leftJoinAndSelect('jobs.skills', 'skills')
-        .orderBy('-jobs.createdAt');
+        .orderBy('jobs.createdAt', pagination.order);
 
-      if (query) {
+      if (searchQueryDto.q) {
         qb = qb.andWhere('jobs.title like :q OR jobs.description like :q', {
-          q: `%${query}%`,
+          q: `%${searchQueryDto.q}%`,
         });
       }
-      if (categoryId) {
+      if (searchQueryDto.category) {
         qb = qb.andWhere('categories.id = :id', {
-          id: categoryId,
+          id: searchQueryDto.category,
         });
       }
 
-      if (skills) {
-        const skillIds = skills.split('');
+      if (searchQueryDto.skills) {
+        const skillIds = searchQueryDto.skills.split('');
         qb = qb.andWhere('skills.id IN (:ids)', {
           ids: skillIds,
         });
       }
 
-      if (timeAvailable) {
+      if (searchQueryDto.timeAvailable) {
         qb = qb.andWhere('jobs.timeAvailable = :timeAvailable', {
-          timeAvailable,
+          timeAvailable: searchQueryDto.timeAvailable,
         });
       }
 
-      if (languageLevel) {
+      if (searchQueryDto.languageLevel) {
         qb = qb.andWhere('jobs.languageLevel = :languageLevel', {
-          languageLevel,
+          languageLevel: searchQueryDto.languageLevel,
         });
       }
 
-      if (price) {
-        qb = qb.andWhere('jobs.price = :price', { price });
+      if (searchQueryDto.price) {
+        qb = qb.andWhere('jobs.price = :price', {
+          price: searchQueryDto.price,
+        });
       }
 
-      return qb.getMany();
+      const jobs = await qb
+        .skip(pagination.skip)
+        .take(pagination.take)
+        .getMany();
+
+      const totalCount = await qb.getCount();
+
+      const meta = new PageMetaDto({
+        itemCount: totalCount,
+        options: pagination,
+      });
+      return new PageDto(jobs, meta);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
