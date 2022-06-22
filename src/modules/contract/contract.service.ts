@@ -111,4 +111,23 @@ export default class ContractService {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }
+
+  async findByOfferId(id: number): Promise<ContractEntity> {
+    try {
+      const contracts = await this.contractRepository
+        .createQueryBuilder('contract')
+        .leftJoinAndSelect('contract.offerId', 'offer')
+        .leftJoinAndSelect('offer.jobId', 'job')
+        .leftJoinAndSelect('offer.ownerId', 'owner')
+        .leftJoinAndSelect('offer.freelancerId', 'freelancer')
+        .orderBy('-contract.createdAt')
+        .andWhere('offerId = :id', {
+          id,
+        })
+        .getOne();
+      return contracts;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
 }
