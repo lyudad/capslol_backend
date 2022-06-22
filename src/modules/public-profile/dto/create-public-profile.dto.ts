@@ -33,14 +33,14 @@ export default class CreatePublicProfileDto {
   @ApiProperty({
     description: 'Recommended hourly rate in dollars (number)',
   })
-  @IsNotEmpty()
+  @IsOptional()
   hourRate: number;
 
   @ApiProperty({
     description: 'Ability to set aside time for daily work (number)',
   })
   @IsNumber()
-  @IsNotEmpty()
+  @IsOptional()
   availableHours: number;
 
   @IsArray()
@@ -52,7 +52,7 @@ export default class CreatePublicProfileDto {
   educations?: [];
 
   @IsNumber()
-  @IsNotEmpty()
+  @IsOptional()
   categoryId: number;
 
   @ApiProperty({
@@ -68,7 +68,7 @@ export default class CreatePublicProfileDto {
     enum: English,
   })
   @IsEnum(English)
-  @IsNotEmpty()
+  @IsOptional()
   english: English;
 
   @IsString()
