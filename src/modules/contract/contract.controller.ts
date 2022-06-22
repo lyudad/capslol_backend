@@ -17,9 +17,10 @@ import JWTGuard from '../auth/guards/jwt.guard';
 import ContractService from './contract.service';
 import CreateContractDto from './dto/create-contract.dto';
 import GetContractParam from './dto/get-contract.param';
-import SearchContractsQuery from './dto/search-contracts.query';
+import SearchByOwnerQuery from './dto/search-by-owner.query';
 import UpdateContractDto from './dto/update-contract.dto';
 import ContractEntity from './entities/contract.entity';
+import SearchByFreelancerQuery from './dto/search-by-freelancer.query';
 
 @ApiTags('Contracts')
 @ApiBearerAuth()
@@ -71,13 +72,27 @@ export default class ContractController {
   @UsePipes(new ValidationPipe())
   @UseGuards(JWTGuard)
   async getOffersByFreelancer(
-    @Query() query: SearchContractsQuery,
+    @Query() query: SearchByFreelancerQuery,
   ): Promise<ContractEntity[]> {
     try {
-      const offers = await this.contractService.findByFreelancer(
+      const contracts = await this.contractService.findByFreelancer(
         query.freelancerId,
       );
-      return offers;
+      return contracts;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Get('searchByOwnerId')
+  @UsePipes(new ValidationPipe())
+  async searchByOwnerId(
+    @Query() searchQuery: SearchByOwnerQuery,
+  ): Promise<ContractEntity[]> {
+    try {
+      const { ownerId } = searchQuery;
+      const jobs = await this.contractService.searchByOwnerId(ownerId);
+      return jobs;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }

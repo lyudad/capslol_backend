@@ -99,6 +99,25 @@ export default class ContractService {
     }
   }
 
+  async searchByOwnerId(ownerId: number): Promise<ContractEntity[]> {
+    try {
+      const contracts = await this.contractRepository
+        .createQueryBuilder('contract')
+        .leftJoinAndSelect('contract.offerId', 'offer')
+        .leftJoinAndSelect('offer.jobId', 'job')
+        .leftJoinAndSelect('offer.ownerId', 'owner')
+        .leftJoinAndSelect('offer.freelancerId', 'freelancer')
+        .orderBy('contract.createdAt')
+        .andWhere('owner.id = :id', {
+          id: ownerId,
+        })
+        .getMany();
+      return contracts;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
+
   async updateContractStatus(
     updateContractStatusDto: UpdateContractDto,
   ): Promise<ContractEntity> {
