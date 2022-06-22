@@ -65,7 +65,28 @@ export default class ChatContactsService {
     }
   }
 
-  async getChatContactByJobId(jobId: number): Promise<ChatContactEntity[]> {
+  async getChatContactByFreelancerId(id: number): Promise<ChatContactEntity> {
+    try {
+      const chatContact = await this.repository
+        .createQueryBuilder('contacts')
+        .leftJoinAndSelect('contacts.proposalId', 'proposals')
+        .leftJoinAndSelect('proposals.freelancerId', 'users')
+        .leftJoinAndSelect('proposals.jobId', 'jobs')
+        .leftJoinAndSelect('jobs.ownerId', 'user')
+        .where('freelancerId =:id', { id })
+        .orderBy('-contacts.createdAt')
+        .getOne();
+
+      return chatContact;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
+
+  async getChatContactByJobId(
+    jobId: number,
+    freelancerId: number,
+  ): Promise<ChatContactEntity> {
     try {
       let chatContact = await this.repository
         .createQueryBuilder('contacts')
@@ -73,15 +94,12 @@ export default class ChatContactsService {
         .leftJoinAndSelect('proposals.freelancerId', 'users')
         .leftJoinAndSelect('proposals.jobId', 'jobs')
         .leftJoinAndSelect('jobs.ownerId', 'user')
-        .orderBy('-contacts.createdAt');
+        .where('jobId =:id', { id: jobId })
+        .getOne();
 
-      if (jobId) {
-        chatContact = chatContact.andWhere('jobId = :id', {
-          id: jobId,
-        });
-      }
+      chatContact = await this.getChatContactByFreelancerId(freelancerId);
 
-      return chatContact.getMany();
+      return chatContact;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }

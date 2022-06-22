@@ -109,4 +109,18 @@ export default class ContractController {
     );
     return updatedStatus;
   }
+
+  @Get('getByOfferId')
+  @UsePipes(new ValidationPipe())
+  @UseGuards(JWTGuard)
+  async getByOfferId(
+    @Query('offerId') offerId: number,
+  ): Promise<ContractEntity> {
+    try {
+      const offer = await this.contractService.findByOfferId(offerId);
+      return offer;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
 }

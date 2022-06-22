@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumberString } from 'class-validator';
 
-export default class SearchByFreelancerQuery {
+export default class SearchByFreelancer {
   @ApiProperty({
     description: 'contract identifier',
   })

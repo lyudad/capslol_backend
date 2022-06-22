@@ -59,12 +59,13 @@ export default class ChatContactsController {
   @Get('getById')
   async findByJobId(
     @Query() searchQuery: SearchQuery,
-  ): Promise<ChatContactEntity[]> {
-    const { jobId } = searchQuery;
+  ): Promise<ChatContactEntity> {
+    const { jobId, freelancerId } = searchQuery;
 
     try {
       const chatContacts = await this.chatContactsService.getChatContactByJobId(
         jobId,
+        freelancerId,
       );
 
       return chatContacts;
