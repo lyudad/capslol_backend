@@ -11,7 +11,7 @@ define(JobEntity, (faker: typeof Faker) => {
 
   job.title = faker.lorem.words(5);
   job.description = faker.lorem.paragraphs();
-  job.price = getRandomInt(1, 1000);
+  job.price = getRandomInt(1, 50);
   job.timeAvailable = getRandomInt(1, 12);
   job.projectDuration = getRandomElement(projectDuration) as ProjectDuration;
   job.languageLevel = getRandomElement(englishLevels) as English;

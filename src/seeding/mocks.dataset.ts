@@ -10,7 +10,6 @@ export const categories: string[] = [
 ];
 
 export const englishLevels: string[] = [
-  'No English',
   'Beginner',
   'Pre-Intermediate',
   'Intermediate',
