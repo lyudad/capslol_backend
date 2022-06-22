@@ -81,13 +81,6 @@ export default class ContractController {
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
-    // async getOffersByFreelancer(
-    //   @Query() query: SearchContractsQuery,
-    // ): Promise<ContractEntity[]> {
-    //   const offers = await this.contractService.findByFreelancer(
-    //     query.freelancerId,
-    //   );
-    //   return offers;
   }
 
   @Put('changeStatus')
@@ -100,5 +93,19 @@ export default class ContractController {
       updateContractStatusDto,
     );
     return updatedStatus;
+  }
+
+  @Get('getByOfferId')
+  @UsePipes(new ValidationPipe())
+  @UseGuards(JWTGuard)
+  async getByOfferId(
+    @Query('offerId') offerId: number,
+  ): Promise<ContractEntity> {
+    try {
+      const offer = await this.contractService.findByOfferId(offerId);
+      return offer;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 }
