@@ -37,10 +37,10 @@ export default class PublicProfile {
   @Column({ type: 'varchar', length: 385, nullable: true })
   profileImage?: string;
 
-  @Column({ type: 'integer' })
+  @Column({ type: 'integer', nullable: true })
   hourRate?: number;
 
-  @Column({ type: 'integer' })
+  @Column({ type: 'integer', nullable: true })
   availableHours?: number;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
@@ -50,6 +50,7 @@ export default class PublicProfile {
     type: 'enum',
     enum: English,
     default: English.NOSET,
+    nullable: true,
   })
   english: English;
 
@@ -64,10 +65,14 @@ export default class PublicProfile {
   @JoinTable({ name: 'experiense_profiles' })
   experiense: ExperienceEntity[];
 
-  @ManyToOne(() => CategoryEntity, (category: CategoryEntity) => category.id)
+  @ManyToOne(() => CategoryEntity, (category: CategoryEntity) => category.id, {
+    nullable: true,
+  })
   categories: CategoryEntity[];
 
-  @ManyToMany(() => SkillEntity)
+  @ManyToMany(() => SkillEntity, {
+    nullable: true,
+  })
   @JoinTable({ name: 'skills_profiles' })
   skills: SkillEntity[];
 
