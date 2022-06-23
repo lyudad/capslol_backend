@@ -58,6 +58,8 @@ export default class PublicProfileController {
   }
 
   @Patch()
+  @UsePipes(new ValidationPipe())
+  @UseGuards(JWTGuard)
   update(
     @Body() updatePublicProfileDto: UpdatePublicProfileDto,
   ): Promise<PublicProfile> {
