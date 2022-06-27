@@ -11,6 +11,8 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiHeader } from '@nestjs/swagger';
+import PageOptionsDto from 'src/shared/DTOs/page-options.dto';
+import PageDto from 'src/shared/DTOs/page.dto';
 import InvitationService from './invitation.service';
 import CreateInvitationDto from './dto/create-invitation.dto';
 import JWTGuard from '../auth/guards/jwt.guard';
@@ -42,9 +44,13 @@ export default class InvitationController {
   }
 
   @Get()
-  async findAll(): Promise<InvitationEntity[]> {
+  @UsePipes(new ValidationPipe())
+  @UseGuards(JWTGuard)
+  async findAll(
+    @Query() pageOptionsDto: PageOptionsDto,
+  ): Promise<PageDto<InvitationEntity>> {
     try {
-      const invitations = await this.invitationService.findAll();
+      const invitations = await this.invitationService.findAll(pageOptionsDto);
       return invitations;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
