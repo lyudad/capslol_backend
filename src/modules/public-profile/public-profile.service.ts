@@ -1,5 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import PageMetaDto from 'src/shared/DTOs/page-meta.dto';
+import PageOptionsDto from 'src/shared/DTOs/page-options.dto';
+import PageDto from 'src/shared/DTOs/page.dto';
 import { Repository } from 'typeorm';
 import SkillEntity from '../skills/entities/skill.entity';
 import CreatePublicProfileDto from './dto/create-public-profile.dto';
@@ -34,18 +37,33 @@ export default class PublicProfileService {
     }
   }
 
-  async findAll(): Promise<PublicProfile[]> {
+  async findAll(
+    pageOptionsDto: PageOptionsDto,
+  ): Promise<PageDto<PublicProfile>> {
     try {
-      const profiles = await this.repository
+      const pagination = new PageOptionsDto();
+      Object.assign(pagination, pageOptionsDto);
+
+      const qb = await this.repository
         .createQueryBuilder('profile')
         .leftJoinAndSelect('profile.user', 'user')
         .leftJoinAndSelect('profile.experiense', 'experiense')
         .leftJoinAndSelect('profile.educations', 'educations')
         .leftJoinAndSelect('profile.categories', 'categories')
         .leftJoinAndSelect('profile.skills', 'skills')
+        .orderBy('profile.createdAt', pagination.order);
+
+      const totalCount = await qb.getCount();
+      const profiles = await qb
+        .skip(pagination.skip)
+        .take(pagination.take)
         .getMany();
 
-      return profiles;
+      const meta = new PageMetaDto({
+        itemCount: totalCount,
+        options: pagination,
+      });
+      return new PageDto(profiles, meta);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
