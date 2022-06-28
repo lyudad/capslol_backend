@@ -11,6 +11,8 @@ import { Role } from '../types/user.interface';
 
 @Entity({ name: 'users' })
 export default class UserEntity {
+  private tempPassword: string;
+
   @PrimaryGeneratedColumn()
   id: number;
 

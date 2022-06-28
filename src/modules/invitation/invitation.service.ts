@@ -1,5 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import PageMetaDto from 'src/shared/DTOs/page-meta.dto';
+import PageOptionsDto from 'src/shared/DTOs/page-options.dto';
+import PageDto from 'src/shared/DTOs/page.dto';
 import { Repository } from 'typeorm';
 import AuthServive from '../auth/auth.service';
 import { Role } from '../auth/types/user.interface';
@@ -96,15 +99,32 @@ export default class InvitationService {
     }
   }
 
-  async findAll(): Promise<InvitationEntity[]> {
+  async findAll(
+    pageOptionsDto: PageOptionsDto,
+  ): Promise<PageDto<InvitationEntity>> {
     try {
-      const result = await this.invitationRepository
+      const pagination = new PageOptionsDto();
+      Object.assign(pagination, pageOptionsDto);
+
+      const qb = await this.invitationRepository
         .createQueryBuilder('invitation')
         .leftJoinAndSelect('invitation.ownerId', 'owner')
         .leftJoinAndSelect('invitation.freelancerId', 'freelancer')
         .leftJoinAndSelect('invitation.jobId', 'job')
+        .orderBy('invitation.createdAt', pagination.order);
+
+      const totalCount = await qb.getCount();
+      const invitations = await qb
+        .skip(pagination.skip)
+        .take(pagination.take)
         .getMany();
-      return result;
+
+      const meta = new PageMetaDto({
+        itemCount: totalCount,
+        options: pagination,
+      });
+
+      return new PageDto(invitations, meta);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
