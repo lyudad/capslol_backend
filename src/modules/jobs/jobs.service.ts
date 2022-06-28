@@ -87,7 +87,8 @@ export default class JobsService {
         .leftJoinAndSelect('jobs.ownerId', 'user')
         .leftJoinAndSelect('jobs.categoryId', 'categories')
         .leftJoinAndSelect('jobs.skills', 'skills')
-        .orderBy('jobs.createdAt', pagination.order);
+        .orderBy('', pagination.order)
+        .orderBy('jobs.createdAt', 'DESC');
 
       if (searchQueryDto.q) {
         qb = qb.andWhere('jobs.title like :q OR jobs.description like :q', {
