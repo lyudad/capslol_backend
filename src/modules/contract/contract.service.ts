@@ -96,7 +96,9 @@ export default class ContractService {
         });
       }
 
-      const contracts = await result
+      const filteredResult = result.orderBy('contract.status');
+
+      const contracts = await filteredResult
         .skip(pagination.skip)
         .take(pagination.take)
         .getMany();
