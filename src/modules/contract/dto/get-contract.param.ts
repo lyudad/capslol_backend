@@ -5,5 +5,5 @@ export default class GetContractParam {
   @ApiProperty()
   @IsNotEmpty()
   @IsNumberString()
-  id: number;
+  id?: number;
 }
