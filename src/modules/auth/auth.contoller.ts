@@ -218,7 +218,7 @@ export default class AuthController {
   async changePasswordWithId(
     @Param('id') userId: number,
     @Body() passwordDto: ChangePasswordDto,
-  ): Promise<boolean> {
+  ): Promise<UserEntity> {
     try {
       const response = await this.authService.changePasswordWithId(
         userId,

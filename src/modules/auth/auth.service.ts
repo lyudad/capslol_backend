@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { compare } from 'bcrypt';
+import { compare, hash } from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { OAuth2Client, TokenPayload } from 'google-auth-library';
@@ -356,12 +356,23 @@ export default class AuthServive {
     }
   }
 
+  async hashPassword(passwordDto: ChangePasswordDto): Promise<string> {
+    try {
+      const password = await hash(passwordDto.password, 10);
+      return password;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
+
   async changePasswordWithId(
     userId: number,
-    password: ChangePasswordDto,
-  ): Promise<boolean> {
+    passwordDto: ChangePasswordDto,
+  ): Promise<UserEntity> {
     try {
-      return await this.changePassword(password, userId);
+      const user = this.userRepository.findOne(userId);
+      (await user).password = passwordDto.password;
+      return await this.userRepository.save(await user);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
