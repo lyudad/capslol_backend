@@ -69,4 +69,14 @@ export default class InvitationController {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
+
+  // @Get('getInvitationsJb')
+  // @UsePipes(new ValidationPipe())
+  // @UseGuards(JWTGuard)
+  // async getInvitationsJobOwner(
+  //   @Query() query: SearchInvitationsQueryOwner,
+  // ): Promise<InvitationEntity[]> {
+  //   const owner = await this.invitationService.findByOwner(query.ownerId);
+  //   return owner;
+  // }
 }

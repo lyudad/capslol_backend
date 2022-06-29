@@ -36,15 +36,31 @@ export default class ProposalsService {
     }
   }
 
-  async getAll(): Promise<ProposalEntity[]> {
+  async getAll(
+    pageOptionsDto: PageOptionsDto,
+  ): Promise<PageDto<ProposalEntity>> {
     try {
-      const proposals = await this.proposalRepository
+      const pagination = new PageOptionsDto();
+      Object.assign(pagination, pageOptionsDto);
+
+      const qb = await this.proposalRepository
         .createQueryBuilder('proposal')
         .leftJoinAndSelect('proposal.jobId', 'jobs')
         .leftJoinAndSelect('proposal.freelancerId', 'user')
+        .orderBy('proposal.createdAt', pagination.order);
+
+      const totalCount = await qb.getCount();
+      const proposals = await qb
+        .skip(pagination.skip)
+        .take(pagination.take)
         .getMany();
 
-      return proposals;
+      const meta = new PageMetaDto({
+        itemCount: totalCount,
+        options: pagination,
+      });
+
+      return new PageDto(proposals, meta);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }

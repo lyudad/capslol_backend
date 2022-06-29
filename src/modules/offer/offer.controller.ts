@@ -14,6 +14,7 @@ import {
   Put,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiHeader } from '@nestjs/swagger';
+import PageOptionsDto from 'src/shared/DTOs/page-options.dto';
 import OfferService from './offer.service';
 import CreateOfferDto from './dto/create-offer.dto';
 import OfferEntity from './entities/offer.entity';
@@ -47,9 +48,11 @@ export default class OfferController {
   @Get()
   @UsePipes(new ValidationPipe())
   @UseGuards(JWTGuard)
-  async findAll(): Promise<OfferEntity[]> {
+  async findAll(
+    @Query() pageOptionsDto: PageOptionsDto,
+  ): Promise<PageDto<OfferEntity>> {
     try {
-      const payload = await this.offerService.findAll();
+      const payload = await this.offerService.findAll(pageOptionsDto);
       return payload;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
