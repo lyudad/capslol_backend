@@ -13,4 +13,6 @@ export enum RESPONSE_MESSAGE {
   USER_NOT_EXISTS = 'User not exists',
   HAS_GOOGLE_ACCOUNT = 'User has google account. Please use Google Sign In button',
   ROLE_UPDATED = 'role updated',
+  EMAIL_NOT_CONFIRMED = 'Please confirm your email to login',
+  EMAIL_CONFIRMED = 'You email successfully confirmed',
 }

@@ -247,4 +247,24 @@ export default class AuthController {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
+
+  @ApiBody({ type: SelectRole })
+  @Get('/confirmEmail')
+  @UsePipes(new ValidationPipe())
+  async confirmEmail(
+    @Query() verifyToken: IToken,
+  ): Promise<IResponse<IUserResponse>> {
+    try {
+      const updatedUser = await this.authService.confirmEmail(verifyToken);
+
+      const response = this.authService.buildResponse(
+        updatedUser,
+        RESPONSE_MESSAGE.EMAIL_CONFIRMED,
+      );
+
+      return response;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
 }

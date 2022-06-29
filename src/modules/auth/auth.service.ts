@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { compare, hash } from 'bcrypt';
+import { compare } from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { OAuth2Client, TokenPayload } from 'google-auth-library';
@@ -94,6 +94,8 @@ export default class AuthServive {
       const user = await this.getUserById(createdUser.raw.insertId);
       delete user.password;
       const userWithToken = await this.generateJWT(user);
+
+      await this.sentConfirmMessage(user, 'confirmation');
 
       return userWithToken;
     } catch (error) {
@@ -289,9 +291,34 @@ export default class AuthServive {
       delete user.password;
 
       const loggedUser = await this.getUserById(user.id);
+
+      if (!loggedUser.isConfirmed) {
+        throw new HttpException(
+          RESPONSE_MESSAGE.EMAIL_NOT_CONFIRMED,
+          HttpStatus.UNPROCESSABLE_ENTITY,
+        );
+      }
+
       const userWithToken = await this.generateJWT(loggedUser);
 
       return userWithToken;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
+
+  async sentConfirmMessage(user: UserEntity, route: string): Promise<void> {
+    try {
+      const confirmedToken = await this.jwtService.sign({ id: user.id });
+      const verifyUrl = `${this.configService.get(
+        'FE_APP_URL',
+      )}/${route}/?token=${confirmedToken}`;
+      const userVerify: IUserVerify = {
+        email: user.email,
+        name: user.firstName,
+      };
+
+      await this.mailService.sendUserConfirmation(userVerify, verifyUrl);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
@@ -309,16 +336,7 @@ export default class AuthServive {
         throw new BadRequestException('Invalid email');
       }
 
-      const token = await this.jwtService.sign({ id: user.id });
-      const url = `${this.configService.get(
-        'FE_APP_URL',
-      )}/reset_password/?token=${token}`;
-      const userVerify: IUserVerify = {
-        email: user.email,
-        name: user.firstName,
-      };
-
-      await this.mailService.sendUserConfirmation(userVerify, url);
+      await this.sentConfirmMessage(user, 'reset_password');
 
       return user;
     } catch (error) {
@@ -356,15 +374,6 @@ export default class AuthServive {
     }
   }
 
-  async hashPassword(passwordDto: ChangePasswordDto): Promise<string> {
-    try {
-      const password = await hash(passwordDto.password, 10);
-      return password;
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
-    }
-  }
-
   async changePasswordWithId(
     userId: number,
     passwordDto: ChangePasswordDto,
@@ -392,6 +401,29 @@ export default class AuthServive {
         .createQueryBuilder('user')
         .where('user.id = :id', { id: role.userId })
         .getOne();
+      return {
+        user: updatedUser,
+      };
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
+
+  async confirmEmail(verifyToken: IToken): Promise<IUserResponse> {
+    try {
+      const { id } = await this.jwtService.verify(verifyToken.token);
+
+      await this.userRepository
+        .createQueryBuilder('user')
+        .update()
+        .set({
+          isConfirmed: true,
+        })
+        .where('id = :id', { id })
+        .execute();
+
+      const updatedUser = await this.getUserById(id);
+
       return {
         user: updatedUser,
       };

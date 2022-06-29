@@ -44,6 +44,9 @@ export default class UserEntity {
   @Column({ type: 'boolean', nullable: true, default: false })
   isGoogle: boolean;
 
+  @Column({ type: 'boolean', nullable: true, default: false })
+  isConfirmed: boolean;
+
   @BeforeInsert()
   @BeforeUpdate()
   async hashedPassword(): Promise<void> {
