@@ -126,6 +126,18 @@ export default class JobsService {
         });
       }
 
+      if (searchQueryDto.ownerId) {
+        qb = qb.andWhere('ownerId = :ownerId', {
+          ownerId: searchQueryDto.ownerId,
+        });
+      }
+
+      if (searchQueryDto.isArchived) {
+        qb = qb.andWhere('isArchived = :isArchived', {
+          isArchived: searchQueryDto.isArchived,
+        });
+      }
+
       const jobs = await qb
         .skip(pagination.skip)
         .take(pagination.take)
