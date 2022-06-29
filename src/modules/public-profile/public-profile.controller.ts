@@ -12,6 +12,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import PageOptionsDto from 'src/shared/DTOs/page-options.dto';
+import PageDto from 'src/shared/DTOs/page.dto';
 import PublicProfileService from './public-profile.service';
 import CreatePublicProfileDto from './dto/create-public-profile.dto';
 import UpdatePublicProfileDto from './dto/update-public-profile.dto';
@@ -52,8 +54,10 @@ export default class PublicProfileController {
   }
 
   @Get()
-  async findAll(): Promise<PublicProfile[]> {
-    const profile = await this.publicProfileService.findAll();
+  async findAll(
+    @Query() pageOptionsDto: PageOptionsDto,
+  ): Promise<PageDto<PublicProfile>> {
+    const profile = await this.publicProfileService.findAll(pageOptionsDto);
     return profile;
   }
 

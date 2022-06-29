@@ -1,5 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import PageMetaDto from 'src/shared/DTOs/page-meta.dto';
+import PageOptionsDto from 'src/shared/DTOs/page-options.dto';
+import PageDto from 'src/shared/DTOs/page.dto';
 import { Repository } from 'typeorm';
 import AuthServive from '../auth/auth.service';
 import { Role } from '../auth/types/user.interface';
@@ -98,15 +101,30 @@ export default class OfferService {
     }
   }
 
-  async findAll(): Promise<OfferEntity[]> {
+  async findAll(pageOptionsDto: PageOptionsDto): Promise<PageDto<OfferEntity>> {
     try {
-      const result = await this.offerRepository
+      const pagination = new PageOptionsDto();
+      Object.assign(pagination, pageOptionsDto);
+
+      const qb = await this.offerRepository
         .createQueryBuilder('offer')
         .leftJoinAndSelect('offer.ownerId', 'owner')
         .leftJoinAndSelect('offer.freelancerId', 'freelancer')
         .leftJoinAndSelect('offer.jobId', 'job')
+        .orderBy('offer.createdAt', pageOptionsDto.order);
+
+      const totalCount = await qb.getCount();
+      const offers = await qb
+        .skip(pagination.skip)
+        .take(pagination.take)
         .getMany();
-      return result;
+
+      const meta = new PageMetaDto({
+        itemCount: totalCount,
+        options: pagination,
+      });
+
+      return new PageDto(offers, meta);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }

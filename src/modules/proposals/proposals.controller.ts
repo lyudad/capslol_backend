@@ -12,6 +12,8 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
+import PageOptionsDto from 'src/shared/DTOs/page-options.dto';
+import PageDto from 'src/shared/DTOs/page.dto';
 import CreateProposalDto from './dto/create-proposal.dto';
 import ProposalEntity from './entities/proposal.entity';
 import ProposalsService from './proposals.service';
@@ -45,9 +47,11 @@ export default class ProposalsController {
     type: ProposalEntity,
   })
   @Get()
-  async getAll(): Promise<ProposalEntity[]> {
+  async getAll(
+    @Query() pageOptionsDto: PageOptionsDto,
+  ): Promise<PageDto<ProposalEntity>> {
     try {
-      const allProposals = await this.proposalService.getAll();
+      const allProposals = await this.proposalService.getAll(pageOptionsDto);
 
       return allProposals;
     } catch (error) {

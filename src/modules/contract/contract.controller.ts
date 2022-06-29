@@ -13,6 +13,8 @@ import {
   Put,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiHeader } from '@nestjs/swagger';
+import PageOptionsDto from 'src/shared/DTOs/page-options.dto';
+import PageDto from 'src/shared/DTOs/page.dto';
 import JWTGuard from '../auth/guards/jwt.guard';
 import ContractService from './contract.service';
 import CreateContractDto from './dto/create-contract.dto';
@@ -59,9 +61,11 @@ export default class ContractController {
   }
 
   @Get()
-  async findAll(): Promise<ContractEntity[]> {
+  async findAll(
+    pageOptionsDto: PageOptionsDto,
+  ): Promise<PageDto<ContractEntity>> {
     try {
-      const response = this.contractService.findAll();
+      const response = this.contractService.findAll(pageOptionsDto);
       return response;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);

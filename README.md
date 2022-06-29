@@ -41,10 +41,12 @@ If you haven`t installed database in your machine, you can use docker container.
 docker run --name mysql \
            --volume "$(pwd)/data:/var/lib/mysql" \
            --env MYSQL_ROOT_PASSWORD=secret \
+           --env MYSQL_USER=admin \
+           --env MYSQL_PASSWORD=freelancer \
+           --env MYSQL_DATABASE=freelancer_db \
            --publish 3306:3306 \
            --detach \
            --restart unless-stopped \
-           --net freelancer \
            mysql:8.0
 ```
 
