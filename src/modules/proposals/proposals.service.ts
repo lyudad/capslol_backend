@@ -105,7 +105,7 @@ export default class ProposalsService {
     }
   }
 
-  async findFilteredAllProposal(
+  async findFilteredAllProposals(
     searchByUserDto: SearchProposalQueryDto,
   ): Promise<PageDto<ProposalEntity>> {
     try {

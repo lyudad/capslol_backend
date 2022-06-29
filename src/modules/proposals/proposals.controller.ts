@@ -102,7 +102,7 @@ export default class ProposalsController {
   ): Promise<PageDto<ProposalEntity>> {
     try {
       const response =
-        this.proposalService.findFilteredAllProposal(searchByUserDto);
+        this.proposalService.findFilteredAllProposals(searchByUserDto);
       return response;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
