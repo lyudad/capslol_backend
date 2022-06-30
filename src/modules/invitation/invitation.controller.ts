@@ -18,6 +18,7 @@ import CreateInvitationDto from './dto/create-invitation.dto';
 import JWTGuard from '../auth/guards/jwt.guard';
 import InvitationEntity from './entities/invitation.entity';
 import SearchInvitationsQueryDto from './dto/search-ivitations.dto';
+import SearchInvitationsQueryOwner from './dto/search-ivitations-owner.dto';
 
 @ApiTags('Invitation')
 @ApiBearerAuth()
@@ -70,13 +71,13 @@ export default class InvitationController {
     }
   }
 
-  // @Get('getInvitationsJb')
-  // @UsePipes(new ValidationPipe())
-  // @UseGuards(JWTGuard)
-  // async getInvitationsJobOwner(
-  //   @Query() query: SearchInvitationsQueryOwner,
-  // ): Promise<InvitationEntity[]> {
-  //   const owner = await this.invitationService.findByOwner(query.ownerId);
-  //   return owner;
-  // }
+  @Get('getInvitationsJb')
+  @UsePipes(new ValidationPipe())
+  @UseGuards(JWTGuard)
+  async getInvitationsJobOwner(
+    @Query() query: SearchInvitationsQueryOwner,
+  ): Promise<InvitationEntity[]> {
+    const owner = await this.invitationService.findByOwner(query.ownerId);
+    return owner;
+  }
 }
