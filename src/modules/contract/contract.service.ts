@@ -1,11 +1,15 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import PageOptionsDto from 'src/shared/DTOs/page-options.dto';
+import PageDto from 'src/shared/DTOs/page.dto';
 import OfferService from '../offer/offer.service';
 import CreateContractDto from './dto/create-contract.dto';
 import ContractEntity from './entities/contract.entity';
 import ResponseMessage from './types/response.type';
+import PageMetaDto from '../../shared/DTOs/page-meta.dto';
 import UpdateContractDto from './dto/update-contract.dto';
+import SearchByUserDto from './dto/search-by-user.query';
 
 @Injectable()
 export default class ContractService {
@@ -65,54 +69,50 @@ export default class ContractService {
     }
   }
 
-  async findAll(): Promise<ContractEntity[]> {
+  async findFilteredAll(
+    searchByUserDto: SearchByUserDto,
+  ): Promise<PageDto<ContractEntity>> {
     try {
-      const result = await this.contractRepository
-        .createQueryBuilder('contract')
-        .leftJoinAndSelect('contract.offerId', 'offer')
-        .leftJoinAndSelect('offer.jobId', 'job')
-        .leftJoinAndSelect('offer.ownerId', 'owner')
-        .leftJoinAndSelect('offer.freelancerId', 'freelancer')
-        .getMany();
-      return result;
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
-    }
-  }
+      const pagination = new PageOptionsDto();
+      Object.assign(pagination, searchByUserDto);
 
-  async findByFreelancer(id: number): Promise<ContractEntity[]> {
-    try {
-      const contracts = await this.contractRepository
+      let result = await this.contractRepository
         .createQueryBuilder('contract')
         .leftJoinAndSelect('contract.offerId', 'offer')
         .leftJoinAndSelect('offer.jobId', 'job')
         .leftJoinAndSelect('offer.ownerId', 'owner')
         .leftJoinAndSelect('offer.freelancerId', 'freelancer')
-        .orderBy('-contract.createdAt')
-        .andWhere('freelancerId = :id', {
-          id,
-        })
-        .getMany();
-      return contracts;
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
-    }
-  }
+        .orderBy('', pagination.order);
 
-  async searchByOwnerId(ownerId: number): Promise<ContractEntity[]> {
-    try {
-      const contracts = await this.contractRepository
-        .createQueryBuilder('contract')
-        .leftJoinAndSelect('contract.offerId', 'offer')
-        .leftJoinAndSelect('offer.jobId', 'job')
-        .leftJoinAndSelect('offer.ownerId', 'owner')
-        .leftJoinAndSelect('offer.freelancerId', 'freelancer')
-        .orderBy('contract.createdAt')
-        .andWhere('owner.id = :id', {
-          id: ownerId,
-        })
+      if (searchByUserDto.freelancerId) {
+        result = result.andWhere('freelancerId = :id', {
+          id: searchByUserDto.freelancerId,
+        });
+      }
+
+      if (searchByUserDto.ownerId) {
+        result = result.andWhere('owner.id = :id', {
+          id: searchByUserDto.ownerId,
+        });
+      }
+
+      result.orderBy('contract.createdAt', 'ASC');
+
+      const filteredResult = result.orderBy('contract.status');
+
+      const contracts = await filteredResult
+        .skip(pagination.skip)
+        .take(pagination.take)
         .getMany();
-      return contracts;
+
+      const totalCount = await result.getCount();
+
+      const meta = new PageMetaDto({
+        itemCount: totalCount,
+        options: pagination,
+      });
+
+      return new PageDto(contracts, meta);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }

@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumberString } from 'class-validator';
 
-export default class SearchByOwnerQuery {
+export default class SearchInvitationsQueryOwner {
   @ApiProperty({
-    description: 'contract identifier',
+    description: 'offer identifier',
   })
   @IsNotEmpty()
   @IsNumberString()

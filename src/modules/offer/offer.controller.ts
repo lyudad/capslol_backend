@@ -1,3 +1,4 @@
+import PageDto from 'src/shared/DTOs/page.dto';
 import {
   Controller,
   Get,
@@ -13,12 +14,13 @@ import {
   Put,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiHeader } from '@nestjs/swagger';
+import PageOptionsDto from 'src/shared/DTOs/page-options.dto';
 import OfferService from './offer.service';
 import CreateOfferDto from './dto/create-offer.dto';
 import OfferEntity from './entities/offer.entity';
 import JWTGuard from '../auth/guards/jwt.guard';
 import GetOfferParam from './dto/get-offer.param';
-import SearchOffersQuery from './dto/search-offers.query';
+import SearchOffersQueryDto from './dto/search-offers.query';
 import UpdateStatusDto from './dto/update-status.dto';
 
 @ApiTags('Offers')
@@ -46,9 +48,11 @@ export default class OfferController {
   @Get()
   @UsePipes(new ValidationPipe())
   @UseGuards(JWTGuard)
-  async findAll(): Promise<OfferEntity[]> {
+  async findAll(
+    @Query() pageOptionsDto: PageOptionsDto,
+  ): Promise<PageDto<OfferEntity>> {
     try {
-      const payload = await this.offerService.findAll();
+      const payload = await this.offerService.findAll(pageOptionsDto);
       return payload;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
@@ -67,14 +71,16 @@ export default class OfferController {
     }
   }
 
-  @Get('getOffers')
-  @UsePipes(new ValidationPipe())
-  @UseGuards(JWTGuard)
-  async getOffersByUserId(
-    @Query() query: SearchOffersQuery,
-  ): Promise<OfferEntity[]> {
-    const offers = await this.offerService.findByUserId(query.freelancerId);
-    return offers;
+  @Get('filter')
+  async findFilteredAll(
+    @Query() searchByUserDto: SearchOffersQueryDto,
+  ): Promise<PageDto<OfferEntity>> {
+    try {
+      const response = this.offerService.findFilteredAll(searchByUserDto);
+      return response;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 
   @Put('ChangeStatus')

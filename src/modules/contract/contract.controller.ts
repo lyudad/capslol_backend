@@ -12,15 +12,15 @@ import {
   Query,
   Put,
 } from '@nestjs/common';
+import PageDto from 'src/shared/DTOs/page.dto';
 import { ApiTags, ApiBearerAuth, ApiHeader } from '@nestjs/swagger';
 import JWTGuard from '../auth/guards/jwt.guard';
 import ContractService from './contract.service';
 import CreateContractDto from './dto/create-contract.dto';
 import GetContractParam from './dto/get-contract.param';
-import SearchByOwnerQuery from './dto/search-by-owner.query';
 import UpdateContractDto from './dto/update-contract.dto';
 import ContractEntity from './entities/contract.entity';
-import SearchByFreelancerQuery from './dto/search-by-freelancer.query';
+import SearchByUserDto from './dto/search-by-user.query';
 
 @ApiTags('Contracts')
 @ApiBearerAuth()
@@ -58,41 +58,13 @@ export default class ContractController {
     }
   }
 
-  @Get()
-  async findAll(): Promise<ContractEntity[]> {
+  @Get('filter')
+  async findFilteredAll(
+    @Query() searchByUserDto: SearchByUserDto,
+  ): Promise<PageDto<ContractEntity>> {
     try {
-      const response = this.contractService.findAll();
+      const response = this.contractService.findFilteredAll(searchByUserDto);
       return response;
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-    }
-  }
-
-  @Get('search')
-  @UsePipes(new ValidationPipe())
-  @UseGuards(JWTGuard)
-  async getOffersByFreelancer(
-    @Query() query: SearchByFreelancerQuery,
-  ): Promise<ContractEntity[]> {
-    try {
-      const contracts = await this.contractService.findByFreelancer(
-        query.freelancerId,
-      );
-      return contracts;
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-    }
-  }
-
-  @Get('searchByOwnerId')
-  @UsePipes(new ValidationPipe())
-  async searchByOwnerId(
-    @Query() searchQuery: SearchByOwnerQuery,
-  ): Promise<ContractEntity[]> {
-    try {
-      const { ownerId } = searchQuery;
-      const jobs = await this.contractService.searchByOwnerId(ownerId);
-      return jobs;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
