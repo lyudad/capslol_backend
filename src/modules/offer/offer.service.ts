@@ -1,17 +1,17 @@
+import PageOptionsDto from 'src/shared/DTOs/page-options.dto';
+import PageDto from 'src/shared/DTOs/page.dto';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import PageMetaDto from 'src/shared/DTOs/page-meta.dto';
-import PageOptionsDto from 'src/shared/DTOs/page-options.dto';
-import PageDto from 'src/shared/DTOs/page.dto';
 import { Repository } from 'typeorm';
 import AuthServive from '../auth/auth.service';
 import { Role } from '../auth/types/user.interface';
 import JobsService from '../jobs/jobs.service';
 import CreateOfferDto from './dto/create-offer.dto';
-
 import UpdateStatusDto from './dto/update-status.dto';
 import OfferEntity from './entities/offer.entity';
 import ResponseMessage from './types/response.type';
+import SearchOffersQueryDto from './dto/search-offers.query';
 
 @Injectable()
 export default class OfferService {
@@ -130,24 +130,6 @@ export default class OfferService {
     }
   }
 
-  async findByUserId(id: number): Promise<OfferEntity[]> {
-    try {
-      const offers = await this.offerRepository
-        .createQueryBuilder('offer')
-        .leftJoinAndSelect('offer.ownerId', 'owner')
-        .leftJoinAndSelect('offer.freelancerId', 'freelancer')
-        .leftJoinAndSelect('offer.jobId', 'job')
-        .orderBy('-offer.createdAt')
-        .andWhere('freelancerId = :id', {
-          id,
-        })
-        .getMany();
-      return offers;
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
-    }
-  }
-
   async updateStatus(updateStatusDto: UpdateStatusDto): Promise<OfferEntity> {
     try {
       const { id, status } = updateStatusDto;
@@ -173,6 +155,45 @@ export default class OfferService {
         .getOne();
 
       return offer;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
+
+  async findFilteredAll(
+    searchByUserDto: SearchOffersQueryDto,
+  ): Promise<PageDto<OfferEntity>> {
+    try {
+      const pagination = new PageOptionsDto();
+      Object.assign(pagination, searchByUserDto);
+
+      let result = await this.offerRepository
+        .createQueryBuilder('offer')
+        .leftJoinAndSelect('offer.ownerId', 'owner')
+        .leftJoinAndSelect('offer.freelancerId', 'freelancer')
+        .leftJoinAndSelect('offer.jobId', 'job')
+        .orderBy('offer.createdAt', 'DESC')
+        .orderBy('offer.status', 'DESC');
+
+      if (searchByUserDto.freelancerId) {
+        result = result.andWhere('freelancerId = :id', {
+          id: searchByUserDto.freelancerId,
+        });
+      }
+
+      const offers = await result
+        .skip(pagination.skip)
+        .take(pagination.take)
+        .getMany();
+
+      const totalCount = await result.getCount();
+
+      const meta = new PageMetaDto({
+        itemCount: totalCount,
+        options: pagination,
+      });
+
+      return new PageDto(offers, meta);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }

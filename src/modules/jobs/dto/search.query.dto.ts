@@ -49,5 +49,19 @@ export default class SearchQueryDto extends PageOptionsDto {
   @IsOptional()
   readonly skills?: string;
 
-  // TODO add projectDuration filter
+  @ApiProperty({
+    required: false,
+  })
+  @IsNumberString()
+  @IsOptional()
+  readonly ownerId?: number;
+
+  @ApiProperty({
+    required: false,
+  })
+  @IsNumberString()
+  @IsOptional()
+  readonly isArchived?: number;
+
+  // TODO add projectDuration filter isArchived
 }

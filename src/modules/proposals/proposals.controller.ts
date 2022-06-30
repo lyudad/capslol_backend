@@ -1,3 +1,4 @@
+import PageDto from 'src/shared/DTOs/page.dto';
 import {
   Body,
   Controller,
@@ -13,11 +14,10 @@ import {
 } from '@nestjs/common';
 import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import PageOptionsDto from 'src/shared/DTOs/page-options.dto';
-import PageDto from 'src/shared/DTOs/page.dto';
 import CreateProposalDto from './dto/create-proposal.dto';
 import ProposalEntity from './entities/proposal.entity';
 import ProposalsService from './proposals.service';
-import SearchQuery from './dto/search.query';
+import SearchProposalQueryDto from './dto/search.query';
 
 @ApiTags('Proposals')
 @Controller('proposals')
@@ -86,7 +86,7 @@ export default class ProposalsController {
   @Get('search')
   @UsePipes(new ValidationPipe())
   async searchByFreelancerId(
-    @Query() searchQuery: SearchQuery,
+    @Query() searchQuery: SearchProposalQueryDto,
   ): Promise<ProposalEntity[]> {
     try {
       const { freelancerId } = searchQuery;
@@ -94,6 +94,19 @@ export default class ProposalsController {
         freelancerId,
       );
       return proposals;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Get('filter')
+  async findFilteredAllProposals(
+    @Query() searchByUserDto: SearchProposalQueryDto,
+  ): Promise<PageDto<ProposalEntity>> {
+    try {
+      const response =
+        this.proposalService.findFilteredAllProposals(searchByUserDto);
+      return response;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }

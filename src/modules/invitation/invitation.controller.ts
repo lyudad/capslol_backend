@@ -17,8 +17,7 @@ import InvitationService from './invitation.service';
 import CreateInvitationDto from './dto/create-invitation.dto';
 import JWTGuard from '../auth/guards/jwt.guard';
 import InvitationEntity from './entities/invitation.entity';
-import SearchInvitationsQuery from './dto/search-ivitations.dto';
-import SearchInvitationsQueryOwner from './dto/search-ivitations-owner.dto';
+import SearchInvitationsQueryDto from './dto/search-ivitations.dto';
 
 @ApiTags('Invitation')
 @ApiBearerAuth()
@@ -58,25 +57,26 @@ export default class InvitationController {
     }
   }
 
-  @Get('getInvitations')
-  @UsePipes(new ValidationPipe())
-  @UseGuards(JWTGuard)
-  async getInvitationsFreelancer(
-    @Query() query: SearchInvitationsQuery,
-  ): Promise<InvitationEntity[]> {
-    const offers = await this.invitationService.findByFreelancer(
-      query.freelancerId,
-    );
-    return offers;
+  @Get('filter')
+  async findFilteredAllProposals(
+    @Query() searchByUserDto: SearchInvitationsQueryDto,
+  ): Promise<PageDto<InvitationEntity>> {
+    try {
+      const response =
+        this.invitationService.findFilteredAllInvitations(searchByUserDto);
+      return response;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 
-  @Get('getInvitationsJb')
-  @UsePipes(new ValidationPipe())
-  @UseGuards(JWTGuard)
-  async getInvitationsJobOwner(
-    @Query() query: SearchInvitationsQueryOwner,
-  ): Promise<InvitationEntity[]> {
-    const owner = await this.invitationService.findByOwner(query.ownerId);
-    return owner;
-  }
+  // @Get('getInvitationsJb')
+  // @UsePipes(new ValidationPipe())
+  // @UseGuards(JWTGuard)
+  // async getInvitationsJobOwner(
+  //   @Query() query: SearchInvitationsQueryOwner,
+  // ): Promise<InvitationEntity[]> {
+  //   const owner = await this.invitationService.findByOwner(query.ownerId);
+  //   return owner;
+  // }
 }

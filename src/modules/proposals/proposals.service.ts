@@ -1,11 +1,12 @@
-﻿import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import PageMetaDto from 'src/shared/DTOs/page-meta.dto';
+﻿import PageMetaDto from 'src/shared/DTOs/page-meta.dto';
 import PageOptionsDto from 'src/shared/DTOs/page-options.dto';
 import PageDto from 'src/shared/DTOs/page.dto';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import CreateProposalDto from './dto/create-proposal.dto';
 import ProposalEntity from './entities/proposal.entity';
+import SearchProposalQueryDto from './dto/search.query';
 
 @Injectable()
 export default class ProposalsService {
@@ -115,6 +116,44 @@ export default class ProposalsService {
         });
 
       return proposals.getMany();
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
+
+  async findFilteredAllProposals(
+    searchByUserDto: SearchProposalQueryDto,
+  ): Promise<PageDto<ProposalEntity>> {
+    try {
+      const pagination = new PageOptionsDto();
+      Object.assign(pagination, searchByUserDto);
+
+      let result = await this.proposalRepository
+        .createQueryBuilder('proposal')
+        .leftJoinAndSelect('proposal.jobId', 'jobs')
+        .leftJoinAndSelect('proposal.freelancerId', 'user')
+        .orderBy('', pagination.order)
+        .orderBy('proposal.createdAt', 'DESC');
+
+      if (searchByUserDto.freelancerId) {
+        result = result.andWhere('freelancerId = :id', {
+          id: searchByUserDto.freelancerId,
+        });
+      }
+
+      const proposals = await result
+        .skip(pagination.skip)
+        .take(pagination.take)
+        .getMany();
+
+      const totalCount = await result.getCount();
+
+      const meta = new PageMetaDto({
+        itemCount: totalCount,
+        options: pagination,
+      });
+
+      return new PageDto(proposals, meta);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }

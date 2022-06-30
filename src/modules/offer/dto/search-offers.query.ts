@@ -1,11 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumberString } from 'class-validator';
+import { IsNumberString, IsOptional } from 'class-validator';
+import PageOptionsDto from 'src/shared/DTOs/page-options.dto';
 
-export default class SearchOffersQuery {
+export default class SearchOffersQueryDto extends PageOptionsDto {
   @ApiProperty({
     description: 'offer identifier',
   })
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumberString()
   freelancerId?: number;
 }

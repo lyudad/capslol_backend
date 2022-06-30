@@ -8,6 +8,7 @@ import AuthServive from '../auth/auth.service';
 import { Role } from '../auth/types/user.interface';
 import JobsService from '../jobs/jobs.service';
 import CreateInvitationDto from './dto/create-invitation.dto';
+import SearchInvitationsQueryDto from './dto/search-ivitations.dto';
 import InvitationEntity from './entities/invitation.entity';
 import ResponseMessage from './types/response.type';
 
@@ -130,19 +131,40 @@ export default class InvitationService {
     }
   }
 
-  async findByFreelancer(id: number): Promise<InvitationEntity[]> {
+  async findFilteredAllInvitations(
+    searchByUserDto: SearchInvitationsQueryDto,
+  ): Promise<PageDto<InvitationEntity>> {
     try {
-      const invitations = await this.invitationRepository
+      const pagination = new PageOptionsDto();
+      Object.assign(pagination, searchByUserDto);
+
+      let result = await this.invitationRepository
         .createQueryBuilder('invitation')
         .leftJoinAndSelect('invitation.ownerId', 'owner')
         .leftJoinAndSelect('invitation.freelancerId', 'freelancer')
         .leftJoinAndSelect('invitation.jobId', 'job')
-        .orderBy('invitation.createdAt')
-        .andWhere('freelancerId = :id', {
-          id,
-        })
+        .orderBy('', pagination.order)
+        .orderBy('invitation.createdAt', 'DESC');
+
+      if (searchByUserDto.freelancerId) {
+        result = result.andWhere('freelancerId = :id', {
+          id: searchByUserDto.freelancerId,
+        });
+      }
+
+      const invitations = await result
+        .skip(pagination.skip)
+        .take(pagination.take)
         .getMany();
-      return invitations;
+
+      const totalCount = await result.getCount();
+
+      const meta = new PageMetaDto({
+        itemCount: totalCount,
+        options: pagination,
+      });
+
+      return new PageDto(invitations, meta);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
