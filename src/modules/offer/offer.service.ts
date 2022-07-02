@@ -172,8 +172,7 @@ export default class OfferService {
         .leftJoinAndSelect('offer.ownerId', 'owner')
         .leftJoinAndSelect('offer.freelancerId', 'freelancer')
         .leftJoinAndSelect('offer.jobId', 'job')
-        .orderBy('offer.createdAt', 'DESC')
-        .orderBy('offer.status', 'DESC');
+        .orderBy('offer.createdAt', 'DESC');
 
       if (searchByUserDto.freelancerId) {
         result = result.andWhere('freelancerId = :id', {

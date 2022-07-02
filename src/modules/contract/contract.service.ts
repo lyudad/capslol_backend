@@ -82,7 +82,8 @@ export default class ContractService {
         .leftJoinAndSelect('offer.jobId', 'job')
         .leftJoinAndSelect('offer.ownerId', 'owner')
         .leftJoinAndSelect('offer.freelancerId', 'freelancer')
-        .orderBy('', pagination.order);
+        // .orderBy('', pagination.order)
+        .orderBy('contract.createdAt', 'DESC');
 
       if (searchByUserDto.freelancerId) {
         result = result.andWhere('freelancerId = :id', {
@@ -96,11 +97,7 @@ export default class ContractService {
         });
       }
 
-      result.orderBy('contract.createdAt', 'ASC');
-
-      const filteredResult = result.orderBy('contract.status');
-
-      const contracts = await filteredResult
+      const contracts = await result
         .skip(pagination.skip)
         .take(pagination.take)
         .getMany();
