@@ -9,7 +9,8 @@ export default class MailService {
   async sendUserConfirmation(user: IUserVerify, url: string): Promise<void> {
     await this.mailerService.sendMail({
       to: user.email,
-      subject: 'Welcome to Nice App! Confirm your Email',
+      subject:
+        'Welcome to Get Job, you can find any job you want! Confirm your Email',
       template: '/confirmation',
       context: {
         name: user.name,
