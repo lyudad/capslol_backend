@@ -18,15 +18,6 @@ export default class PublicProfileService {
 
   async create(dto: CreatePublicProfileDto): Promise<SkillEntity[]> {
     try {
-      const pattern = /(\.jpg|\.jpeg|\.png)$/;
-
-      if (!dto.profileImage.match(pattern)) {
-        throw new HttpException(
-          'Invalid Format! Only jpg jpeg and png files are allowed!',
-          HttpStatus.UNPROCESSABLE_ENTITY,
-        );
-      }
-
       const newProfile = await this.repository.save({
         ...dto,
         user: { id: dto.userId },
