@@ -347,16 +347,11 @@ export default class AuthServive {
   async changePassword(
     password: ChangePasswordDto,
     id: number,
-  ): Promise<boolean> {
+  ): Promise<UserEntity> {
     try {
-      await this.userRepository
-        .createQueryBuilder()
-        .update()
-        .set(password)
-        .where('id =:id', { id })
-        .execute();
-
-      return true;
+      const user = this.userRepository.findOne(id);
+      (await user).password = password.password;
+      return await this.userRepository.save(await user);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
@@ -364,11 +359,11 @@ export default class AuthServive {
 
   async changePasswordWithToken(
     verifyToken: IToken,
-    password: ChangePasswordDto,
-  ): Promise<boolean> {
+    passwordDto: ChangePasswordDto,
+  ): Promise<UserEntity> {
     const { id } = await this.jwtService.verify(verifyToken.token);
     try {
-      return await this.changePassword(password, id);
+      return await this.changePassword(passwordDto, id);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
@@ -379,9 +374,7 @@ export default class AuthServive {
     passwordDto: ChangePasswordDto,
   ): Promise<UserEntity> {
     try {
-      const user = this.userRepository.findOne(userId);
-      (await user).password = passwordDto.password;
-      return await this.userRepository.save(await user);
+      return await this.changePassword(passwordDto, userId);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }

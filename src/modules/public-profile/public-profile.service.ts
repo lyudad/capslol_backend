@@ -18,6 +18,15 @@ export default class PublicProfileService {
 
   async create(dto: CreatePublicProfileDto): Promise<SkillEntity[]> {
     try {
+      const pattern = /(\.jpg|\.jpeg|\.png)$/;
+
+      if (!dto.profileImage.match(pattern)) {
+        throw new HttpException(
+          'Invalid Format! Only jpg jpeg and png files are allowed!',
+          HttpStatus.UNPROCESSABLE_ENTITY,
+        );
+      }
+
       const newProfile = await this.repository.save({
         ...dto,
         user: { id: dto.userId },
@@ -31,6 +40,7 @@ export default class PublicProfileService {
           ? dto.skills.map((e: number) => ({ id: e }))
           : undefined,
       });
+
       return newProfile;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
