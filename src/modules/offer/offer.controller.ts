@@ -15,6 +15,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiHeader } from '@nestjs/swagger';
 import PageOptionsDto from 'src/shared/DTOs/page-options.dto';
+import Roles from 'src/shared/decorators/role.decorator';
 import OfferService from './offer.service';
 import CreateOfferDto from './dto/create-offer.dto';
 import OfferEntity from './entities/offer.entity';
@@ -22,6 +23,7 @@ import JWTGuard from '../auth/guards/jwt.guard';
 import GetOfferParam from './dto/get-offer.param';
 import SearchOffersQueryDto from './dto/search-offers.query';
 import UpdateStatusDto from './dto/update-status.dto';
+import { Role } from '../auth/types/user.interface';
 
 @ApiTags('Offers')
 @ApiBearerAuth()
@@ -46,6 +48,7 @@ export default class OfferController {
   }
 
   @Get()
+  @Roles(Role.FREELANCER)
   @UsePipes(new ValidationPipe())
   @UseGuards(JWTGuard)
   async findAll(
@@ -60,6 +63,7 @@ export default class OfferController {
   }
 
   @Get('getById/:id')
+  @Roles(Role.FREELANCER)
   @UsePipes(new ValidationPipe())
   @UseGuards(JWTGuard)
   async findOne(@Param() params: GetOfferParam): Promise<OfferEntity> {
@@ -72,6 +76,7 @@ export default class OfferController {
   }
 
   @Get('filter')
+  @Roles(Role.FREELANCER)
   async findFilteredAll(
     @Query() searchByUserDto: SearchOffersQueryDto,
   ): Promise<PageDto<OfferEntity>> {
@@ -84,6 +89,7 @@ export default class OfferController {
   }
 
   @Put('ChangeStatus')
+  @Roles(Role.FREELANCER)
   @UsePipes(new ValidationPipe())
   @UseGuards(JWTGuard)
   async update(@Body() updateStatusDto: UpdateStatusDto): Promise<OfferEntity> {
@@ -92,6 +98,7 @@ export default class OfferController {
   }
 
   @Get('getByJobId')
+  @Roles(Role.FREELANCER)
   @UsePipes(new ValidationPipe())
   @UseGuards(JWTGuard)
   async getByJobId(@Query('jobId') jobId: number): Promise<OfferEntity> {

@@ -10,5 +10,4 @@ export interface IUserResponse {
 export enum Role {
   FREELANCER = 'Freelancer',
   JOB_OWNER = 'Job Owner',
-  NOSET = 'No set',
 }
