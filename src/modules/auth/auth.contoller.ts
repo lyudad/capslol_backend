@@ -200,7 +200,7 @@ export default class AuthController {
     changePasswordDto: ChangePasswordDto,
     @Query()
     verifyToken: IToken,
-  ): Promise<boolean> {
+  ): Promise<UserEntity> {
     try {
       const response = await this.authService.changePasswordWithToken(
         verifyToken,

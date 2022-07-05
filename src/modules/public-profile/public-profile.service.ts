@@ -31,6 +31,7 @@ export default class PublicProfileService {
           ? dto.skills.map((e: number) => ({ id: e }))
           : undefined,
       });
+
       return newProfile;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);

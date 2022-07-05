@@ -93,9 +93,16 @@ export default class AuthServive {
 
       const user = await this.getUserById(createdUser.raw.insertId);
       delete user.password;
-      const userWithToken = await this.generateJWT(user);
 
-      await this.sentConfirmMessage(user, 'confirmation');
+      if (!user.isGoogle) {
+        await this.sentConfirmMessage(user, 'confirmation');
+      }
+
+      if (user.isGoogle) {
+        await this.handleIsConfirmed(user.id);
+      }
+
+      const userWithToken = await this.generateJWT(user);
 
       return userWithToken;
     } catch (error) {
@@ -347,16 +354,11 @@ export default class AuthServive {
   async changePassword(
     password: ChangePasswordDto,
     id: number,
-  ): Promise<boolean> {
+  ): Promise<UserEntity> {
     try {
-      await this.userRepository
-        .createQueryBuilder()
-        .update()
-        .set(password)
-        .where('id =:id', { id })
-        .execute();
-
-      return true;
+      const user = this.userRepository.findOne(id);
+      (await user).password = password.password;
+      return await this.userRepository.save(await user);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
@@ -364,11 +366,11 @@ export default class AuthServive {
 
   async changePasswordWithToken(
     verifyToken: IToken,
-    password: ChangePasswordDto,
-  ): Promise<boolean> {
+    passwordDto: ChangePasswordDto,
+  ): Promise<UserEntity> {
     const { id } = await this.jwtService.verify(verifyToken.token);
     try {
-      return await this.changePassword(password, id);
+      return await this.changePassword(passwordDto, id);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
@@ -379,9 +381,7 @@ export default class AuthServive {
     passwordDto: ChangePasswordDto,
   ): Promise<UserEntity> {
     try {
-      const user = this.userRepository.findOne(userId);
-      (await user).password = passwordDto.password;
-      return await this.userRepository.save(await user);
+      return await this.changePassword(passwordDto, userId);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
@@ -409,18 +409,30 @@ export default class AuthServive {
     }
   }
 
-  async confirmEmail(verifyToken: IToken): Promise<IUserResponse> {
+  async handleIsConfirmed(userId: number): Promise<UserEntity> {
     try {
-      const { id } = await this.jwtService.verify(verifyToken.token);
-
       await this.userRepository
         .createQueryBuilder('user')
         .update()
         .set({
           isConfirmed: true,
         })
-        .where('id = :id', { id })
+        .where('id = :id', { id: userId })
         .execute();
+
+      const confirmedUser = await this.getUserById(userId);
+
+      return confirmedUser;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
+
+  async confirmEmail(verifyToken: IToken): Promise<IUserResponse> {
+    try {
+      const { id } = await this.jwtService.verify(verifyToken.token);
+
+      await this.handleIsConfirmed(id);
 
       const updatedUser = await this.getUserById(id);
 
