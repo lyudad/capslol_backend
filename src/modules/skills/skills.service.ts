@@ -19,14 +19,14 @@ export default class SkillsService {
         .createQueryBuilder('skills')
         .getMany();
 
-      let asd = false;
+      let toggle = false;
 
       oldSkills.map(async (e) => {
         if (e.name === skills.name) {
-          asd = true;
+          toggle = true;
         }
       });
-      if (asd) {
+      if (toggle) {
         throw new HttpException(
           `${SkillsResponse.HAS_SKILLS}, '${skills.name}' ${SkillsResponse.ALREADY}`,
           HttpStatus.UNPROCESSABLE_ENTITY,

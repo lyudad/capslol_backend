@@ -1,5 +1,6 @@
 enum SkillsResponse {
-  HAS_SKILLS = 'skills must be unique',
+  HAS_SKILLS = 'Skill must be unique',
+  HAS_CATEGORY = 'Category must be unique',
   ALREADY = 'already exists',
 }
 
