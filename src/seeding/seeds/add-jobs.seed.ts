@@ -11,9 +11,14 @@ export default class AddJobs implements Seeder {
   public async run(factory: Factory, connection: Connection): Promise<void> {
     try {
       const jobRepository = await connection.getRepository(JobEntity);
+      const skillsRepository = await connection.getRepository(SkillEntity);
+      const skillsDB = await skillsRepository
+        .createQueryBuilder('skills')
+        .getMany();
 
       const users: UserEntity[] = await factory(UserEntity)().createMany(10);
-      const skills: SkillEntity[] = await factory(SkillEntity)().createMany(10);
+      const skills: SkillEntity[] =
+        skillsDB || (await factory(SkillEntity)().createMany(10));
       const categories: CategoryEntity[] = await factory(
         CategoryEntity,
       )().createMany(10);
