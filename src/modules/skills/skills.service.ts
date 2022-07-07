@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import SkillsResponse from './constants/response.constants';
 import CreateSkillDto from './dto/create-skill.dto';
 import UpdateSkillDto from './dto/update-skill.dto';
 import SkillEntity from './entities/skill.entity';
@@ -14,6 +15,23 @@ export default class SkillsService {
 
   async create(skills: CreateSkillDto): Promise<SkillEntity> {
     try {
+      const oldSkills = await this.repository
+        .createQueryBuilder('skills')
+        .getMany();
+
+      let asd = false;
+
+      oldSkills.map(async (e) => {
+        if (e.name === skills.name) {
+          asd = true;
+        }
+      });
+      if (asd) {
+        throw new HttpException(
+          `${SkillsResponse.HAS_SKILLS}, '${skills.name}' ${SkillsResponse.ALREADY}`,
+          HttpStatus.UNPROCESSABLE_ENTITY,
+        );
+      }
       const newSkills = await this.repository.save(skills);
       return newSkills;
     } catch (error) {
