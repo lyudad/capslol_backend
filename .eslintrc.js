@@ -36,7 +36,7 @@ module.exports = {
     ],
     '@typescript-eslint/interface-name-prefix': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
-    "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
+    "import/no-extraneous-dependencies": ["off", {"devDependencies": true}],
     "no-shadow": "off",
     "@typescript-eslint/no-shadow": ["error"],
     '@typescript-eslint/no-explicit-any': 'error',

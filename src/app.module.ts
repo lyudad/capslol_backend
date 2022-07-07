@@ -1,6 +1,7 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { JwtModule } from '@nestjs/jwt';
 import ContractModule from './modules/contract/contract.module';
 import InvitationModule from './modules/invitation/invitation.module';
 import ProposalsModule from './modules/proposals/proposals.module';
@@ -19,6 +20,7 @@ import JobsModule from './modules/jobs/jobs.module';
 import MessageModule from './modules/message/message.module';
 import ChatContactsModule from './modules/chat-contacts/chat-contacts.module';
 import OfferModule from './modules/offer/offer.module';
+import UserMiddleware from './shared/middlewares/user.middleware';
 
 @Module({
   imports: [
@@ -38,12 +40,13 @@ import OfferModule from './modules/offer/offer.module';
     OfferModule,
     InvitationModule,
     ContractModule,
+    JwtModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export default class AppModule {
   configure(consumer: MiddlewareConsumer): void {
-    consumer.apply(LoggerMiddleware).forRoutes('*');
+    consumer.apply(LoggerMiddleware, UserMiddleware).forRoutes('*');
   }
 }

@@ -1,8 +1,9 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import jwtConfig from 'src/jwt.config';
 import MailModule from '../mail/mail.module';
 import AuthController from './auth.contoller';
 import AuthServive from './auth.service';
@@ -16,16 +17,7 @@ import JWTStrategy from './strategies/jwt.strategy';
     ConfigModule,
     PassportModule,
     MailModule,
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'),
-        signOptions: {
-          expiresIn: configService.get<string>('JWT_EXPIRES'),
-        },
-      }),
-      inject: [ConfigService],
-    }),
+    JwtModule.registerAsync(jwtConfig),
   ],
   controllers: [AuthController],
   providers: [AuthServive, JWTStrategy],
