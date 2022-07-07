@@ -16,6 +16,7 @@ import {
 import { ApiTags, ApiBearerAuth, ApiHeader } from '@nestjs/swagger';
 import PageOptionsDto from 'src/shared/DTOs/page-options.dto';
 import Roles from 'src/shared/decorators/role.decorator';
+import RolesGuard from 'src/shared/guards/roles.guard';
 import OfferService from './offer.service';
 import CreateOfferDto from './dto/create-offer.dto';
 import OfferEntity from './entities/offer.entity';
@@ -32,12 +33,13 @@ import { Role } from '../auth/types/user.interface';
   description: 'Bearer $your.token',
 })
 @Controller('offer')
+@UseGuards(JWTGuard, RolesGuard)
 export default class OfferController {
   constructor(private readonly offerService: OfferService) {}
 
   @Post()
+  @Roles(Role.FREELANCER)
   @UsePipes(new ValidationPipe())
-  @UseGuards(JWTGuard)
   async create(@Body() createOfferDto: CreateOfferDto): Promise<OfferEntity> {
     try {
       const payload = await this.offerService.create(createOfferDto);
@@ -50,7 +52,6 @@ export default class OfferController {
   @Get()
   @Roles(Role.FREELANCER)
   @UsePipes(new ValidationPipe())
-  @UseGuards(JWTGuard)
   async findAll(
     @Query() pageOptionsDto: PageOptionsDto,
   ): Promise<PageDto<OfferEntity>> {
@@ -65,7 +66,6 @@ export default class OfferController {
   @Get('getById/:id')
   @Roles(Role.FREELANCER)
   @UsePipes(new ValidationPipe())
-  @UseGuards(JWTGuard)
   async findOne(@Param() params: GetOfferParam): Promise<OfferEntity> {
     try {
       const payload = await this.offerService.findOfferById(params.id);
@@ -91,7 +91,6 @@ export default class OfferController {
   @Put('ChangeStatus')
   @Roles(Role.FREELANCER)
   @UsePipes(new ValidationPipe())
-  @UseGuards(JWTGuard)
   async update(@Body() updateStatusDto: UpdateStatusDto): Promise<OfferEntity> {
     const offer = await this.offerService.updateStatus(updateStatusDto);
     return offer;
@@ -100,7 +99,6 @@ export default class OfferController {
   @Get('getByJobId')
   @Roles(Role.FREELANCER)
   @UsePipes(new ValidationPipe())
-  @UseGuards(JWTGuard)
   async getByJobId(@Query('jobId') jobId: number): Promise<OfferEntity> {
     try {
       const offer = await this.offerService.findByJobId(jobId);
