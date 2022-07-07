@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import SkillsResponse from '../skills/constants/response.constants';
 import CreateCategoryDto from './dto/create-category.dto';
 import UpdateCategoryDto from './dto/update-category.dto';
 import CategoryEntity from './entities/category.entity';
@@ -14,6 +15,24 @@ export default class CategoriesService {
 
   async create(categories: CreateCategoryDto): Promise<CategoryEntity> {
     try {
+      const oldCatigories = await this.repository
+        .createQueryBuilder('categories')
+        .getMany();
+
+      let toggle = false;
+
+      oldCatigories.map(async (e) => {
+        if (e.categoryName === categories.categoryName) {
+          toggle = true;
+        }
+      });
+
+      if (toggle) {
+        throw new HttpException(
+          `${SkillsResponse.HAS_CATEGORY}, '${categories.categoryName}' ${SkillsResponse.ALREADY}`,
+          HttpStatus.UNPROCESSABLE_ENTITY,
+        );
+      }
       const newCategories = await this.repository.save(categories);
       return newCategories;
     } catch (error) {

@@ -5,5 +5,5 @@ export default class CreateCategoryDto {
   id: number;
 
   @IsString()
-  categoryТame: string;
+  categoryName: string;
 }
