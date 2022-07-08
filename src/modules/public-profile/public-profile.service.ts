@@ -155,10 +155,7 @@ export default class PublicProfileService {
       }
 
       const totalCount = await qb.getCount();
-      const talents = await qb
-        .skip(pagination.skip)
-        .take(pagination.take)
-        .getMany();
+      const talents = await qb.skip(pagination.skip).take(12).getMany();
 
       const meta = new PageMetaDto({
         itemCount: totalCount,
