@@ -95,13 +95,9 @@ export default class AuthServive {
       const user = await this.getUserById(createdUser.raw.insertId);
       delete user.password;
 
-      // if (!user.isGoogle) {
-      //   await this.sentConfirmMessage(user, 'confirmation');
-      // }
-
-      // if (user.isGoogle) {
-      //   await this.handleIsConfirmed(user.id);
-      // }
+      if (user.isGoogle) {
+        await this.handleIsConfirmed(user.id);
+      }
 
       const userWithToken = await this.generateJWT(user);
 
