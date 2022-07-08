@@ -29,6 +29,7 @@ import { IResponse } from './types/response.interface';
 import { IToken } from './types/password.verifyToken';
 import { IUserResponse, UserType } from './types/user.interface';
 import SelectRole from './dto/select-role.query';
+import ConfirmEmailDto from './dto/confirm-email.dto';
 
 @ApiTags('Authorization')
 @Controller('auth')
@@ -82,6 +83,10 @@ export default class AuthController {
   ): Promise<IResponse<IUserResponse>> {
     try {
       const createdUser = await this.authService.createUser(userInfoDto);
+      await this.authService.sentConfirmMessage(
+        createdUser.user,
+        'confirmation',
+      );
       const response = this.authService.buildResponse<IUserResponse>(
         createdUser,
         RESPONSE_MESSAGE.USER_CREATED,
@@ -248,14 +253,13 @@ export default class AuthController {
     }
   }
 
-  @ApiBody({ type: SelectRole })
-  @Get('/confirmEmail')
+  @Post('/confirmEmail')
   @UsePipes(new ValidationPipe())
   async confirmEmail(
-    @Query() verifyToken: IToken,
+    @Body() confirmEmailDto: ConfirmEmailDto,
   ): Promise<IResponse<IUserResponse>> {
     try {
-      const updatedUser = await this.authService.confirmEmail(verifyToken);
+      const updatedUser = await this.authService.confirmEmail(confirmEmailDto);
 
       const response = this.authService.buildResponse(
         updatedUser,
