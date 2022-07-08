@@ -33,9 +33,15 @@ import JWTStrategy from './strategies/jwt.strategy';
 })
 export default class AuthModule {
   configure(consumer: MiddlewareConsumer): void {
-    consumer.apply(AuthMiddlerware).forRoutes({
-      path: '/auth/login',
-      method: RequestMethod.POST,
-    });
+    consumer.apply(AuthMiddlerware).forRoutes(
+      {
+        path: '/auth/login',
+        method: RequestMethod.POST,
+      },
+      {
+        path: '/auth/forgotPassword',
+        method: RequestMethod.POST,
+      },
+    );
   }
 }

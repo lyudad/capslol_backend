@@ -22,6 +22,7 @@ import { RESPONSE_MESSAGE } from './constants/auth.constants';
 import { IUserResponse, UserType } from './types/user.interface';
 import { IToken } from './types/password.verifyToken';
 import SelectRole from './dto/select-role.query';
+import ConfirmEmailDto from './dto/confirm-email.dto';
 
 @Injectable()
 export default class AuthServive {
@@ -94,13 +95,13 @@ export default class AuthServive {
       const user = await this.getUserById(createdUser.raw.insertId);
       delete user.password;
 
-      if (!user.isGoogle) {
-        await this.sentConfirmMessage(user, 'confirmation');
-      }
+      // if (!user.isGoogle) {
+      //   await this.sentConfirmMessage(user, 'confirmation');
+      // }
 
-      if (user.isGoogle) {
-        await this.handleIsConfirmed(user.id);
-      }
+      // if (user.isGoogle) {
+      //   await this.handleIsConfirmed(user.id);
+      // }
 
       const userWithToken = await this.generateJWT(user);
 
@@ -314,7 +315,7 @@ export default class AuthServive {
     }
   }
 
-  async sentConfirmMessage(user: UserEntity, route: string): Promise<void> {
+  async sentConfirmMessage(user: UserType, route: string): Promise<void> {
     try {
       const confirmedToken = await this.jwtService.sign({ id: user.id });
       const verifyUrl = `${this.configService.get(
@@ -428,10 +429,14 @@ export default class AuthServive {
     }
   }
 
-  async confirmEmail(verifyToken: IToken): Promise<IUserResponse> {
+  async confirmEmail(confirmEmailDto: ConfirmEmailDto): Promise<IUserResponse> {
     try {
-      const { id } = await this.jwtService.verify(verifyToken.token);
+      const { id } = await this.jwtService.verify(confirmEmailDto.token);
 
+      const user = await this.getUserById(id);
+      if (user.isConfirmed) {
+        throw new BadRequestException('Email already confirmed');
+      }
       await this.handleIsConfirmed(id);
 
       const updatedUser = await this.getUserById(id);
