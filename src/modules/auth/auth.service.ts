@@ -113,15 +113,28 @@ export default class AuthServive {
   async createGoogleUser(idToken: string): Promise<IUserResponse> {
     try {
       const payload = await this.verifyGoogleUser(idToken);
-      const { email, given_name: firstName } = payload;
+      const { email, given_name: givenName, family_name: familyName } = payload;
+
+      const googleUser: Partial<UserEntity> = {
+        email,
+        isGoogle: true,
+      };
+      const googleFirstName = givenName.split(' ')[0];
+      const GoogleLastName = givenName.split(' ')[1];
+
+      if (GoogleLastName) {
+        Object.assign(googleUser, { lastName: GoogleLastName } as UserEntity);
+      }
+
+      if (familyName) {
+        Object.assign(googleUser, { lastName: familyName } as UserEntity);
+      }
+
+      Object.assign(googleUser, { firstName: googleFirstName } as UserEntity);
       await this.checkEmail(email);
 
       const newUser = new UserEntity();
-      const entity = Object.assign(newUser, {
-        email,
-        firstName,
-        isGoogle: true,
-      } as UserEntity);
+      const entity = Object.assign(newUser, googleUser);
 
       const createdGoogleUser = await this.createUser(entity);
       return createdGoogleUser;
