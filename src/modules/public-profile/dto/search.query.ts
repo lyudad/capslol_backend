@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNumberString, IsOptional, IsString } from 'class-validator';
+import PageOptionsDto from 'src/shared/DTOs/page-options.dto';
 
 export enum English {
   BEGINNER = 'Beginner',
@@ -9,7 +10,7 @@ export enum English {
   NOSET = 'No set',
 }
 
-export default class SearchQueryProfile {
+export default class SearchQueryProfile extends PageOptionsDto {
   @ApiProperty({
     description: 'search queries',
     required: false,
@@ -40,4 +41,8 @@ export default class SearchQueryProfile {
   @IsNumberString()
   @IsOptional()
   readonly skills?: string;
+
+  @IsString()
+  @IsOptional()
+  readonly user?: string;
 }
