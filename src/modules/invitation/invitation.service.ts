@@ -186,4 +186,21 @@ export default class InvitationService {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }
+
+  async findByFreelancer(id: number): Promise<InvitationEntity[]> {
+    try {
+      const invitations = await this.invitationRepository
+        .createQueryBuilder('invitation')
+        .leftJoinAndSelect('invitation.freelancerId', 'freelancer')
+        .leftJoinAndSelect('invitation.ownerId', 'owner')
+        .leftJoinAndSelect('invitation.jobId', 'job')
+        .andWhere('freelancer.id = :id', {
+          id,
+        })
+        .getMany();
+      return invitations;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
 }
