@@ -2,10 +2,13 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import PageMetaDto from 'src/shared/DTOs/page-meta.dto';
 import PageOptionsDto from 'src/shared/DTOs/page-options.dto';
+import PageDtoTalents from 'src/shared/DTOs/page-talents.dto';
 import PageDto from 'src/shared/DTOs/page.dto';
 import { Repository } from 'typeorm';
+import InvitationService from '../invitation/invitation.service';
 import SkillEntity from '../skills/entities/skill.entity';
 import CreatePublicProfileDto from './dto/create-public-profile.dto';
+import SearchQueryProfile from './dto/search.query';
 import UpdatePublicProfileDto from './dto/update-public-profile.dto';
 import PublicProfile from './entities/public-profile.entity';
 
@@ -14,6 +17,7 @@ export default class PublicProfileService {
   constructor(
     @InjectRepository(PublicProfile)
     private repository: Repository<PublicProfile>,
+    private readonly repositoryInvitation: InvitationService,
   ) {}
 
   async create(dto: CreatePublicProfileDto): Promise<SkillEntity[]> {
@@ -105,6 +109,61 @@ export default class PublicProfileService {
       }
 
       return qb.getMany();
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
+
+  async searchTalents(
+    searchQuery: SearchQueryProfile,
+  ): Promise<PageDtoTalents<PublicProfile>> {
+    try {
+      const pagination = new PageOptionsDto();
+      Object.assign(pagination, searchQuery);
+
+      const InvitationsDb = await this.repositoryInvitation.findByOwner(
+        Number(searchQuery.user),
+      );
+
+      let qb = await this.repository
+        .createQueryBuilder('profile')
+        .leftJoinAndSelect('profile.user', 'user')
+        .where('user.role = :role', { role: 'Freelancer' })
+        .leftJoinAndSelect('profile.categories', 'categories')
+        .leftJoinAndSelect('profile.skills', 'skills')
+        .orderBy('profile.createdAt', searchQuery.order);
+
+      if (searchQuery.q) {
+        qb = qb.andWhere(
+          'user.firstName like :q OR user.lastName like :q OR profile.other like :q',
+          {
+            q: `%${searchQuery.q}%`,
+          },
+        );
+      }
+      if (searchQuery.category) {
+        qb = qb.andWhere('categories.id = :id', {
+          id: searchQuery.category,
+        });
+      }
+
+      if (searchQuery.skills) {
+        const skillIds = searchQuery.skills.split('');
+        qb = qb.andWhere('skills.id IN (:ids)', {
+          ids: skillIds,
+        });
+      }
+
+      const totalCount = await qb.getCount();
+      const talents = await qb.skip(pagination.skip).take(12).getMany();
+
+      const meta = new PageMetaDto({
+        itemCount: totalCount,
+        options: pagination,
+      });
+
+      return new PageDtoTalents(talents, InvitationsDb, meta);
+      return undefined;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }

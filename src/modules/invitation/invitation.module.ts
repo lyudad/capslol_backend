@@ -14,5 +14,6 @@ import JobsModule from '../jobs/jobs.module';
   ],
   controllers: [InvitationController],
   providers: [InvitationService],
+  exports: [InvitationService],
 })
 export default class InvitationModule {}

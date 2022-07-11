@@ -10,6 +10,8 @@ import {
   ValidationPipe,
   UsePipes,
   UseGuards,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import PageOptionsDto from 'src/shared/DTOs/page-options.dto';
@@ -51,6 +53,23 @@ export default class PublicProfileController {
       skills,
     );
     return response;
+  }
+
+  @Get('search-talens')
+  @UsePipes(new ValidationPipe())
+  @UseGuards(JWTGuard)
+  async searchTalents(
+    @Query()
+    searchQuery: SearchQueryProfile,
+  ): Promise<PageDto<PublicProfile>> {
+    try {
+      const response = await this.publicProfileService.searchTalents(
+        searchQuery,
+      );
+      return response;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 
   @Get()
