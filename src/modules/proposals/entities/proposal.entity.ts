@@ -24,8 +24,11 @@ export default class ProposalEntity {
   @Column({ type: 'integer' })
   hourRate: number;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'text' })
   coverLetter: string;
+
+  @Column({ type: 'boolean', default: false })
+  isInvite: boolean;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: string;

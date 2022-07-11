@@ -83,10 +83,7 @@ export default class AuthController {
   ): Promise<IResponse<IUserResponse>> {
     try {
       const createdUser = await this.authService.createUser(userInfoDto);
-      await this.authService.sentConfirmMessage(
-        createdUser.user,
-        'confirmation',
-      );
+
       const response = this.authService.buildResponse<IUserResponse>(
         createdUser,
         RESPONSE_MESSAGE.USER_CREATED,
