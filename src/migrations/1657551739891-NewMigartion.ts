@@ -1,11 +1,11 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class NewMigration1656945364144 implements MigrationInterface {
-  name = 'NewMigration1656945364144';
+export class NewMigartion1657551739891 implements MigrationInterface {
+  name = 'NewMigartion1657551739891';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `CREATE TABLE \`users\` (\`id\` int NOT NULL AUTO_INCREMENT, \`firstName\` varchar(50) NOT NULL, \`lastName\` varchar(50) NOT NULL DEFAULT '', \`role\` enum ('Freelancer', 'Job Owner', 'No set') NULL, \`email\` varchar(50) NOT NULL, \`phoneNumber\` varchar(25) NULL, \`password\` varchar(255) NULL, \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, \`isGoogle\` tinyint NULL DEFAULT 0, \`isConfirmed\` tinyint NULL DEFAULT 0, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+      `CREATE TABLE \`users\` (\`id\` int NOT NULL AUTO_INCREMENT, \`firstName\` varchar(50) NOT NULL, \`lastName\` varchar(50) NOT NULL DEFAULT '', \`role\` enum ('Freelancer', 'Job Owner') NULL, \`email\` varchar(50) NOT NULL, \`phoneNumber\` varchar(25) NULL, \`password\` varchar(255) NULL, \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, \`isGoogle\` tinyint NULL DEFAULT 0, \`isConfirmed\` tinyint NULL DEFAULT 0, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
     );
     await queryRunner.query(
       `CREATE TABLE \`categories\` (\`id\` int NOT NULL AUTO_INCREMENT, \`categoryName\` varchar(255) NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
@@ -32,13 +32,13 @@ export class NewMigration1656945364144 implements MigrationInterface {
       `CREATE TABLE \`contracts\` (\`id\` int NOT NULL AUTO_INCREMENT, \`status\` enum ('opened', 'closed') NOT NULL DEFAULT 'opened', \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, \`closedAt\` timestamp NULL, \`offerId\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
     );
     await queryRunner.query(
-      `CREATE TABLE \`proposals\` (\`id\` int NOT NULL AUTO_INCREMENT, \`hourRate\` int NOT NULL, \`coverLetter\` varchar(255) NOT NULL, \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, \`jobId\` int NOT NULL, \`freelancerId\` int NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+      `CREATE TABLE \`invitations\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, \`ownerId\` int NULL, \`freelancerId\` int NULL, \`jobId\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE \`proposals\` (\`id\` int NOT NULL AUTO_INCREMENT, \`hourRate\` int NOT NULL, \`coverLetter\` text NOT NULL, \`isInvite\` tinyint NOT NULL DEFAULT 0, \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, \`jobId\` int NOT NULL, \`freelancerId\` int NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
     );
     await queryRunner.query(
       `CREATE TABLE \`chat-contacts\` (\`id\` int NOT NULL AUTO_INCREMENT, \`isActive\` tinyint NULL DEFAULT 0, \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, \`proposalId\` int NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
-    );
-    await queryRunner.query(
-      `CREATE TABLE \`invitations\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, \`ownerId\` int NULL, \`freelancerId\` int NULL, \`jobId\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
     );
     await queryRunner.query(
       `CREATE TABLE \`messages\` (\`id\` int NOT NULL AUTO_INCREMENT, \`content\` varchar(1000) NOT NULL, \`createdAt\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, \`isOffer\` tinyint NOT NULL DEFAULT 0, \`senderId\` int NOT NULL, \`roomId\` int NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
@@ -83,15 +83,6 @@ export class NewMigration1656945364144 implements MigrationInterface {
       `ALTER TABLE \`contracts\` ADD CONSTRAINT \`FK_b61e944e4f72458a7cd75e59020\` FOREIGN KEY (\`offerId\`) REFERENCES \`offers\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
-      `ALTER TABLE \`proposals\` ADD CONSTRAINT \`FK_2c211ba3f45c099feb2a6f72e98\` FOREIGN KEY (\`jobId\`) REFERENCES \`jobs\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE \`proposals\` ADD CONSTRAINT \`FK_219edc10f7e4cc15dd19ea5d36d\` FOREIGN KEY (\`freelancerId\`) REFERENCES \`users\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE \`chat-contacts\` ADD CONSTRAINT \`FK_85a9a13329d027ce0c7b77d694d\` FOREIGN KEY (\`proposalId\`) REFERENCES \`proposals\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
-    );
-    await queryRunner.query(
       `ALTER TABLE \`invitations\` ADD CONSTRAINT \`FK_fb023082a27002a896ae4ee559a\` FOREIGN KEY (\`ownerId\`) REFERENCES \`users\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
@@ -99,6 +90,15 @@ export class NewMigration1656945364144 implements MigrationInterface {
     );
     await queryRunner.query(
       `ALTER TABLE \`invitations\` ADD CONSTRAINT \`FK_49951fcfd1f7d0b5a5c2e4b07b7\` FOREIGN KEY (\`jobId\`) REFERENCES \`jobs\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`proposals\` ADD CONSTRAINT \`FK_2c211ba3f45c099feb2a6f72e98\` FOREIGN KEY (\`jobId\`) REFERENCES \`jobs\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`proposals\` ADD CONSTRAINT \`FK_219edc10f7e4cc15dd19ea5d36d\` FOREIGN KEY (\`freelancerId\`) REFERENCES \`users\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`chat-contacts\` ADD CONSTRAINT \`FK_85a9a13329d027ce0c7b77d694d\` FOREIGN KEY (\`proposalId\`) REFERENCES \`proposals\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
       `ALTER TABLE \`messages\` ADD CONSTRAINT \`FK_2db9cf2b3ca111742793f6c37ce\` FOREIGN KEY (\`senderId\`) REFERENCES \`users\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`,
@@ -164,15 +164,6 @@ export class NewMigration1656945364144 implements MigrationInterface {
       `ALTER TABLE \`messages\` DROP FOREIGN KEY \`FK_2db9cf2b3ca111742793f6c37ce\``,
     );
     await queryRunner.query(
-      `ALTER TABLE \`invitations\` DROP FOREIGN KEY \`FK_49951fcfd1f7d0b5a5c2e4b07b7\``,
-    );
-    await queryRunner.query(
-      `ALTER TABLE \`invitations\` DROP FOREIGN KEY \`FK_7205bba6121dee22a2535890127\``,
-    );
-    await queryRunner.query(
-      `ALTER TABLE \`invitations\` DROP FOREIGN KEY \`FK_fb023082a27002a896ae4ee559a\``,
-    );
-    await queryRunner.query(
       `ALTER TABLE \`chat-contacts\` DROP FOREIGN KEY \`FK_85a9a13329d027ce0c7b77d694d\``,
     );
     await queryRunner.query(
@@ -180,6 +171,15 @@ export class NewMigration1656945364144 implements MigrationInterface {
     );
     await queryRunner.query(
       `ALTER TABLE \`proposals\` DROP FOREIGN KEY \`FK_2c211ba3f45c099feb2a6f72e98\``,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`invitations\` DROP FOREIGN KEY \`FK_49951fcfd1f7d0b5a5c2e4b07b7\``,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`invitations\` DROP FOREIGN KEY \`FK_7205bba6121dee22a2535890127\``,
+    );
+    await queryRunner.query(
+      `ALTER TABLE \`invitations\` DROP FOREIGN KEY \`FK_fb023082a27002a896ae4ee559a\``,
     );
     await queryRunner.query(
       `ALTER TABLE \`contracts\` DROP FOREIGN KEY \`FK_b61e944e4f72458a7cd75e59020\``,
@@ -237,9 +237,9 @@ export class NewMigration1656945364144 implements MigrationInterface {
     );
     await queryRunner.query(`DROP TABLE \`educations_profiles\``);
     await queryRunner.query(`DROP TABLE \`messages\``);
-    await queryRunner.query(`DROP TABLE \`invitations\``);
     await queryRunner.query(`DROP TABLE \`chat-contacts\``);
     await queryRunner.query(`DROP TABLE \`proposals\``);
+    await queryRunner.query(`DROP TABLE \`invitations\``);
     await queryRunner.query(`DROP TABLE \`contracts\``);
     await queryRunner.query(`DROP TABLE \`offers\``);
     await queryRunner.query(`DROP TABLE \`jobs\``);

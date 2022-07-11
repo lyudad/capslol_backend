@@ -95,10 +95,6 @@ export default class AuthServive {
       const user = await this.getUserById(createdUser.raw.insertId);
       delete user.password;
 
-      if (user.isGoogle) {
-        await this.handleIsConfirmed(user.id);
-      }
-
       const userWithToken = await this.generateJWT(user);
 
       return userWithToken;
@@ -308,13 +304,6 @@ export default class AuthServive {
       delete user.password;
 
       const loggedUser = await this.getUserById(user.id);
-
-      if (!loggedUser.isConfirmed) {
-        throw new HttpException(
-          RESPONSE_MESSAGE.EMAIL_NOT_CONFIRMED,
-          HttpStatus.UNPROCESSABLE_ENTITY,
-        );
-      }
 
       const userWithToken = await this.generateJWT(loggedUser);
 
