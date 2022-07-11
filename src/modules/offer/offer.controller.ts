@@ -38,7 +38,7 @@ export default class OfferController {
   constructor(private readonly offerService: OfferService) {}
 
   @Post()
-  @Roles(Role.FREELANCER)
+  @Roles(Role.JOB_OWNER)
   @UsePipes(new ValidationPipe())
   async create(@Body() createOfferDto: CreateOfferDto): Promise<OfferEntity> {
     try {
