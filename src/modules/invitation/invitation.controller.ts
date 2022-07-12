@@ -9,7 +9,6 @@ import {
   HttpException,
   HttpStatus,
   Query,
-  // Param,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiHeader } from '@nestjs/swagger';
 import PageOptionsDto from 'src/shared/DTOs/page-options.dto';
@@ -90,5 +89,15 @@ export default class InvitationController {
   ): Promise<InvitationEntity[]> {
     const owner = await this.invitationService.findByFreelancer(id);
     return owner;
+  }
+
+  @Get('getBy')
+  @UsePipes(new ValidationPipe())
+  @UseGuards(JWTGuard)
+  async getInvitationById(
+    @Query('byInvitationId') id: number,
+  ): Promise<InvitationEntity> {
+    const invitation = await this.invitationService.findById(id);
+    return invitation;
   }
 }
