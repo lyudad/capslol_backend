@@ -73,4 +73,20 @@ export default class ChatContactsController {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
+
+  @ApiResponse({
+    type: ChatContactEntity,
+  })
+  @Get('getChatContacts')
+  async findById(
+    @Query('byFreelancerId') id: number,
+  ): Promise<ChatContactEntity[]> {
+    try {
+      const chatContacts = await this.chatContactsService.getByFreelancerId(id);
+
+      return chatContacts;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
 }
