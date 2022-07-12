@@ -104,4 +104,22 @@ export default class ChatContactsService {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }
+
+  async getByFreelancerId(id: number): Promise<ChatContactEntity[]> {
+    try {
+      const chatContact = await this.repository
+        .createQueryBuilder('contacts')
+        .leftJoinAndSelect('contacts.proposalId', 'proposals')
+        .leftJoinAndSelect('proposals.freelancerId', 'users')
+        .leftJoinAndSelect('proposals.jobId', 'jobs')
+        .leftJoinAndSelect('jobs.ownerId', 'user')
+        .where('freelancerId =:id', { id })
+        .orderBy('-contacts.createdAt')
+        .getMany();
+
+      return chatContact;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
 }
