@@ -15,7 +15,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiHeader } from '@nestjs/swagger';
 import PageOptionsDto from 'src/shared/DTOs/page-options.dto';
-import Roles from 'src/shared/decorators/role.decorator';
+// import Roles from 'src/shared/decorators/role.decorator';
 import RolesGuard from 'src/shared/guards/roles.guard';
 import OfferService from './offer.service';
 import CreateOfferDto from './dto/create-offer.dto';
@@ -24,7 +24,7 @@ import JWTGuard from '../auth/guards/jwt.guard';
 import GetOfferParam from './dto/get-offer.param';
 import SearchOffersQueryDto from './dto/search-offers.query';
 import UpdateStatusDto from './dto/update-status.dto';
-import { Role } from '../auth/types/user.interface';
+// import { Role } from '../auth/types/user.interface';
 
 @ApiTags('Offers')
 @ApiBearerAuth()
@@ -38,7 +38,7 @@ export default class OfferController {
   constructor(private readonly offerService: OfferService) {}
 
   @Post()
-  @Roles(Role.JOB_OWNER)
+  // @Roles(Role.JOB_OWNER)
   @UsePipes(new ValidationPipe())
   async create(@Body() createOfferDto: CreateOfferDto): Promise<OfferEntity> {
     try {
@@ -50,7 +50,7 @@ export default class OfferController {
   }
 
   @Get()
-  @Roles(Role.FREELANCER)
+  // @Roles(Role.FREELANCER)
   @UsePipes(new ValidationPipe())
   async findAll(
     @Query() pageOptionsDto: PageOptionsDto,
@@ -64,7 +64,7 @@ export default class OfferController {
   }
 
   @Get('getById/:id')
-  @Roles(Role.FREELANCER)
+  // @Roles(Role.FREELANCER)
   @UsePipes(new ValidationPipe())
   async findOne(@Param() params: GetOfferParam): Promise<OfferEntity> {
     try {
@@ -76,7 +76,7 @@ export default class OfferController {
   }
 
   @Get('filter')
-  @Roles(Role.FREELANCER)
+  // @Roles(Role.FREELANCER)
   async findFilteredAll(
     @Query() searchByUserDto: SearchOffersQueryDto,
   ): Promise<PageDto<OfferEntity>> {
@@ -89,7 +89,7 @@ export default class OfferController {
   }
 
   @Put('ChangeStatus')
-  @Roles(Role.FREELANCER)
+  // @Roles(Role.FREELANCER)
   @UsePipes(new ValidationPipe())
   async update(@Body() updateStatusDto: UpdateStatusDto): Promise<OfferEntity> {
     const offer = await this.offerService.updateStatus(updateStatusDto);
@@ -97,7 +97,7 @@ export default class OfferController {
   }
 
   @Get('getByJobId')
-  @Roles(Role.FREELANCER)
+  // @Roles(Role.FREELANCER)
   @UsePipes(new ValidationPipe())
   async getByJobId(@Query('jobId') jobId: number): Promise<OfferEntity> {
     try {
