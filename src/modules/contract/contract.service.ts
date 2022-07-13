@@ -128,7 +128,7 @@ export default class ContractService {
     }
   }
 
-  async findByOfferId(id: number): Promise<ContractEntity> {
+  async findByFreelancerId(id: number): Promise<ContractEntity[]> {
     try {
       const contracts = await this.contractRepository
         .createQueryBuilder('contract')
@@ -137,10 +137,10 @@ export default class ContractService {
         .leftJoinAndSelect('offer.ownerId', 'owner')
         .leftJoinAndSelect('offer.freelancerId', 'freelancer')
         .orderBy('-contract.createdAt')
-        .andWhere('offerId = :id', {
+        .andWhere('freelancerId = :id', {
           id,
         })
-        .getOne();
+        .getMany();
       return contracts;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNPROCESSABLE_ENTITY);

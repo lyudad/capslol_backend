@@ -82,15 +82,16 @@ export default class ContractController {
     return updatedStatus;
   }
 
-  @Get('getByOfferId')
+  @Get('getBy')
   @UsePipes(new ValidationPipe())
-  @UseGuards(JWTGuard)
   async getByOfferId(
-    @Query('offerId') offerId: number,
-  ): Promise<ContractEntity> {
+    @Query('freelancerId') freelanceId: number,
+  ): Promise<ContractEntity[]> {
     try {
-      const offer = await this.contractService.findByOfferId(offerId);
-      return offer;
+      const contract = await this.contractService.findByFreelancerId(
+        freelanceId,
+      );
+      return contract;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
