@@ -84,7 +84,6 @@ export default class ContractController {
 
   @Get('getBy')
   @UsePipes(new ValidationPipe())
-  // @UseGuards(JWTGuard)
   async getByOfferId(
     @Query('freelancerId') freelanceId: number,
   ): Promise<ContractEntity[]> {
