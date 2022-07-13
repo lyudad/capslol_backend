@@ -97,7 +97,7 @@ export default class OfferController {
   }
 
   @Get('getByJobId')
-  @Roles(Role.FREELANCER)
+  // @Roles(Role.FREELANCER)
   @UsePipes(new ValidationPipe())
   async getByJobId(@Query('jobId') jobId: number): Promise<OfferEntity> {
     try {
