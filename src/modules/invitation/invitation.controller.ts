@@ -83,7 +83,6 @@ export default class InvitationController {
 
   @Get('getInvitation')
   @UsePipes(new ValidationPipe())
-  @UseGuards(JWTGuard)
   async getById(
     @Query('byFreelancerId') id: number,
   ): Promise<InvitationEntity[]> {
